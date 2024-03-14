@@ -2,7 +2,7 @@ class_name Note; extends AnimatedSprite2D;
 
 var strum_time:float
 var dir:int = 0
-var note_type:String = "":
+var type:String = "":
 	set(type): pass
 
 var must_press:bool = false

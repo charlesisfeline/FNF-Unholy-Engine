@@ -15,7 +15,6 @@ func _ready():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	position.y = lerpf(position.y, init_pos.y - 30, delta * 3)
-	pass
 
 var returned_index = 0
 func get_rating_data(diff:float): # gets rating and score for the rating
@@ -29,11 +28,12 @@ func get_rating(diff:float):
 			play_rating(i)
 			return ratings_data.name[i]
 		returned_index += 1
-	return ratings_data.name[returned_index][ratings_data.name.size() - 1]
+	play_rating(returned_index)
+	return ratings_data.name[ratings_data.name.size() - 1]
 
 func play_rating(index:int = 0):
 	play('rating')
-	frame = returned_index
+	frame = index
 	await get_tree().create_timer(Conductor.crochet * 0.001).timeout
 	var tween = get_tree().create_tween()
 	tween.tween_property(self, "modulate", Color.TRANSPARENT, 0.2)
