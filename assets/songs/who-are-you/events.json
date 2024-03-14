@@ -1,0 +1,29 @@
+{
+	"song": {
+		"speed": 3,
+		"stage": "innocence",
+		"player1": "bf",
+		"player2": "innocence",
+		"player3": null,
+		"events": [
+			[
+				13479.020979021,
+				[
+					[
+						"Change Character",
+						"dad",
+						"innocenceOut"
+					]
+				]
+			]
+		],
+		"notes": [],
+		"splashSkin": null,
+		"validScore": false,
+		"gfVersion": "gf",
+		"bpm": 143,
+		"arrowSkin": null,
+		"needsVoices": true,
+		"song": "who-are-you"
+	}
+}

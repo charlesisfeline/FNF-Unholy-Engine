@@ -1,26 +1,41 @@
-extends AnimatedSprite2D
-	
-var ratings:Dictionary = {
-	'sick': {'hit_window': 45,   'score': 350, 'hit_mod': 1},
-	'good': {'hit_window': 90,   'score': 200, 'hit_mod': 0.67},
-	'bad' : {'hit_window': 135,  'score': 100, 'hit_mod': 0.34},
-	'shit': {'hit_window': null, 'score': 50,  'hit_mod': 0} 
+class_name Rating; extends AnimatedSprite2D;
+
+var init_pos:Vector2
+var ratings_data:Dictionary = {
+	'name':       ['sick', 'good', 'bad', 'shit'],
+	'score':      [  350,    200,   100,    50],
+	'hit_window': [   45,     90,   135,  null]
 }
 
 func _ready():
-	pass # Replace with function body.
-
+	scale = Vector2(0.5, 0.5)
+	position = Vector2(get_viewport().size.x - 450, get_viewport().size.y - 300)
+	init_pos = position
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+	position.y = lerpf(position.y, init_pos.y - 30, delta * 3)
 	pass
 
-func get_rating(diff):
-	for rating in ratings:
-		if absf(diff) <= rating.hit_window:
-			print(rating)
-			return rating
-	pass
+var returned_index = 0
+func get_rating_data(diff:float): # gets rating and score for the rating
+	return [get_rating(diff), ratings_data.score[returned_index]]
 
-func play_rating(rating:String = 'sick'):
-	play(rating)
+func get_rating(diff:float):
+	returned_index = 0
+	for i in ratings_data.hit_window.size() - 1:
+		var win = ratings_data.hit_window[i]
+		if absf(diff) <= win:
+			play_rating(i)
+			return ratings_data.name[i]
+		returned_index += 1
+	return ratings_data.name[returned_index][ratings_data.name.size() - 1]
+
+func play_rating(index:int = 0):
+	play('rating')
+	frame = returned_index
+	await get_tree().create_timer(Conductor.crochet * 0.001).timeout
+	var tween = get_tree().create_tween()
+	tween.tween_property(self, "modulate", Color.TRANSPARENT, 0.2)
+	#tween.tween_property(self, "position", Vector2(position.x, position.y - 20), 0.2).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_callback(self.queue_free)

@@ -10,38 +10,23 @@
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("1_o7ou3")
-}],
-"loop": false,
-"name": &"bad",
-"speed": 0.0
+"texture": ExtResource("4_qdw7y")
 }, {
-"frames": [{
 "duration": 1.0,
 "texture": ExtResource("2_3xxff")
-}],
-"loop": false,
-"name": &"good",
-"speed": 0.0
 }, {
-"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_o7ou3")
+}, {
 "duration": 1.0,
 "texture": ExtResource("3_eijyb")
 }],
 "loop": false,
-"name": &"shit",
-"speed": 0.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("4_qdw7y")
-}],
-"loop": false,
-"name": &"sick",
+"name": &"rating",
 "speed": 0.0
 }]
 
 [node name="Rating" type="AnimatedSprite2D"]
 sprite_frames = SubResource("SpriteFrames_t8ika")
-animation = &"good"
+animation = &"rating"
 script = ExtResource("5_ml345")

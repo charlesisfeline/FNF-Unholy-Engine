@@ -211,5 +211,5 @@ animations = [{
 
 [node name="Strum" type="AnimatedSprite2D"]
 sprite_frames = SubResource("SpriteFrames_g7rlw")
-animation = &"up_static"
+animation = &"up_confirm"
 script = ExtResource("37_p00rn")

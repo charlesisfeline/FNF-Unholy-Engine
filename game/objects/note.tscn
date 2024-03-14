@@ -115,5 +115,5 @@ animations = [{
 
 [node name="Note" type="AnimatedSprite2D"]
 sprite_frames = SubResource("SpriteFrames_cda8d")
-animation = &"redScroll"
+animation = &"purpleHold"
 script = ExtResource("13_ivxlp")

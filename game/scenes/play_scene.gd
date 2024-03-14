@@ -1,7 +1,11 @@
 extends Node2D
 
+@onready var camGAME = CanvasGroup.new()
+@onready var camHUD = CanvasGroup.new()
+var ui:UI
 var STRUM = preload("res://game/objects/strum.tscn")
 var NOTE = preload("res://game/objects/note.tscn")
+var RATING = preload("res://game/objects/rating.tscn")
 
 var SONG
 var chart_notes
@@ -17,13 +21,19 @@ var keys = [
 	InputMap.action_get_events('Note_Right')
 ]
 const STRUMX = 150
-var auto:bool = false
+var auto_play:bool = false
 
-# Called when the node enters the scene tree for the first time.
+var score:int = 0
+var misses:int = 0
+
 func _ready():
 	SONG = Conductor.load_song()
 	print(SONG.song)
 	generate_chart(SONG)
+	add_child(camHUD)
+	
+	ui = UI.new()
+	camHUD.add_child(ui)
 	
 	for i in 8:
 		var new_strum:Strum = STRUM.instantiate()
@@ -32,7 +42,7 @@ func _ready():
 		new_strum.position.x += (110 * i)
 		new_strum.position.y = 110
 		new_strum.is_player = (i > 3)
-		add_child(new_strum)
+		camHUD.add_child(new_strum)
 		if i <= 3: 
 			opponent_strums.append(new_strum)
 		else:
@@ -43,7 +53,7 @@ func _ready():
 var bleh = 0
 func _process(delta):
 	if Input.is_action_just_pressed("ui_cancel"):
-		auto = !auto
+		auto_play = !auto_play
 	if Input.is_action_just_pressed("Accept"): # lol
 		Conductor.reset()
 		get_tree().change_scene_to_file("res://game/scenes/debug_song_select.tscn")
@@ -81,16 +91,11 @@ func _process(delta):
 				if note.was_good_hit && not note.must_press:
 					opponent_note_hit(note)
 	#			
-				if auto and note.strum_time <= Conductor.song_pos and note.must_press:
+				if auto_play and note.strum_time <= Conductor.song_pos and note.must_press:
 					good_note_hit(note)
-	#			if not note.must_hit and note.was_good_hit:
-	#				cpu_note_hit(note)
-				
-	#			if note.can_cause_miss:
-	#				note_miss(note)
 
 func _input(event):
-	if auto: return
+	if auto_play: return
 	if event is InputEventKey:
 		var key:int = get_key(event.physical_keycode)
 		if key < 0: return
@@ -159,16 +164,18 @@ func song_end():
 	#get_tree().reload_current_scene()
 
 func good_note_hit(note:Note):
-	var strum:Strum = player_strums[note.dir]
-	strum.play_anim('confirm')
-	strum.reset_timer = Conductor.step_crochet * 1.25 / 1000 #0.15
-
+	strum_anim(note.dir, true)
+	
+	var new_rating = RATING.instantiate()
+	ui.add_child(new_rating)
+	var data = new_rating.get_rating_data(note.strum_time - Conductor.song_pos)
+	score += data[1] 
+	ui.update_score_txt()
+	
 	kill_note(note)
 	
 func opponent_note_hit(note:Note):
-	var strum:Strum = opponent_strums[note.dir]
-	strum.play_anim('confirm')
-	strum.reset_timer = Conductor.step_crochet * 1.25 / 1000 #0.15
+	strum_anim(note.dir, false)
 
 	kill_note(note)
 
@@ -177,5 +184,10 @@ func kill_note(note):
 	notes.remove_at(notes.find(note))
 	note.queue_free()
 
+func strum_anim(dir:int = 0, player:bool = false):
+	var strum:Strum = player_strums[dir] if player else opponent_strums[dir]
+	strum.play_anim('confirm')
+	strum.reset_timer = Conductor.step_crochet * 1.25 / 1000 #0.15
+	
 func sort_notes(a:Note, b:Note):
 	return a.strum_time < b.strum_time
