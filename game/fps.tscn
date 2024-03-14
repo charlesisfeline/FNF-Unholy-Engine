@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://ei01le58riyc"]
+
+[ext_resource type="Script" path="res://game/FPS.gd" id="1_b1nsl"]
+
+[node name="FPS" type="Label"]
+script = ExtResource("1_b1nsl")

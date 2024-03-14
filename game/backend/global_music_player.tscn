@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://dmxdcs6i68lbs"]
+
+[ext_resource type="Script" path="res://game/backend/GlobalMusicPlayer.gd" id="1_13fcx"]
+
+[node name="GlobalMusicPlayer" type="Node2D"]
+script = ExtResource("1_13fcx")
+
+[node name="Player" type="AudioStreamPlayer" parent="."]

@@ -1,0 +1,16 @@
+[gd_scene load_steps=4 format=3 uid="uid://ysmylqyiivm5"]
+
+[ext_resource type="Script" path="res://game/scenes/play_scene.gd" id="1_86u4e"]
+
+[sub_resource type="AudioStreamOggVorbis" id="AudioStreamOggVorbis_l01cb"]
+
+[sub_resource type="AudioStreamOggVorbis" id="AudioStreamOggVorbis_e40kv"]
+
+[node name="Play_Scene" type="Node2D"]
+script = ExtResource("1_86u4e")
+
+[node name="InstPlayer" type="AudioStreamPlayer" parent="."]
+stream = SubResource("AudioStreamOggVorbis_l01cb")
+
+[node name="VoicePlayer" type="AudioStreamPlayer" parent="."]
+stream = SubResource("AudioStreamOggVorbis_e40kv")
