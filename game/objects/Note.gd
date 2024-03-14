@@ -3,8 +3,7 @@ class_name Note; extends AnimatedSprite2D;
 var strum_time:float
 var dir:int = 0
 var note_type:String = "":
-	set(type):
-		pass
+	set(type): pass
 
 var must_press:bool = false
 var can_hit:bool = false
@@ -27,8 +26,6 @@ func _ready():
 	#self_modulate.a
 	pass # Replace with function body.
 
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	var safe_zone:float = Conductor.safe_zone
 	if must_press:
@@ -38,6 +35,5 @@ func _process(delta):
 			pass
 	else:
 		can_hit = false
-		#if (strum_time < Conductor.song_pos + (safe_zone * 0.8)):
 		if(strum_time <= Conductor.song_pos): #is_sustain && prev_note.wasGoodHit) || 
 			was_good_hit = true
