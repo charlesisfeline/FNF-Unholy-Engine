@@ -17,6 +17,7 @@ var keys = [
 	InputMap.action_get_events('Note_Right')
 ]
 const STRUMX = 150
+var auto:bool = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -41,6 +42,8 @@ func _ready():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 var bleh = 0
 func _process(delta):
+	if Input.is_action_just_pressed("ui_cancel"):
+		auto = !auto
 	if Input.is_action_just_pressed("Accept"): # lol
 		Conductor.reset()
 		get_tree().change_scene_to_file("res://game/scenes/debug_song_select.tscn")
@@ -78,6 +81,8 @@ func _process(delta):
 				if note.was_good_hit && not note.must_press:
 					opponent_note_hit(note)
 	#			
+				if auto and note.strum_time <= Conductor.song_pos and note.must_press:
+					good_note_hit(note)
 	#			if not note.must_hit and note.was_good_hit:
 	#				cpu_note_hit(note)
 				
@@ -85,6 +90,7 @@ func _process(delta):
 	#				note_miss(note)
 
 func _input(event):
+	if auto: return
 	if event is InputEventKey:
 		var key:int = get_key(event.physical_keycode)
 		if key < 0: return

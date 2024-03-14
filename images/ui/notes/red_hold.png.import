@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://b8lmdsc3adehk"
-path="res://.godot/imported/red_hold.png-d65d0bf65515cd8f456d21fb2e4b3248.ctex"
+path="res://.godot/imported/red_hold.png-dfead358c104d033d087af9ea5800aa8.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/images/ui/notes/red_hold.png"
-dest_files=["res://.godot/imported/red_hold.png-d65d0bf65515cd8f456d21fb2e4b3248.ctex"]
+source_file="res://images/ui/notes/red_hold.png"
+dest_files=["res://.godot/imported/red_hold.png-dfead358c104d033d087af9ea5800aa8.ctex"]
 
 [params]
 

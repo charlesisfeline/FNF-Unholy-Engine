@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cmj3t11rpcguy"
-path="res://.godot/imported/purple_hold.png-c08e5fc4273a14f76c9bb099b2ad6132.ctex"
+path="res://.godot/imported/purple_hold.png-4380243b29ab9027b16d5b3a07af20c2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/images/ui/notes/purple_hold.png"
-dest_files=["res://.godot/imported/purple_hold.png-c08e5fc4273a14f76c9bb099b2ad6132.ctex"]
+source_file="res://images/ui/notes/purple_hold.png"
+dest_files=["res://.godot/imported/purple_hold.png-4380243b29ab9027b16d5b3a07af20c2.ctex"]
 
 [params]
 

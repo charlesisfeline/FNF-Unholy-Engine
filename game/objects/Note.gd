@@ -38,6 +38,6 @@ func _process(delta):
 			pass
 	else:
 		can_hit = false
-		if (strum_time < Conductor.song_pos + (safe_zone * 0.8)):
-			if(strum_time <= Conductor.song_pos): #is_sustain && prev_note.wasGoodHit) || 
-				was_good_hit = true
+		#if (strum_time < Conductor.song_pos + (safe_zone * 0.8)):
+		if(strum_time <= Conductor.song_pos): #is_sustain && prev_note.wasGoodHit) || 
+			was_good_hit = true
