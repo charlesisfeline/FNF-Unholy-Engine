@@ -29,7 +29,9 @@ var misses:int = 0
 func _ready():
 	SONG = Conductor.load_song()
 	print(SONG.song)
-	generate_chart(SONG)
+	
+	var thread = Thread.new()
+	thread.start(generate_chart.bind(SONG))
 	add_child(camHUD)
 	
 	ui = UI.new()
@@ -48,6 +50,7 @@ func _ready():
 		else:
 			player_strums.append(new_strum)
 	Conductor.song_pos -= Conductor.crochet * 4
+	await thread.wait_to_finish()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 var bleh = 0
