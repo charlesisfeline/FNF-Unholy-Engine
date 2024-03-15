@@ -13,13 +13,17 @@ config_version=5
 config/name="Unholy Engine"
 run/main_scene="res://game/scenes/debug_song_select.tscn"
 config/features=PackedStringArray("4.2", "Forward Plus")
-run/max_fps=60
 config/icon="res://icon.svg"
 
 [autoload]
 
 Conductor="*res://game/backend/Conductor.gd"
 Fps="*res://game/FPS.gd"
+Prefs="*res://game/backend/Prefs.gd"
+
+[display]
+
+window/vsync/vsync_mode=0
 
 [input]
 

@@ -11,6 +11,7 @@ var RATING = preload("res://game/objects/rating.tscn")
 var SONG
 var chart_notes
 var notes:Array[Note] = []
+var sustains:Array[Sustain] = []
 var spawn_time:int = 2000
 
 var player_strums:Array[Strum] = []
@@ -54,7 +55,7 @@ func _ready():
 	await thread.wait_to_finish()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-var bleh = 0
+var bleh:int = 0
 var last_note:Note
 func _process(delta):
 	if Input.is_action_just_pressed("ui_cancel"):
@@ -68,19 +69,40 @@ func _process(delta):
 			if chart_notes[bleh][0] - Conductor.song_pos > spawn_time / SONG.speed:
 				break
 			
+			var is_sustain:bool = chart_notes[bleh][2]
 			var new_note:Note = NOTE.instantiate()
-			new_note.is_sustain = chart_notes[bleh][2]
 			new_note.sustain_length = chart_notes[bleh][3]
 			new_note.strum_time = chart_notes[bleh][0]
 			new_note.dir = chart_notes[bleh][1] % 4
 			new_note.must_press = chart_notes[bleh][4]
 			new_note.spawned = true
-			# SONG.notes.pop_at(0)
+
 			notes.append(new_note)
 			add_child(new_note)
-			last_note = new_note
-			notes.sort_custom(sort_notes)
+
+			if is_sustain:
+				var _note:Note = new_note
+				#var size = _note.sustain_length / Conductor.step_crochet
+				
+				#for i in loops + 1:
+				last_note = notes[notes.size() - 1]
+				var new_sustain:Sustain = SUSTAIN.instantiate()
+				new_sustain.parent = _note
+				new_sustain.dir = _note.dir
+				new_sustain.length = _note.sustain_length
+				new_sustain.strum_time = _note.strum_time + (Conductor.step_crochet / 16)
+				new_sustain.da = 1 #absf((Conductor.song_pos - new_sustain.strum_time) - (new_sustain.length / SONG.speed)) / 70 #abs(floor((new_sustain.strum_time - new_sustain.length) - Conductor.song_pos) / 50) #_note.sustain_length / Conductor.step_crochet * 2.4
+				print(new_sustain.da)#new_sustain.length * (0.45 * SONG.speed) + (((150 * 0.7) * 0.5) * SONG.speed))
+				#
+				
+				#new_sustain.z_index = -1
+				#new_sustain.scale.y *= Note.SUSTAIN_SIZE / 44;
+				#new_sustain.scale.y *= Conductor.step_crochet / 100 * 1.05;
+				add_child(new_sustain)
+				#_note.sustain = new_sustain
+				sustains.append(new_sustain)
 			#cam_notes.add_child(new_note)
+			notes.sort_custom(sort_notes)
 			bleh += 1
 			#print('bleh')
 			
@@ -99,9 +121,14 @@ func _process(delta):
 					note_miss(note)
 				if note.was_good_hit && not note.must_press:
 					opponent_note_hit(note)
-	#			
+					
 				if auto_play and note.strum_time <= Conductor.song_pos and note.must_press:
 					good_note_hit(note)
+	for sustain in sustains:
+		sustain.position.y = player_strums[0].position.y - (Conductor.song_pos - sustain.strum_time) * (0.45 * SONG.speed)
+		if sustain.strum_time < Conductor.song_pos - sustain.length:
+			sustains.remove_at(sustains.find(sustain))
+			sustain.queue_free()
 
 func _input(event):
 	if auto_play: return
@@ -109,20 +136,30 @@ func _input(event):
 		var key:int = get_key(event.physical_keycode)
 		if key < 0: return
 		
-		var control_array:Array[bool] = [
+		var press_array:Array[bool] = [
 			Input.is_action_just_pressed('Note_Left'),
 			Input.is_action_just_pressed('Note_Down'),
 			Input.is_action_just_pressed('Note_Up'),
 			Input.is_action_just_pressed('Note_Right')
 		]
+		var hold_array:Array[bool] = [
+			Input.is_action_pressed('Note_Left'),
+			Input.is_action_pressed('Note_Down'),
+			Input.is_action_pressed('Note_Up'),
+			Input.is_action_pressed('Note_Right')
+		]
 		
 		var hittable_notes:Array[Note] = []
+		var holdable_notes:Array[Sustain] = []
 		
 		for i in notes:
 			if i != null and i.spawned and i.must_press and i.can_hit and i.dir == key and not i.was_good_hit: #and not i.can_cause_miss:
 				hittable_notes.append(i)
+		for i in sustains:
+			if i != null and i.spawned and i.must_press:
+				holdable_notes.append(i)
 		
-		if control_array[key]:
+		if press_array[key]:
 			if hittable_notes.size() > 0:
 				var note:Note = hittable_notes[0]
 				
@@ -137,7 +174,10 @@ func _input(event):
 						note = behind_note
 				
 				good_note_hit(note)
-			
+		if hold_array[key]:
+			if holdable_notes.size() > 0:
+				var sustain = holdable_notes[0]
+				strum_anim(sustain.dir, true)
 		if event.pressed:
 			if hittable_notes.size() == 0:
 				player_strums[key].play_anim('press')
@@ -191,7 +231,8 @@ func opponent_note_hit(note:Note):
 func note_miss(note:Note):
 	score -= 10
 	misses += 1
-	
+	if Conductor.vocals != null:
+		Conductor.vocals.volume_db = -100
 	ui.update_score_txt()
 	kill_note(note)
 	
@@ -202,7 +243,8 @@ func kill_note(note):
 
 func strum_anim(dir:int = 0, player:bool = false):
 	var strum:Strum = player_strums[dir] if player else opponent_strums[dir]
-	
+	if Conductor.vocals != null:
+		Conductor.vocals.volume_db = 1
 	strum.play_anim('confirm')
 	if !player or auto_play:
 		strum.reset_timer = Conductor.step_crochet * 1.25 / 1000 #0.15
