@@ -1,8 +1,10 @@
 extends Node2D
 
 var preferences:Dictionary = {
+	'auto_play': false,
 	'downscroll': false,
 	'offset': 0,
+	'hitsounds': false,
 	'sick_window': 45,
 	'good_window': 90,
 	'bad_window': 135

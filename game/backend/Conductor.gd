@@ -33,7 +33,7 @@ func load_song(song:String = ''):
 			song = embedded_song
 		else: 
 			printerr('Conductor.load_song: NO SONG ENTERED')
-			song = DirAccess.get_directories_at('res://assets/songs')[0]
+			song = 'test' #DirAccess.get_directories_at('res://assets/songs')[0]
 		
 	var path:String = 'res://assets/songs/'+ song.replace(' ', '-') +'/audio/'
 	if FileAccess.file_exists(path + 'Inst.ogg'):
@@ -74,6 +74,7 @@ func _process(delta):
 			if song_pos >= inst.stream.get_length() * 1000:
 				print('grah!!!')
 				song_end.emit()
+				get_tree().current_scene.call('song_end')
 				song_pos = 0
 				inst.stop()
 				if vocals != null: vocals.stop()

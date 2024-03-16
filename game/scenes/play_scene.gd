@@ -110,12 +110,11 @@ func _process(delta):
 		for note in notes:
 			if note != null and note.spawned:
 				var strum:Strum = player_strums[note.dir] if note.must_press else opponent_strums[note.dir]
-				
+			
+				var pos:float = (0.45 * (Conductor.song_pos - note.strum_time) * SONG.speed)
+				if !Prefs.get_pref('downscroll'): pos *= -1
 				note.position.x = strum.position.x
-				if Prefs.get_pref('downscroll'):
-					note.position.y = strum.position.y + (Conductor.song_pos - note.strum_time) * (0.45 * SONG.speed)
-				else:
-					note.position.y = strum.position.y - (Conductor.song_pos - note.strum_time) * (0.45 * SONG.speed)
+				note.position.y = strum.position.y + pos
 					
 				if note.strum_time < Conductor.song_pos - 250 and note.must_press and !note.was_good_hit:
 					note_miss(note)
@@ -222,6 +221,13 @@ func good_note_hit(note:Note):
 	ui.update_score_txt()
 	
 	kill_note(note)
+	if Prefs.get_pref('hitsounds'):
+		var hit = AudioStreamPlayer.new()
+		add_child(hit)
+		hit.stream = load('res://assets/sounds/hitsound.ogg')
+		hit.play()
+		await hit.finished
+		hit.queue_free()
 	
 func opponent_note_hit(note:Note):
 	strum_anim(note.dir, false)

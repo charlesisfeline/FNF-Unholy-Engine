@@ -21,5 +21,5 @@ func play_anim(anim:String):
 	anim = dir_array[dir] + '_' + anim
 	if anim == 'static':
 		reset_timer = 0
-		
+	frame = 0
 	play(anim)
