@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://4ghjxp2clif4"
-path="res://.godot/imported/num3.png-7e563624b2814d446c41c280f05f4d5e.ctex"
+uid="uid://mq1bysv6ojiq"
+path="res://.godot/imported/BOYFRIEND.png-2881773e078baa54db9268dad831ef1e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/images/ui/ratings/num3.png"
-dest_files=["res://.godot/imported/num3.png-7e563624b2814d446c41c280f05f4d5e.ctex"]
+source_file="res://assets/images/test/BOYFRIEND.png"
+dest_files=["res://.godot/imported/BOYFRIEND.png-2881773e078baa54db9268dad831ef1e.ctex"]
 
 [params]
 

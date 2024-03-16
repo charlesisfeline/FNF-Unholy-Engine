@@ -7,6 +7,7 @@ var STRUM = preload("res://game/objects/strum.tscn")
 var NOTE = preload("res://game/objects/note.tscn")
 var SUSTAIN = preload("res://game/objects/sustain.tscn")
 var RATING = preload("res://game/objects/rating.tscn")
+var NUMS = preload("res://game/objects/combo_nums.tscn")
 
 var SONG
 var chart_notes
@@ -26,6 +27,7 @@ const STRUMX = 150
 var auto_play:bool = false
 
 var score:int = 0
+var combo:int = 0
 var misses:int = 0
 
 func _ready():
@@ -92,7 +94,7 @@ func _process(delta):
 				new_sustain.length = _note.sustain_length
 				new_sustain.strum_time = _note.strum_time + (Conductor.step_crochet / 16)
 				new_sustain.da = 1 #absf((Conductor.song_pos - new_sustain.strum_time) - (new_sustain.length / SONG.speed)) / 70 #abs(floor((new_sustain.strum_time - new_sustain.length) - Conductor.song_pos) / 50) #_note.sustain_length / Conductor.step_crochet * 2.4
-				print(new_sustain.da)#new_sustain.length * (0.45 * SONG.speed) + (((150 * 0.7) * 0.5) * SONG.speed))
+				#print(new_sustain.da)#new_sustain.length * (0.45 * SONG.speed) + (((150 * 0.7) * 0.5) * SONG.speed))
 				#
 				
 				#new_sustain.z_index = -1
@@ -123,6 +125,7 @@ func _process(delta):
 					
 				if auto_play and note.strum_time <= Conductor.song_pos and note.must_press:
 					good_note_hit(note)
+					
 	for sustain in sustains:
 		sustain.position.y = player_strums[0].position.y - (Conductor.song_pos - sustain.strum_time) * (0.45 * SONG.speed)
 		if sustain.strum_time < Conductor.song_pos - sustain.length:
@@ -214,10 +217,26 @@ func song_end():
 func good_note_hit(note:Note):
 	strum_anim(note.dir, true)
 
+	combo += 1
 	var new_rating = RATING.instantiate()
 	ui.add_child(new_rating)
+	new_rating.linear_velocity.y = randi_range(-200, -300)
+	#new_rating.linear_velocity.x -= randi_range(0, 10)
+	new_rating.apply_central_force(-new_rating.linear_velocity * 0.2)
+	
 	var data = new_rating.get_rating_data(note.strum_time - Conductor.song_pos)
-	score += data[1] 
+	score += data[1]
+	
+	var loops:int = 0
+	for i in str(combo).split():
+		var new_num = NUMS.instantiate()
+		new_num.frame = int(i)
+		ui.add_child(new_num)
+
+		new_num.position.x += (38 * loops)
+		loops += 1
+
+		
 	ui.update_score_txt()
 	
 	kill_note(note)

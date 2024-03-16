@@ -1,4 +1,4 @@
-class_name Rating; extends AnimatedSprite2D;
+class_name Rating; extends RigidBody2D;
 
 var init_pos:Vector2
 var ratings_data:Dictionary = {
@@ -8,13 +8,12 @@ var ratings_data:Dictionary = {
 }
 
 func _ready():
-	scale = Vector2(0.5, 0.5)
+	$Sprite.scale = Vector2(0.5, 0.5)
 	position = Vector2(get_viewport().size.x - 450, get_viewport().size.y - 300)
 	init_pos = position
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	position.y = lerpf(position.y, init_pos.y - 30, delta * 3)
+#func _process(delta):
+#	position.y = lerpf(position.y, init_pos.y - 30, delta * 3)
 
 var returned_index = 0
 func get_rating_data(diff:float): # gets rating and score for the rating
@@ -32,8 +31,7 @@ func get_rating(diff:float):
 	return ratings_data.name[ratings_data.name.size() - 1]
 
 func play_rating(index:int = 0):
-	play('rating')
-	frame = index
+	$Sprite.frame = index
 	await get_tree().create_timer(Conductor.crochet * 0.001).timeout
 	var tween = get_tree().create_tween()
 	tween.tween_property(self, "modulate", Color.TRANSPARENT, 0.2)
