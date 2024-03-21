@@ -28,7 +28,7 @@ var keys = [
 var key_names = ['Note_Left', 'Note_Down', 'Note_Up', 'Note_Right']
 
 @export var STRUMX = 150
-@export var auto_play:bool = true
+@export var auto_play:bool = false
 
 var health_bar = BAR.instantiate()
 var icon_p1 = ICON.instantiate()
