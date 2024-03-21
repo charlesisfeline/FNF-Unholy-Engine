@@ -13,6 +13,7 @@ var hitsound_check:CheckBox
 var i = 0
 func _ready():
 	# song list
+	GlobalMusicPlayer.play_music()
 	for bleh in base_songs: 
 		base_list.append(bleh.replace('\r', ''))
 	#song_list.append_array(base_songs)
@@ -78,6 +79,7 @@ func load_list(list:Array[String]):
 
 func _process(delta):
 	if Input.is_action_just_pressed("Accept"):
+		GlobalMusicPlayer.stop()
 		Conductor.embedded_song = selectable_songs[cur_song].text
 		get_tree().change_scene_to_file('res://game/scenes/play_scene.tscn')
 

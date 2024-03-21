@@ -18,11 +18,19 @@ var song_pos:float = 0.0
 #var offset:float = 0
 var safe_zone:float = 166
 
+var beat_time:float = 0
+var step_time:float = 0
+#var sec_time:float = 0
+
 var cur_beat:int = 0
 var cur_step:int = 0
 var cur_section:int = 0
 
-var embedded_song:String = '' # if load_song has no param, we'll check this var instead
+var last_beat:int = -1
+var last_step:int = -1
+var last_section:int = -1
+
+var embedded_song:String = '-!sustain-test' # if load_song has no param, we'll check this var instead
 var song_prepped:bool = false
 var inst:AudioStreamPlayer
 var vocals:AudioStreamPlayer
@@ -33,7 +41,7 @@ func load_song(song:String = ''):
 			song = embedded_song
 		else: 
 			printerr('Conductor.load_song: NO SONG ENTERED')
-			song = 'test' #DirAccess.get_directories_at('res://assets/songs')[0]
+			song = 'tutorial' #DirAccess.get_directories_at('res://assets/songs')[0]
 		
 	var path:String = 'res://assets/songs/'+ song.replace(' ', '-') +'/audio/'
 	if FileAccess.file_exists(path + 'Inst.ogg'):
@@ -61,6 +69,7 @@ func start_song():
 func _ready():
 	pass
 
+var test:float = 0
 func _process(delta):
 	if song_prepped:
 		song_pos += (1000 * delta)
@@ -70,6 +79,19 @@ func _process(delta):
 			start_song()
 			return
 		if inst != null: 
+			if song_pos > beat_time + crochet:
+				beat_time += crochet
+				cur_beat += 1
+				get_tree().current_scene.call('beat_hit')
+				if cur_beat % 4 == 0:
+					cur_section += 1
+					get_tree().current_scene.call('section_hit')
+			
+			if song_pos > step_time + step_crochet:
+				step_time += step_crochet
+				cur_step += 1
+				get_tree().current_scene.call('step_hit')
+			
 			if inst.playing: check_resync(inst)
 			if song_pos >= inst.stream.get_length() * 1000:
 				print('grah!!!')
@@ -86,10 +108,17 @@ func check_resync(sound:AudioStreamPlayer):
 	if absf(sound.get_playback_position() * 1000 - song_pos) > 20:
 		sound.seek(song_pos / 1000)
 		print('resynced')
-		
+
+func get_bpm_changes(song):
+	
+	pass
+
 func reset():
 	bpm = 100
 	embedded_song = ''
 	song_pos = 0
+	cur_beat = 0; cur_step = 0; cur_section = 0;
+	last_beat = -1; last_step = -1; last_section = -1;
+	beat_time = 0; step_time = 0;
 	played_audio = false
 	song_prepped = false

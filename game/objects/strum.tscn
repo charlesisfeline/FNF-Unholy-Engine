@@ -143,6 +143,9 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": ExtResource("27_bsnaq")
+}, {
+"duration": 1.0,
 "texture": ExtResource("24_i3ggd")
 }, {
 "duration": 1.0,
@@ -150,9 +153,6 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("26_gdvdm")
-}, {
-"duration": 1.0,
-"texture": ExtResource("27_bsnaq")
 }],
 "loop": false,
 "name": &"right_press",
@@ -211,5 +211,7 @@ animations = [{
 
 [node name="Strum" type="AnimatedSprite2D"]
 sprite_frames = SubResource("SpriteFrames_g7rlw")
-animation = &"up_confirm"
+animation = &"right_press"
+frame = 3
+frame_progress = 1.0
 script = ExtResource("37_p00rn")

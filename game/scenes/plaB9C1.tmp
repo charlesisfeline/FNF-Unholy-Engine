@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://ysmylqyiivm5"]
+
+[ext_resource type="Script" path="res://game/scenes/play_scene.gd" id="1_86u4e"]
+
+[node name="Play_Scene" type="Node2D"]
+script = ExtResource("1_86u4e")
+
+[node name="InstPlayer" type="AudioStreamPlayer" parent="."]
+
+[node name="VoicePlayer" type="AudioStreamPlayer" parent="."]

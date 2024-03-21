@@ -13,9 +13,10 @@ var must_press:bool = false
 var can_hit:bool = false
 var was_good_hit:bool = false
 var too_late:bool = false
-var sustain:Sustain
 
 # for sustains
+var sustain:TextureRect
+
 var prev_note:Note
 const SUSTAIN_SIZE:int = 44
 var sustain_length:float = 0
@@ -47,3 +48,6 @@ func _process(delta):
 		can_hit = false
 		if(strum_time <= Conductor.song_pos): #is_sustain && prev_note.wasGoodHit) || 
 			was_good_hit = true
+
+func copy_from(note:Note):
+	pass

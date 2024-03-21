@@ -3,18 +3,41 @@ extends Node2D
 
 signal changed_music
 
-var cur_track:String = "nuttin":
+var Player = AudioStreamPlayer.new()
+var pos:float = 0 # in case you need the position for something or whatever
+var volume:float = 1
+var music:String = "freakyMenu": # setter for if you KNOW the file exists, set_music for null checks
 	set(track):
-		if cur_track != track and FileAccess.file_exists('res://assets/music/'+ track +'.ogg'):
-			cur_track = track
-			$Player.stream = load('res://assets/music/'+ track +'.ogg')
+		if music != track:
+			music = track
+			Player.stream = load('res://assets/music/'+ track +'.ogg')
 		else:
-			$Player
-# Called when the node enters the scene tree for the first time.
+			Player.seek(0)
+		pos = 0
+		Player.play()
+
 func _ready():
-	pass # Replace with function body.
+	add_child(Player)
+	if (music != null or music.length() > 0) and get_tree().current_scene.name != 'Play_Scene':
+		print(get_tree().current_scene.name)
+		set_music(music)
 
+func set_music(new_music:String, auto_play:bool = true):
+	var path:String = 'assets/music/' + new_music + '.ogg'
+	if FileAccess.file_exists('res://' + path):
+		Player.stream = load('res://' + path)
+		if auto_play:
+			play_music()
+	else: 
+		printerr('MUSIC PLAYER | SET MUSIC: CAN\'T FIND FILE "' + path + '"')
+	
+func play_music(at_pos:float = -1):
+	if Player.stream == null: # why not, fuck errors
+		printerr('MUSIC PLAYER | PLAY_MUSIC: MUSIC IS NULL'); return
+		
+	if at_pos > -1:
+		Player.seek(at_pos * 1000) # milliseconds
+		pos = at_pos * 1000
+	Player.play()
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	pass
+func stop(): Player.stop()

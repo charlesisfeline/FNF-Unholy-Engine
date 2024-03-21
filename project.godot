@@ -20,9 +20,12 @@ config/icon="res://icon.png"
 Conductor="*res://game/backend/Conductor.gd"
 Fps="*res://game/FPS.gd"
 Prefs="*res://game/backend/Prefs.gd"
+GlobalMusicPlayer="*res://game/backend/GlobalMusicPlayer.gd"
+JsonHandler="*res://game/backend/JsonHandler.gd"
 
 [display]
 
+window/stretch/mode="viewport"
 window/vsync/vsync_mode=0
 
 [dotnet]

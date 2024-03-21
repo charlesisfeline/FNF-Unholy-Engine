@@ -1,6 +1,5 @@
 extends Label
 
-
 var cur_fps:float = 0
 func _ready():
 	position = Vector2(10, 10)
