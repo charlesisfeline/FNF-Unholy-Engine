@@ -1,10 +1,10 @@
 extends Node2D
 
 var preferences:Dictionary = {
+	'downscroll': false, 'middlescroll': false, 'splitscroll': false, # scroll types
 	'auto_play': false,
-	'downscroll': false,
-	'offset': 0,
 	'hitsounds': false,
+	'offset': 0,
 	'sick_window': 45,
 	'good_window': 90,
 	'bad_window': 135
@@ -16,7 +16,7 @@ func _ready():
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
+func _process(_delta):
 	pass
 
 func get_pref(pref):

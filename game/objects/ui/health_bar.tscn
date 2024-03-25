@@ -3,15 +3,8 @@
 [ext_resource type="Texture2D" uid="uid://oidr6fynykmc" path="res://assets/images/ui/healthBar.png" id="1_0xbv1"]
 
 [node name="HealthBar" type="TextureProgressBar"]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -300.5
-offset_top = -9.5
-offset_right = 300.5
-offset_bottom = 9.5
+offset_right = 601.0
+offset_bottom = 19.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4

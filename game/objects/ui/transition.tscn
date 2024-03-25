@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://548wadsc4u4o"]
+
+[ext_resource type="Script" path="res://game/objects/ui/Transition.gd" id="1_d20kq"]
+[ext_resource type="Texture2D" uid="uid://qs858rmiq41m" path="res://assets/images/skry.png" id="2_aqlmp"]
+
+[node name="Transition" type="CanvasLayer"]
+script = ExtResource("1_d20kq")
+
+[node name="dannyboy" type="Sprite2D" parent="."]
+position = Vector2(643, 356)
+scale = Vector2(8, 5)
+texture = ExtResource("2_aqlmp")

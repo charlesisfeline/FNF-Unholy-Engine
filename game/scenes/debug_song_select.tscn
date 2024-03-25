@@ -20,3 +20,59 @@ offset_bottom = 114.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 22
 text = "PREFERENCES"
+
+[node name="SickMS" type="SpinBox" parent="."]
+offset_left = 886.0
+offset_top = 399.0
+offset_right = 969.063
+offset_bottom = 430.0
+min_value = 15.0
+max_value = 45.0
+value = 45.0
+alignment = 1
+update_on_text_changed = true
+suffix = "ms"
+
+[node name="Label" type="Label" parent="SickMS"]
+layout_mode = 0
+offset_left = -133.0
+offset_top = 3.0
+offset_bottom = 26.0
+text = "SICK hit window: "
+
+[node name="GoodMS" type="SpinBox" parent="."]
+offset_left = 886.0
+offset_top = 433.0
+offset_right = 969.063
+offset_bottom = 464.0
+min_value = 15.0
+max_value = 90.0
+value = 90.0
+alignment = 1
+update_on_text_changed = true
+suffix = "ms"
+
+[node name="Label" type="Label" parent="GoodMS"]
+offset_left = -147.0
+offset_top = 3.0
+offset_bottom = 26.0
+text = "GOOD hit window: "
+
+[node name="BadMS" type="SpinBox" parent="."]
+offset_left = 886.0
+offset_top = 467.0
+offset_right = 969.063
+offset_bottom = 498.0
+focus_mode = 1
+min_value = 15.0
+max_value = 135.0
+value = 135.0
+alignment = 1
+update_on_text_changed = true
+suffix = "ms"
+
+[node name="Label" type="Label" parent="BadMS"]
+offset_left = -133.0
+offset_top = 3.0
+offset_bottom = 26.0
+text = "BAD hit window: "

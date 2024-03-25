@@ -12,5 +12,5 @@ func _ready():
 	tween.tween_property(self, "modulate", Color.TRANSPARENT, 0.2)
 	tween.tween_callback(self.queue_free)
 	
-func _process(delta):
+func _process(_delta):
 	pass

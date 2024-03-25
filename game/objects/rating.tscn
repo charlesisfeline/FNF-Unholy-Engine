@@ -1,49 +1,6 @@
-[gd_scene load_steps=8 format=3 uid="uid://bowqaqk6lx0vi"]
+[gd_scene load_steps=2 format=3 uid="uid://bowqaqk6lx0vi"]
 
-[ext_resource type="Texture2D" uid="uid://us00wj3hsior" path="res://assets/images/ui/ratings/ratings.png" id="1_psti7"]
 [ext_resource type="Script" path="res://game/objects/Rating.gd" id="5_ml345"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_r5my3"]
-atlas = ExtResource("1_psti7")
-region = Rect2(0, 0, 348, 143)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_hlqu6"]
-atlas = ExtResource("1_psti7")
-region = Rect2(348, 0, 348, 143)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_6dfck"]
-atlas = ExtResource("1_psti7")
-region = Rect2(696, 0, 348, 143)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_tiv6o"]
-atlas = ExtResource("1_psti7")
-region = Rect2(1044, 0, 348, 143)
-
-[sub_resource type="SpriteFrames" id="SpriteFrames_4xb1u"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_r5my3")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_hlqu6")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_6dfck")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_tiv6o")
-}],
-"loop": false,
-"name": &"rating",
-"speed": 0.0
-}]
-
-[node name="Rating" type="RigidBody2D"]
-can_sleep = false
-linear_damp_mode = 1
+[node name="Rating" type="Node2D"]
 script = ExtResource("5_ml345")
-
-[node name="Sprite" type="AnimatedSprite2D" parent="."]
-sprite_frames = SubResource("SpriteFrames_4xb1u")
-animation = &"rating"

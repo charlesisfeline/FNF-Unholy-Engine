@@ -60,8 +60,8 @@ func load_song(song:String = ''):
 var played_audio:bool = false
 func start_song():
 	played_audio = true
-	if get_tree().current_scene.name == 'play_scene':
-		song_end.connect(get_tree().current_scene.song_end)
+	#if get_tree().current_scene.name == 'play_scene':
+		#song_end.connect(get_tree().current_scene.song_end)
 		
 	if inst != null: inst.play()
 	if vocals != null: vocals.play()
@@ -109,9 +109,8 @@ func check_resync(sound:AudioStreamPlayer):
 		sound.seek(song_pos / 1000)
 		print('resynced')
 
-func get_bpm_changes(song):
-	
-	pass
+#func get_bpm_changes(song):	
+#	pass
 
 func reset():
 	bpm = 100

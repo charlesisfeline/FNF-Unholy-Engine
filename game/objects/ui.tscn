@@ -1,6 +1,50 @@
-[gd_scene load_steps=2 format=3 uid="uid://c1p2xt18crpgv"]
+[gd_scene load_steps=6 format=3 uid="uid://c1p2xt18crpgv"]
 
 [ext_resource type="Script" path="res://game/objects/UI.gd" id="1_sa7x1"]
+[ext_resource type="PackedScene" uid="uid://c1wn576p2y4xj" path="res://game/objects/ui/strum_line.tscn" id="2_fxgad"]
+[ext_resource type="PackedScene" uid="uid://btb8naqubifyk" path="res://game/objects/ui/health_bar.tscn" id="7_e1wxe"]
+[ext_resource type="FontFile" uid="uid://b6kd6rbkd08ld" path="res://assets/fonts/vcr.ttf" id="8_1567e"]
+[ext_resource type="Script" path="res://game/objects/ui/Icon.gd" id="8_ojola"]
 
-[node name="UI" type="Node2D"]
+[node name="UI" type="CanvasLayer"]
 script = ExtResource("1_sa7x1")
+
+[node name="Back" type="Node2D" parent="."]
+
+[node name="Strum_Group" type="CanvasGroup" parent="."]
+
+[node name="Player" parent="Strum_Group" instance=ExtResource("2_fxgad")]
+position = Vector2(730, 55)
+is_cpu = false
+
+[node name="Opponent" parent="Strum_Group" instance=ExtResource("2_fxgad")]
+position = Vector2(55, 55)
+
+[node name="HealthBar" parent="." instance=ExtResource("7_e1wxe")]
+offset_left = 364.0
+offset_top = 630.0
+offset_right = 965.0
+offset_bottom = 649.0
+
+[node name="IconP1" type="Sprite2D" parent="HealthBar"]
+script = ExtResource("8_ojola")
+
+[node name="IconP2" type="Sprite2D" parent="HealthBar"]
+script = ExtResource("8_ojola")
+
+[node name="Score_Txt" type="Label" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -85.0
+offset_top = 667.0
+offset_right = 138.0
+offset_bottom = 684.0
+grow_horizontal = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = ExtResource("8_1567e")
+theme_override_font_sizes/font_size = 19
+text = "Score: 0 - Misses: 0"
+horizontal_alignment = 1
+vertical_alignment = 1

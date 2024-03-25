@@ -7,10 +7,13 @@ var list_list:Array[Array] = []
 var cur_list:int = 0
 var cur_song:int = 0
 var selectable_songs:Array[Label] = []
+var can_select:bool = true
 
 var downscroll_check:CheckBox
 var hitsound_check:CheckBox
-var i = 0
+var auto_check:CheckBox
+var last_windows:Array = [0, 0, 0]
+var ratings = ['sick', 'good', 'bad']
 func _ready():
 	# song list
 	GlobalMusicPlayer.play_music()
@@ -26,7 +29,12 @@ func _ready():
 	list_list.append(song_list)
 	load_list(base_list)
 	#print(list_list)
-	# pref list
+	
+	# pref stuff
+	var things = [$SickMS, $GoodMS, $BadMS]
+	for i in 3:
+		things[i].value = Prefs.get_pref(ratings[i] +'_window')
+		
 	var txt = Label.new()
 	txt.text = 'Downscroll: '
 	txt.position = Vector2(800, 150)
@@ -57,9 +65,24 @@ func _ready():
 	hitsound_check.toggle_mode = true
 	hitsound_check.toggled.connect(get_tree().current_scene.hitsound_toggled)
 	
+	var txt3 = Label.new()
+	txt3.text = 'Autoplay: '
+	txt3.position = Vector2(800, 190)
+	txt3.modulate = Color(255, 255, 255)
+	add_child(txt3)
+	
+	auto_check = CheckBox.new()
+	auto_check.position.x = txt3.position.x + 100
+	auto_check.position.y = txt3.position.y
+	auto_check.modulate = Color(255, 255, 255)
+	auto_check.button_pressed = Prefs.get_pref('auto_play')
+	add_child(auto_check)
+	auto_check.toggle_mode = true
+	auto_check.toggled.connect(get_tree().current_scene.auto_toggled)
+	
 	#for pref in Prefs.preferences:
 		#pref
-		
+var i:int = 0
 func load_list(list:Array[String]):
 	for item in selectable_songs:
 		remove_child(item)
@@ -78,10 +101,11 @@ func load_list(list:Array[String]):
 	i = 0
 
 func _process(delta):
-	if Input.is_action_just_pressed("Accept"):
+	if Input.is_action_just_pressed('Accept'):
+		update_hit_windows()
 		GlobalMusicPlayer.stop()
 		Conductor.embedded_song = selectable_songs[cur_song].text
-		get_tree().change_scene_to_file('res://game/scenes/play_scene.tscn')
+		Game.switch_scene('play_scene')
 
 	if Input.is_action_just_pressed('ui_down'):
 		update_list(1)
@@ -110,3 +134,11 @@ func downscroll_toggled(is_active):
 
 func hitsound_toggled(is_active):
 	Prefs.set_pref('hitsounds', is_active)
+
+func auto_toggled(is_active):
+	Prefs.set_pref('auto_play', is_active)
+
+func update_hit_windows():
+	var new_win = [$SickMS.value, $GoodMS.value, $BadMS.value]
+	for i in ratings.size():
+		Prefs.set_pref(ratings[i] +'_window', new_win[i])

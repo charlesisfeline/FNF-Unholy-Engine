@@ -6,28 +6,28 @@ func parse_song(song:String = 'test', type:String = 'psych', diff:String = 'hard
 	var parsed_song
 	check_diff = diff
 	match type:
-		'base'    : parsed_song = base(song)
+		#'base'    : parsed_song = base(song)
 		'psych'   : parsed_song = psych(song)
-		'fps_plus': parsed_song = fps_plus(song)
-		'maru'    : parsed_song = maru(song)
-		'osu'     : parsed_song = osu(song)
+		#'fps_plus': parsed_song = fps_plus(song)
+		#'maru'    : parsed_song = maru(song)
+		#'osu'     : parsed_song = osu(song)
 		#'': parsed_song = psych(song)
 	return parsed_song
 
-func base(song:String): pass
+#func base(song:String): pass
 func psych(song:String):
 	var json = you_WILL_get_a_json(song)
 	var parsed = JSON.parse_string(json.get_as_text())
 	return parsed.song # i dont want to have to do no SONG.song.bpm or something
 
-func fps_plus(song:String): pass
-func maru(song:String): pass
-func osu(song:String): pass
+#func fps_plus(song:String): pass
+#func maru(song:String): pass
+#func osu(song:String): pass
 
 func you_WILL_get_a_json(song:String):
 	var path:String = 'res://assets/songs/'+ song + '/charts'
 	var return_file:String = 'test.json'
-	var dir_files = DirAccess.get_files_at(path)
+	#var dir_files = DirAccess.get_files_at(path)
 
 	#if dir_files.has(check_diff):
 	return_file = 'hard' #check_diff
