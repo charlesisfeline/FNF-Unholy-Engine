@@ -58,6 +58,7 @@ func load_song(song:String = ''):
 	return parsed
 
 var played_audio:bool = false
+var paused:bool = false
 func start_song():
 	played_audio = true
 	#if get_tree().current_scene.name == 'play_scene':
@@ -71,6 +72,7 @@ func _ready():
 
 var test:float = 0
 func _process(delta):
+	if paused: return
 	if song_prepped:
 		song_pos += (1000 * delta)
 
@@ -82,22 +84,23 @@ func _process(delta):
 			if song_pos > beat_time + crochet:
 				beat_time += crochet
 				cur_beat += 1
-				get_tree().current_scene.call('beat_hit')
+				Game.call_func('beat_hit')
 				if cur_beat % 4 == 0:
 					cur_section += 1
-					get_tree().current_scene.call('section_hit')
+					Game.call_func('section_hit')
 			
 			if song_pos > step_time + step_crochet:
 				step_time += step_crochet
 				cur_step += 1
-				get_tree().current_scene.call('step_hit')
+				Game.call_func('step_hit')
 			
 			if inst.playing: check_resync(inst)
-			if song_pos >= inst.stream.get_length() * 1000:
+			if song_pos >= inst.stream.get_length() * 1000 and song_prepped:
 				print('grah!!!')
-				song_end.emit()
-				get_tree().current_scene.call('song_end')
 				song_pos = 0
+				
+				#song_end.emit()
+				Game.call_func('song_end')
 				inst.stop()
 				if vocals != null: vocals.stop()
 				
@@ -112,12 +115,25 @@ func check_resync(sound:AudioStreamPlayer):
 #func get_bpm_changes(song):	
 #	pass
 
+func pause(force_to:bool):
+	paused = (force_to if force_to != null else !paused)
+	if paused:
+		inst.stop()
+		if vocals != null: vocals.stop()
+	else:
+		inst.play()
+		if vocals != null: vocals.play()
+
 func reset():
+	soft_reset()
 	bpm = 100
-	embedded_song = ''
-	song_pos = 0
-	cur_beat = 0; cur_step = 0; cur_section = 0;
-	last_beat = -1; last_step = -1; last_section = -1;
-	beat_time = 0; step_time = 0;
+	#embedded_song = ''
 	played_audio = false
 	song_prepped = false
+
+func soft_reset():
+	song_pos = 0
+	beat_time = 0; step_time = 0;
+	cur_beat = 0; cur_step = 0; cur_section = 0;
+	last_beat = -1; last_step = -1; last_section = -1;
+	paused = false

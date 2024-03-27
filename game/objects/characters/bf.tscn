@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://cxiinfgmpi12h"]
+
+[ext_resource type="SpriteFrames" uid="uid://cluwcjcyrniko" path="res://assets/images/characters/bf/char.res" id="1_q0ttd"]
+[ext_resource type="Script" path="res://game/objects/characters/bf.gd" id="2_cyiv2"]
+
+[node name="bf" type="AnimatedSprite2D"]
+sprite_frames = ExtResource("1_q0ttd")
+animation = &"hey"
+centered = false
+script = ExtResource("2_cyiv2")

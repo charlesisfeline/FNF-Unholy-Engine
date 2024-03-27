@@ -6,6 +6,13 @@ var spawned:bool = false
 var strum_time:float
 var dir:int = 0
 
+var holding:bool = false
+var missed:bool = false:
+	set(miss): if miss: modulate = Color(0, 0, 0, 0.3)
+
+var da:float = 0.7
+var end:TextureRect
+
 var type:String = "": 
 	set(type): pass
 
@@ -15,12 +22,17 @@ var was_good_hit:bool = false
 var too_late:bool = false
 
 # for sustains
+var is_sustain:bool = length > 0
+
+var parent:Note
+var prev_note:Note
 var sustain:TextureRect
 
-var prev_note:Note
-const SUSTAIN_SIZE:int = 44
-var sustain_length:float = 0
-var is_sustain:bool = false
+var length:float = 0
+
+var hold_offset:float = 0
+var offsets:float = 0
+
 	#set(will_be):
 	#	alpha = 0.6 if will_be else 1
 	#	play(col_array[dir] + ('Hold' if will_be else 'Scroll'))
@@ -35,7 +47,9 @@ func _ready():
 	if !is_sustain:
 		play(col_array[dir] + 'Scroll')
 	else:
-		pass
+		sustain = TextureRect.new()
+		sustain.stretch_mode = TextureRect.STRETCH_TILE
+		sustain.texture = load('res://assets/images/ui/notes/'+ '' +'.png')
 
 func _process(_delta):
 	var safe_zone:float = Conductor.safe_zone

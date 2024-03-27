@@ -1,10 +1,10 @@
-class_name ComboNums; extends AnimatedSprite2D;
+class_name ComboNums; extends Sprite2D;
 
 var id:int = 0
 var init_pos:Vector2
 func _ready():
 	scale = Vector2(0.4, 0.4)
-	position = Vector2((get_viewport().size.x - 400), get_viewport().size.y - 280)
+	position = Vector2(620, 350)
 	init_pos = position
 	
 	await get_tree().create_timer(Conductor.crochet * 0.002).timeout

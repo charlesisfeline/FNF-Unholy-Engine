@@ -52,9 +52,10 @@ func _ready():
 	#camHUD.add_child(ui)
 	
 	Conductor.song_pos -= Conductor.crochet * 4
+	section_hit()
 	#await thread.wait_to_finish()
 
-var cur_section:int = 0
+var cur_section:int = -1
 var section_data
 
 var bleh:int = 0
@@ -63,9 +64,11 @@ func _process(_delta):
 	if Input.is_action_just_pressed("ui_cancel"):
 		auto_play = !auto_play
 	if Input.is_action_just_pressed("Accept"): # lol
-		#get_tree().paused = !get_tree().paused
-		Conductor.reset()
-		Game.switch_scene("debug_song_select")
+		get_tree().paused = true
+		var pause = load('res://game/scenes/pause_screen.tscn').instantiate()
+		ui.add_child(pause)
+		#Conductor.reset()
+		#Game.switch_scene("debug_song_select")
 		
 	if chart_notes != null:
 		while chart_notes.size() > 0 and bleh != chart_notes.size() and chart_notes[bleh][0] - Conductor.song_pos < spawn_time / SONG.speed:
@@ -74,7 +77,7 @@ func _process(_delta):
 			
 			var is_sustain:bool = chart_notes[bleh][2]
 			var new_note:Note = NOTE.instantiate()
-			new_note.sustain_length = chart_notes[bleh][3]
+			new_note.length = chart_notes[bleh][3]
 			new_note.strum_time = floor(chart_notes[bleh][0])
 			new_note.dir = chart_notes[bleh][1] % 4
 			new_note.must_press = chart_notes[bleh][4]
@@ -144,6 +147,10 @@ func _process(_delta):
 				sustain.queue_free()
 
 func beat_hit():
+	if $bf.animation == 'idle':
+		$bf.dance()
+	if $'bf-pixel'.animation == 'idle':
+		$'bf-pixel'.dance()
 	ui.icon_p1.bump()
 	ui.icon_p2.bump()
 	#var tick = AudioStreamPlayer.new()
@@ -218,7 +225,7 @@ func song_end():
 
 func good_note_hit(note:Note):
 	strum_anim(note.dir, true)
-		
+	$bf.sing(note.dir)
 	combo += 1
 	var new_rating = RATING.instantiate()
 	ui.add_behind(new_rating)
@@ -254,16 +261,17 @@ func good_note_hit(note:Note):
 func good_sustain_press(sustain:Sustain):
 	if ui.player_strums[sustain.dir].anim_timer <= 0:
 		strum_anim(sustain.dir, true)
+		$bf.sing(sustain.dir)
 	
 func opponent_note_hit(note:Note):
 	strum_anim(note.dir, false)
-
+	$'bf-pixel'.sing(note.dir)
 	kill_note(note)
 
 func opponent_sustain_press(sustain:Sustain):
 	if ui.opponent_strums[sustain.dir].anim_timer <= 0:
 		strum_anim(sustain.dir, false)
-	
+		$'bf-pixel'.sing(sustain.dir)
 func note_miss(note:Note):
 	score -= 10
 	misses += 1

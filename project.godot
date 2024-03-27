@@ -19,8 +19,9 @@ config/icon="res://icon.png"
 
 Game="*res://game/Game.gd"
 Conductor="*res://game/backend/Conductor.gd"
+DebugInfo="*res://game/debug_info.tscn"
+GlobalMusic="*res://game/backend/GlobalMusic.gd"
 Prefs="*res://game/backend/Prefs.gd"
-GlobalMusicPlayer="*res://game/backend/GlobalMusicPlayer.gd"
 JsonHandler="*res://game/backend/JsonHandler.gd"
 
 [display]

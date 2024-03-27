@@ -53,6 +53,7 @@ update_on_text_changed = true
 suffix = "ms"
 
 [node name="Label" type="Label" parent="GoodMS"]
+layout_mode = 0
 offset_left = -147.0
 offset_top = 3.0
 offset_bottom = 26.0
@@ -72,6 +73,7 @@ update_on_text_changed = true
 suffix = "ms"
 
 [node name="Label" type="Label" parent="BadMS"]
+layout_mode = 0
 offset_left = -133.0
 offset_top = 3.0
 offset_bottom = 26.0

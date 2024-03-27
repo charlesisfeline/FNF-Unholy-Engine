@@ -16,7 +16,9 @@ var last_windows:Array = [0, 0, 0]
 var ratings = ['sick', 'good', 'bad']
 func _ready():
 	# song list
-	GlobalMusicPlayer.play_music()
+	if GlobalMusic.Player.stream == null:
+		GlobalMusic.set_music('freakyMenu')
+		
 	for bleh in base_songs: 
 		base_list.append(bleh.replace('\r', ''))
 	#song_list.append_array(base_songs)
@@ -103,7 +105,7 @@ func load_list(list:Array[String]):
 func _process(delta):
 	if Input.is_action_just_pressed('Accept'):
 		update_hit_windows()
-		GlobalMusicPlayer.stop()
+		GlobalMusic.stop()
 		Conductor.embedded_song = selectable_songs[cur_song].text
 		Game.switch_scene('play_scene')
 
@@ -115,6 +117,11 @@ func _process(delta):
 		switch_list(-1)
 	if Input.is_action_just_pressed('ui_right'):
 		switch_list(1)
+	
+	if Input.is_action_just_pressed('ui_cancel'):
+		GlobalMusic.play_sound('cancelMenu')
+		Game.switch_scene('menus/main_menu')
+		
 
 func update_list(amount:int = 0):
 	cur_song = wrapi(cur_song + amount, 0, selectable_songs.size())

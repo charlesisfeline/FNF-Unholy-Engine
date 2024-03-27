@@ -47,7 +47,7 @@ func copy_parent():
 		strum_time = parent.strum_time
 		dir = parent.dir
 		must_press = parent.must_press
-		length = parent.sustain_length
+		length = parent.length
 	texture = load("res://assets/images/ui/notes/"+ col[dir] +"_hold.png")
 
 func cut(mills:float):
