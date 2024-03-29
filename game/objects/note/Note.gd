@@ -13,6 +13,7 @@ var missed:bool = false:
 var da:float = 0.7
 var end:TextureRect
 
+var speed:float = 1
 var type:String = "": 
 	set(type): pass
 

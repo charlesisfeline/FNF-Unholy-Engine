@@ -50,3 +50,11 @@ func generate_chart(data):
 			chart_notes.append([time, n_data, is_sustain, sustain_length, must_hit])
 			chart_notes.sort()
 	return chart_notes
+
+func get_character(char:String = 'bf'):
+	var json_path = 'res://assets/data/characters/%s.json' % [char]
+	if !FileAccess.file_exists(json_path):
+		printerr('JSON: get_character | JSON FILE [%s.json] COULD NOT BE FOUND' % [char]);
+		return 'Nothin'
+	var file = FileAccess.open(json_path, FileAccess.READ)
+	return JSON.parse_string(file.get_as_text())

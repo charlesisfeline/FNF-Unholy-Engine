@@ -4,6 +4,11 @@ var is_menu:bool = false # for freeplay icons, when i get around to it
 var follow_spr = null
 var image:String = 'face'
 var is_player:bool = false
+var antialiasing:bool = true:
+	#get: texture_filter == TEXTURE_FILTER_NEAREST
+	set(anti):
+		var filter = CanvasItem.TEXTURE_FILTER_LINEAR if anti else CanvasItem.TEXTURE_FILTER_NEAREST
+		texture_filter = filter
 
 const min_width:int = 150 # if icon image is less or equal, theres only no lose anim
 var has_lose:bool = false
@@ -12,6 +17,7 @@ func change_icon(image:String = 'face', is_player:bool = false):
 	self.is_player = is_player
 	self.image = image
 	texture = load('res://assets/images/icons/icon-'+ image +'.png')
+	#if image.ends_with('-pixel'): antialiasing = false
 	has_lose = texture.get_width() > min_width
 	hframes = 2 if has_lose else 1
 	if is_player: flip_h = true

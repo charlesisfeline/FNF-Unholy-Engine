@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://ysmylqyiivm5"]
+
+[ext_resource type="Script" path="res://game/scenes/play_scene.gd" id="1_86u4e"]
+[ext_resource type="PackedScene" uid="uid://c1p2xt18crpgv" path="res://game/objects/ui.tscn" id="2_5ylyw"]
+
+[node name="Play_Scene" type="Node2D"]
+script = ExtResource("1_86u4e")
+
+[node name="UI" parent="." instance=ExtResource("2_5ylyw")]
+
+[node name="InstPlayer" type="AudioStreamPlayer" parent="."]
+
+[node name="VoicePlayer" type="AudioStreamPlayer" parent="."]

@@ -30,7 +30,8 @@ var last_beat:int = -1
 var last_step:int = -1
 var last_section:int = -1
 
-var embedded_song:String = '-!sustain-test' # if load_song has no param, we'll check this var instead
+var embedded_song:String = 'tutorial': # if load_song has no param, we'll check this var instead
+	set(song): embedded_song = song.replace(' ', '-')
 var song_prepped:bool = false
 var inst:AudioStreamPlayer
 var vocals:AudioStreamPlayer
@@ -84,15 +85,15 @@ func _process(delta):
 			if song_pos > beat_time + crochet:
 				beat_time += crochet
 				cur_beat += 1
-				Game.call_func('beat_hit')
+				Game.call_func('beat_hit', [cur_beat])
 				if cur_beat % 4 == 0:
 					cur_section += 1
-					Game.call_func('section_hit')
+					Game.call_func('section_hit', [cur_section])
 			
 			if song_pos > step_time + step_crochet:
 				step_time += step_crochet
 				cur_step += 1
-				Game.call_func('step_hit')
+				Game.call_func('step_hit', [cur_step])
 			
 			if inst.playing: check_resync(inst)
 			if song_pos >= inst.stream.get_length() * 1000 and song_prepped:

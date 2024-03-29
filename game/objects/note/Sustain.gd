@@ -1,4 +1,4 @@
-class_name Sustain; extends TextureRect;
+class_name Sustain; extends Control;
 
 var parent:Note
 var strum_time:float = 0
@@ -17,19 +17,23 @@ var missed:bool = false:
 	set(miss): if miss: modulate = Color(0, 0, 0, 0.3)
 
 var da:float = 0.7
-var end:TextureRect = TextureRect.new()
 
 @onready var game = get_tree().current_scene
+
 const col = ['purple', 'blue', 'green', 'red']
 func _ready():
-	modulate.a = 0.6
-	stretch_mode = TextureRect.STRETCH_TILE
-	scale = Vector2(0.7, 0.7)
+	$Hold.modulate.a = 0.6
+	$End.modulate.a = 0.6
+	$Hold.stretch_mode = TextureRect.STRETCH_TILE
+	$Hold.scale = Vector2(0.7, 0.7)
+	$End.scale = Vector2(0.7, 0.7)
 
 func _process(delta):
-	scale.y = da
+	$Hold.scale.y = da
 	if parent != null:
-		position.x = (parent.position.x + parent.scale.x * 0.5) - 20
+		$Hold.position.x = (parent.position.x + parent.scale.x * 0.5) - 20
+	$End.position.x = $Hold.position.x
+	$End.position.y = $Hold.position.y + $Hold.scale.y * 44 # note to self: probably change how this shit works
 	
 	#for auto and opponent 
 	can_hit = strum_time <= Conductor.song_pos
@@ -48,10 +52,11 @@ func copy_parent():
 		dir = parent.dir
 		must_press = parent.must_press
 		length = parent.length
-	texture = load("res://assets/images/ui/notes/"+ col[dir] +"_hold.png")
+	$Hold.texture = load('res://assets/images/ui/notes/'+ col[dir] +'_hold.png')
+	$End.texture = load('res://assets/images/ui/notes/'+ col[dir] +'_end.png')
 
 func cut(mills:float):
 	da = (absf(mills) / 50) * 0.45 * game.SONG.speed
 	if Prefs.get_pref('downscroll'): da *= -1
-	if abs(mills) <= 1 or (Conductor.song_pos - strum_time) > length: # sustain would go on forever
+	if abs(mills) <= 1 or (Conductor.song_pos - strum_time) > length: # $Hold would go on forever
 		was_good_hit = true

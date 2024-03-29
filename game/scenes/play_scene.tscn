@@ -1,24 +1,20 @@
-[gd_scene load_steps=5 format=3 uid="uid://ysmylqyiivm5"]
+[gd_scene load_steps=3 format=3 uid="uid://ysmylqyiivm5"]
 
 [ext_resource type="Script" path="res://game/scenes/play_scene.gd" id="1_86u4e"]
 [ext_resource type="PackedScene" uid="uid://c1p2xt18crpgv" path="res://game/objects/ui.tscn" id="2_5ylyw"]
-[ext_resource type="PackedScene" uid="uid://tfw3ywdke1w7" path="res://game/objects/characters/bf_pixel.tscn" id="2_jbkl5"]
-[ext_resource type="PackedScene" uid="uid://cxiinfgmpi12h" path="res://game/objects/characters/bf.tscn" id="3_kb3t3"]
 
 [node name="Play_Scene" type="Node2D"]
 script = ExtResource("1_86u4e")
 
-[node name="bf-pixel" parent="." instance=ExtResource("2_jbkl5")]
-position = Vector2(241, 409)
-scale = Vector2(4.5, 4.5)
-flip_h = true
-
-[node name="bf" parent="." instance=ExtResource("3_kb3t3")]
-position = Vector2(811, 309)
-scale = Vector2(0.7, 0.7)
+[node name="Camera" type="Camera2D" parent="."]
+position = Vector2(640, 360)
+position_smoothing_enabled = true
 
 [node name="UI" parent="." instance=ExtResource("2_5ylyw")]
 
 [node name="InstPlayer" type="AudioStreamPlayer" parent="."]
 
 [node name="VoicePlayer" type="AudioStreamPlayer" parent="."]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+animation = &""

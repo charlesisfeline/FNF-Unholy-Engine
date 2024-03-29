@@ -1,28 +1,78 @@
-class_name Character; extends Sprite2D;
+class_name Character; extends AnimatedSprite2D;
 
-var offsets:Dictionary = {
-	'idle': [0, 0],
-	'singLEFT': [0, 0],
-	'singDOWN': [0, 0],
-	'singUP': [0, 0],
-	'singRIGHT': [0, 0],
-	'singLEFTmiss': [0, 0],
-	'singDOWNmiss': [0, 0],
-	'singUPmiss': [0, 0],
-	'singRIGHTmiss': [0, 0]
-}
+var json
+var offsets:Dictionary = {}
+var focus_point:Vector2 = Vector2(0, 0)
+var cur_char:String = ''
+var char_path:String = ''
+
 var is_player:bool = false
 var hold_timer:float = 0
-var cur_character:String = ''
+var sing_duration:float = 4
 
+var antialiasing:bool = true:
+	set(anti):
+		var filter = CanvasItem.TEXTURE_FILTER_LINEAR if anti else CanvasItem.TEXTURE_FILTER_NEAREST
+		texture_filter = filter
+
+var dir_anims:Array[String] = ['singLEFT', 'singDOWN', 'singUP', 'singRIGHT']
+func _init(pos:Array = [0, 0], char:String = 'bf', player:bool = false):
+	centered = false
+	var split = char.split('-')
+	char_path = (split[0]+ '/' +split[1] if split.size() > 1 else char)
+	cur_char = char
+	is_player = player
+	position = Vector2(pos[0], pos[1])
+	#focus_point = Vector2(0, 0)
+	print('init ' + cur_char)
+	
 func _ready():
-	pass # Replace with function body.
+	print(centered)
+	var path = '/characters/'+ char_path
+	#print(path)
+	sprite_frames = load('res://assets/images/'+ path +'/char.res')
+	if cur_char.ends_with('-pixel'): 
+		scale = Vector2(6, 6)
+		antialiasing = false
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
+	json = JsonHandler.get_character(cur_char) # get offsets and anim names...
+	var lol
+	for anim in json.animations:
+		offsets[anim.anim] = [-anim.offsets[0], -anim.offsets[1]]
+	dance()	
+	#print(offsets['idle'])
 	if !is_player:
-		if hold_timer > Conductor.crochet * 0.11:
-			hold_timer += delta
+		scale.x *= -1
+		#flip_h = true
+		swap_anim('singLEFT', 'singRIGHT')
+
+func _process(delta):
+	#if !is_player:
+	if animation.begins_with('sing'):
+		hold_timer += delta
+		if hold_timer >= Conductor.step_crochet * (0.0011 * sing_duration):
+			dance()
+
+
+func dance(forced:bool = false):
+	if forced: frame = 0
+	play_anim('idle')
+	hold_timer = 0
+
+func sing(dir:int = 0, suffix:String = ''):
+	frame = 0
+	hold_timer = 0
+	play_anim(dir_anims[dir] + suffix)
+	
+func swap_anim(anim1:String, anim2:String):
+	var index1 = dir_anims.find(anim1)
+	var index2 = dir_anims.find(anim2)
+	dir_anims[index1] = anim2
+	dir_anims[index2] = anim1
 
 func play_anim(anim:String, forced:bool = true):
-	pass
+	play(anim)
+	if offsets.has(anim):
+		var anim_offset = offsets[anim]
+		if anim_offset.size() == 2:
+			offset = Vector2(anim_offset[0], anim_offset[1])

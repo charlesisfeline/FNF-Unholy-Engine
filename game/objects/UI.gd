@@ -41,7 +41,8 @@ func _ready():
 	if downscroll:
 		score_txt.position.y = 130
 
-var hp:float = 50
+var hp:float = 50:
+	set(val): hp = min(max(val, health_bar.min_value), health_bar.max_value)
 func _process(delta):
 	health_bar.value = lerpf(health_bar.value, hp, delta * 7)
 

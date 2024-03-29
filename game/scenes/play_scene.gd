@@ -3,19 +3,24 @@ extends Node2D
 @onready var camGAME = CanvasGroup.new()
 @onready var camNotes = CanvasGroup.new()
 @onready var ui:UI = $UI
-#var STRUM #= preload("res://game/objects/strum.tscn")
+
+# "import" stuff
 var NOTE = preload("res://game/objects/note/note.tscn")
 var SUSTAIN = preload("res://game/objects/note/sustain.tscn")
 var RATING = preload("res://game/objects/rating.tscn")
 var NUMS = preload("res://game/objects/combo_nums.tscn")
-#var BAR = preload("res://game/objects/ui/health_bar.tscn")
-#var ICON = preload("res://game/objects/ui/icon.tscn")
+#var CHARACTER = preload('res://game/objects/characters/Character.gd')
 
+@onready var cam = $Camera
+var default_zoom:float = 0.8
 var SONG
 var chart_notes
 var notes:Array[Note] = []
 var sustains:Array[Sustain] = []
 var spawn_time:int = 2000
+
+var boyfriend:Character
+var dad:Character
 
 var player_strums:Array[Strum] = []
 var opponent_strums:Array[Strum] = []
@@ -36,7 +41,14 @@ var combo:int = 0
 var misses:int = 0
 
 func _ready():
-	print(Prefs.get_pref('sick_window'))
+	dad = Character.new([380, 150], 'bf-pixel')
+	add_child(dad)
+	
+	boyfriend = Character.new([770, 170], 'bf', true)
+	add_child(boyfriend)
+	ui.icon_p1.change_icon(boyfriend.cur_char, true)
+	ui.icon_p2.change_icon(dad.cur_char)
+	
 	SONG = JsonHandler.parse_song(Conductor.embedded_song)
 	Conductor.load_song()
 	print(SONG.song)
@@ -52,7 +64,7 @@ func _ready():
 	#camHUD.add_child(ui)
 	
 	Conductor.song_pos -= Conductor.crochet * 4
-	section_hit()
+	section_hit(0)
 	#await thread.wait_to_finish()
 
 var cur_section:int = -1
@@ -60,7 +72,7 @@ var section_data
 
 var bleh:int = 0
 var last_note:Note
-func _process(_delta):
+func _process(delta):
 	if Input.is_action_just_pressed("ui_cancel"):
 		auto_play = !auto_play
 	if Input.is_action_just_pressed("Accept"): # lol
@@ -69,7 +81,9 @@ func _process(_delta):
 		ui.add_child(pause)
 		#Conductor.reset()
 		#Game.switch_scene("debug_song_select")
-		
+	cam.zoom.x = lerpf(cam.zoom.x, default_zoom, delta * 4)
+	cam.zoom.y = lerpf(cam.zoom.y, default_zoom, delta * 4)
+	
 	if chart_notes != null:
 		while chart_notes.size() > 0 and bleh != chart_notes.size() and chart_notes[bleh][0] - Conductor.song_pos < spawn_time / SONG.speed:
 			if chart_notes[bleh][0] - Conductor.song_pos > spawn_time / SONG.speed:
@@ -81,6 +95,7 @@ func _process(_delta):
 			new_note.strum_time = floor(chart_notes[bleh][0])
 			new_note.dir = chart_notes[bleh][1] % 4
 			new_note.must_press = chart_notes[bleh][4]
+			new_note.speed = SONG.speed
 			new_note.spawned = true
 
 			notes.append(new_note)
@@ -104,7 +119,7 @@ func _process(_delta):
 			ui.add_to_strum_group(new_note, new_note.must_press)
 			notes.sort_custom(sort_notes)
 			bleh += 1
-			
+
 	if notes != null and notes.size() > 0:
 		for note in notes:
 			if note != null and note.spawned:
@@ -146,11 +161,12 @@ func _process(_delta):
 				sustains.remove_at(sustains.find(sustain))
 				sustain.queue_free()
 
-func beat_hit():
-	if $bf.animation == 'idle':
-		$bf.dance()
-	if $'bf-pixel'.animation == 'idle':
-		$'bf-pixel'.dance()
+func beat_hit(beat):
+	if beat % 2 == 0:
+		if boyfriend.animation == 'idle':
+			boyfriend.dance()
+		if dad.animation == 'idle':
+			dad.dance()
 	ui.icon_p1.bump()
 	ui.icon_p2.bump()
 	#var tick = AudioStreamPlayer.new()
@@ -160,17 +176,25 @@ func beat_hit():
 	#await tick.finished
 	#tick.queue_free()
 
-func step_hit(): pass
+func step_hit(step): pass
 
-func section_hit():
+func section_hit(section):
 	if SONG.notes.size() <= cur_section + 1: return
 	cur_section += 1
 	section_data = SONG.notes[cur_section]
+	cam.zoom.x += 0.1
+	cam.zoom.y += 0.1
+	
+	move_cam(section_data.mustHitSection)
 	if section_data.has('changeBPM') and section_data.has('bpm'):
 		if section_data.changeBPM and Conductor.bpm != section_data.bpm:
 			Conductor.bpm = section_data.bpm
 			print('bpm changeded ' + str(section_data.bpm))
 
+func move_cam(to_player:bool = true):
+	var new_pos = Vector2(820, 360) if to_player else Vector2(600, 360)
+	cam.position = new_pos
+	
 func _input(event): 
 	if auto_play || !(event is InputEventKey): return
 
@@ -225,7 +249,8 @@ func song_end():
 
 func good_note_hit(note:Note):
 	strum_anim(note.dir, true)
-	$bf.sing(note.dir)
+	boyfriend.sing(note.dir)
+	
 	combo += 1
 	var new_rating = RATING.instantiate()
 	ui.add_behind(new_rating)
@@ -261,18 +286,20 @@ func good_note_hit(note:Note):
 func good_sustain_press(sustain:Sustain):
 	if ui.player_strums[sustain.dir].anim_timer <= 0:
 		strum_anim(sustain.dir, true)
-		$bf.sing(sustain.dir)
+		boyfriend.sing(sustain.dir)
 	
 func opponent_note_hit(note:Note):
 	strum_anim(note.dir, false)
-	$'bf-pixel'.sing(note.dir)
+	dad.sing(note.dir)
 	kill_note(note)
 
 func opponent_sustain_press(sustain:Sustain):
 	if ui.opponent_strums[sustain.dir].anim_timer <= 0:
 		strum_anim(sustain.dir, false)
-		$'bf-pixel'.sing(sustain.dir)
+		dad.sing(sustain.dir)
+		
 func note_miss(note:Note):
+	boyfriend.sing(note.dir, 'miss')
 	score -= 10
 	misses += 1
 	ui.hp -= 4.7
