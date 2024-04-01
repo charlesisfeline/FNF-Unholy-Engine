@@ -22,7 +22,7 @@ var must_press:bool = false
 # continue it onto a new line or not
 # - Zyflx
 var can_hit:bool = false:
-	get: return (not must_press and strum_time >= Conductor.song_pos - (Conductor.safe_zone * 0.8) and strum_time <= Conductor.song_pos + (Conductor.safe_zone * 1))
+	get: return (must_press and strum_time >= Conductor.song_pos - (Conductor.safe_zone * 0.8) and strum_time <= Conductor.song_pos + (Conductor.safe_zone * 1))
 var was_good_hit:bool = false:
 	get: not must_press and strum_time <= Conductor.song_pos
 var too_late:bool = false
