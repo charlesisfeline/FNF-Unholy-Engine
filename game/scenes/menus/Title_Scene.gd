@@ -19,7 +19,7 @@ func _ready():
 	Conductor.inst = GlobalMusic.Player
 
 var danced:bool = false
-func beat_hit():
+func beat_hit(beat):
 	$Funkin.scale = Vector2(1.1, 1.1)
 
 	danced = !danced

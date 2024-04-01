@@ -11,15 +11,6 @@ script = ExtResource("1_sa7x1")
 
 [node name="Back" type="Node2D" parent="."]
 
-[node name="Strum_Group" type="CanvasGroup" parent="."]
-
-[node name="Player" parent="Strum_Group" instance=ExtResource("2_fxgad")]
-position = Vector2(730, 55)
-is_cpu = false
-
-[node name="Opponent" parent="Strum_Group" instance=ExtResource("2_fxgad")]
-position = Vector2(55, 55)
-
 [node name="HealthBar" parent="." instance=ExtResource("7_e1wxe")]
 offset_left = 364.0
 offset_top = 630.0
@@ -31,6 +22,15 @@ script = ExtResource("8_ojola")
 
 [node name="IconP2" type="Sprite2D" parent="HealthBar"]
 script = ExtResource("8_ojola")
+
+[node name="Strum_Group" type="CanvasGroup" parent="."]
+
+[node name="Player" parent="Strum_Group" instance=ExtResource("2_fxgad")]
+position = Vector2(730, 55)
+is_cpu = false
+
+[node name="Opponent" parent="Strum_Group" instance=ExtResource("2_fxgad")]
+position = Vector2(55, 55)
 
 [node name="Score_Txt" type="Label" parent="."]
 anchors_preset = 5
@@ -48,3 +48,4 @@ theme_override_font_sizes/font_size = 19
 text = "Score: 0 - Misses: 0"
 horizontal_alignment = 1
 vertical_alignment = 1
+text_direction = 3

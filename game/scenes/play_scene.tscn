@@ -15,6 +15,3 @@ position_smoothing_enabled = true
 [node name="InstPlayer" type="AudioStreamPlayer" parent="."]
 
 [node name="VoicePlayer" type="AudioStreamPlayer" parent="."]
-
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-animation = &""

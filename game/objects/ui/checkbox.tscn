@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://witkqohswf7d"]
+
+[ext_resource type="SpriteFrames" uid="uid://bbo2suoc5vxex" path="res://assets/images/checkbox.res" id="1_p0jbm"]
+[ext_resource type="Script" path="res://game/objects/ui/Checkbox.gd" id="2_2bo12"]
+
+[node name="Checkbox" type="AnimatedSprite2D"]
+sprite_frames = ExtResource("1_p0jbm")
+animation = &"selected"
+frame = 10
+frame_progress = 1.0
+offset = Vector2(-6, -40)
+script = ExtResource("2_2bo12")

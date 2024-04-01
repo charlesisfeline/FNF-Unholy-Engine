@@ -17,19 +17,18 @@ func change_icon(image:String = 'face', is_player:bool = false):
 	self.is_player = is_player
 	self.image = image
 	texture = load('res://assets/images/icons/icon-'+ image +'.png')
-	#if image.ends_with('-pixel'): antialiasing = false
+	if image.ends_with('-pixel'): antialiasing = false
 	has_lose = texture.get_width() > min_width
 	hframes = 2 if has_lose else 1
 	if is_player: flip_h = true
 	
 func _ready():
-	change_icon()
+	change_icon(image)
 
 func bump(to_scale:float = 1.2):
 	scale = Vector2(to_scale, to_scale)
 	
 func _process(delta):
-	if is_menu: return
 	scale.x = lerpf(1, scale.x, exp(-delta * 15))
 	scale.y = lerpf(1, scale.y, exp(-delta * 15))
 	
@@ -55,5 +54,5 @@ func _process(delta):
 					else: frame = 0
 		else:
 			position = follow_spr.position
-			position.x += offset.x
-			position.y += offset.y
+			position.x += follow_spr.width + 50
+			position.y += 13

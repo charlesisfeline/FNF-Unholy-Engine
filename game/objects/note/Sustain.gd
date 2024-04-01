@@ -4,6 +4,7 @@ var parent:Note
 var strum_time:float = 0
 var dir:int = 0
 var length:float = 0
+var speed:float = 1
 
 var hold_offset:float = 0
 var offset:float = 0
@@ -52,11 +53,19 @@ func copy_parent():
 		dir = parent.dir
 		must_press = parent.must_press
 		length = parent.length
+		speed = parent.speed
 	$Hold.texture = load('res://assets/images/ui/notes/'+ col[dir] +'_hold.png')
 	$End.texture = load('res://assets/images/ui/notes/'+ col[dir] +'_end.png')
 
 func cut(mills:float):
-	da = (absf(mills) / 50) * 0.45 * game.SONG.speed
+	da = (absf(mills) / 50) * 0.45 * speed
 	if Prefs.get_pref('downscroll'): da *= -1
 	if abs(mills) <= 1 or (Conductor.song_pos - strum_time) > length: # $Hold would go on forever
 		was_good_hit = true
+
+func follow_song_pos(strum:Strum):
+	var pos:float = (0.45 * (Conductor.song_pos - strum_time) * speed)
+	if !strum.downscroll: pos *= -1
+	
+	position.x = strum.position.x
+	position.y = strum.position.y + pos + sin(offset)

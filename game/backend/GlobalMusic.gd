@@ -7,15 +7,7 @@ var Player = AudioStreamPlayer.new()
 var pos:float = 0 # in case you need the position for something or whatever
 var volume:float = 1
 var loop:bool = true
-var music:String = "freakyMenu": # setter for if you KNOW the file exists, set_music for null checks
-	set(track):
-		if music != track:
-			music = track
-			Player.stream = load('res://assets/music/'+ track +'.ogg')
-		else:
-			Player.seek(0)
-		pos = 0
-		Player.play()
+var music:String = "freakyMenu" # setter for if you KNOW the file exists, set_music for null checks
 
 func _ready():
 	add_child(Player)
@@ -27,13 +19,13 @@ func _process(delta):
 	if Player.stream != null:
 		pos += delta * 1000
 
-func set_music(new_music:String, volume:float = 1, auto_play:bool = true):
+func set_music(new_music:String, volume:float = 1, looped:bool = true):
 	var path:String = 'assets/music/' + new_music + '.ogg'
 	if FileAccess.file_exists('res://' + path):
 		Player.stream = load('res://' + path)
 		Player.volume_db = volume
-		if auto_play:
-			play_music()
+		play_music()
+		loop = looped
 	else: 
 		printerr('MUSIC PLAYER | SET MUSIC: CAN\'T FIND FILE "' + path + '"')
 	
@@ -47,6 +39,7 @@ func play_music(at_pos:float = -1):
 	Player.play()
 
 func finished():
+	print('blopr')
 	if loop: play_music(0)
 	Game.call_func('on_music_finish')
 	

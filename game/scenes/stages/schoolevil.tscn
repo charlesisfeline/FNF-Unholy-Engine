@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://dkr0x6eknd0lh"]
+
+[ext_resource type="SpriteFrames" path="res://assets/images/stages/schoolevil/evilSchool.res" id="1_li67e"]
+
+[node name="schoolevil" type="Node2D"]
+
+[node name="Sprite2D" type="AnimatedSprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-880, -1215)
+scale = Vector2(6, 6)
+sprite_frames = ExtResource("1_li67e")
+animation = &"background 2 instance 1"
+frame_progress = 0.249118
+centered = false

@@ -20,11 +20,13 @@ func center_obj(obj = null, axis:String = 'xy'):
 	if obj is Sprite2D:
 		pass
 
-
 	match axis:
 		'x': obj.position.x = (screen[0] / 2) #- (obj_size.x / 2)
 		'y': obj.position.y = (screen[1] / 2) #- (obj_size.y / 2)
 		_: obj.position = Vector2(screen[0] / 2, screen[1] / 2)
+
+func get_rating(diff:float):
+	pass
 
 func reset_scene(_skip_trans:bool = false):
 	get_tree().reload_current_scene()

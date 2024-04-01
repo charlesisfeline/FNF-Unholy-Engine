@@ -107,7 +107,7 @@ func load_list(list:Array[String]):
 	for song in list:
 		var alphabet = Alphabet.new()
 		alphabet.bold = true
-		alphabet.text = song
+		alphabet.text = song.replace('-', ' ')
 		alphabet.is_menu = true
 		alphabet.target_y = i
 		songs.append(alphabet)

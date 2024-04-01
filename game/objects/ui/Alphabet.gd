@@ -87,8 +87,7 @@ func get_anim(item):
 			if item == null or item == "" or item == "\n": return ""
 			if !bold:
 				if Letter.ALPHABET.find(item.to_lower()) != -1:
-					var casing = "case"
-					casing = (' upper' if item.to_lower() != item else ' lower') + casing
+					var casing = (' upper' if item.to_lower() != item else ' lower') + 'case'
 					return "%s".dedent() % [item.to_lower() + casing]
 			return item.to_lower().dedent()
 
@@ -103,7 +102,7 @@ class Letter extends AnimatedSprite2D:
 	var row:int = 0
 	
 	var _width = 0: 
-		get: return sprite_frames.get_frame_texture(char, 0).get_width()
+		get: return sprite_frames.get_frame_texture(char, 0).get_width() if sprite_frames.get_frame_texture(char, 0) != null else 0
 	var _height = 0: 
 		get: return sprite_frames.get_frame_texture(char, 0).get_height()
 	

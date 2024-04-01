@@ -1,7 +1,7 @@
 extends Node2D
 
 @onready var menu_sprites = [$StoryMode, $Freeplay, $Donate, $Options]
-var scene_to_load = [null, 'debug_song_select', null, null]
+var scene_to_load = ['story_mode', 'freeplay', 'donate', 'options_menu']
 var cur_option:int = 0
 
 func _ready():
@@ -16,7 +16,9 @@ func _process(delta):
 	if Input.is_action_just_pressed('Accept'):
 		if scene_to_load[cur_option] != null:
 			GlobalMusic.play_sound('confirmMenu')
-			Game.switch_scene(scene_to_load[cur_option])
+			if scene_to_load[cur_option] != 'donate':
+				Game.switch_scene('menus/'+ scene_to_load[cur_option])
+			else: OS.shell_open('https://ninja-muffin24.itch.io/funkin')
 		else:
 			GlobalMusic.play_sound('cancelMenu')
 	if Input.is_action_just_pressed('ui_cancel'):

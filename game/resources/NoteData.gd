@@ -1,11 +1,17 @@
 class_name NoteData; extends Resource;
 
+var strum_time:float
+var must_press:bool
+var dir:int
 
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass # Replace with function body.
+var speed:float
+var type:String
 
+var length:float
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	pass
+func _init(data):
+	if data != null:
+		strum_time = floor(data[0])
+		dir = data[1] % 4
+		length = data[3]
+		must_press = data[4]

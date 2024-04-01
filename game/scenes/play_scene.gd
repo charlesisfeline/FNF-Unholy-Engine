@@ -7,7 +7,7 @@ extends Node2D
 # "import" stuff
 var NOTE = preload("res://game/objects/note/note.tscn")
 var SUSTAIN = preload("res://game/objects/note/sustain.tscn")
-var RATING = preload("res://game/objects/rating.tscn")
+var Judge:Rating = Rating.new()
 var NUMS = preload("res://game/objects/combo_nums.tscn")
 #var CHARACTER = preload('res://game/objects/characters/Character.gd')
 
@@ -31,9 +31,7 @@ var keys = [
 	InputMap.action_get_events('Note_Right')
 ]
 var key_names = ['Note_Left', 'Note_Down', 'Note_Up', 'Note_Right']
-var sing_anim = ['singLEFT', 'singDOWN', 'singUP', 'singRIGHT']
 
-@export var STRUMX = 150
 @onready var auto_play:bool = Prefs.get_pref('auto_play')
 
 var score:int = 0
@@ -41,10 +39,13 @@ var combo:int = 0
 var misses:int = 0
 
 func _ready():
-	dad = Character.new([380, 150], 'bf-pixel')
+	var stage = load('res://game/scenes/stages/stage.tscn').instantiate() # im sick of grey bg FUCK
+	add_child(stage)
+	
+	dad = Character.new([380, 340], 'bf-pixel')
 	add_child(dad)
 	
-	boyfriend = Character.new([770, 170], 'bf', true)
+	boyfriend = Character.new([770, 400], 'bf', true)
 	add_child(boyfriend)
 	ui.icon_p1.change_icon(boyfriend.cur_char, true)
 	ui.icon_p2.change_icon(dad.cur_char)
@@ -79,22 +80,18 @@ func _process(delta):
 		get_tree().paused = true
 		var pause = load('res://game/scenes/pause_screen.tscn').instantiate()
 		ui.add_child(pause)
-		#Conductor.reset()
-		#Game.switch_scene("debug_song_select")
+
 	cam.zoom.x = lerpf(cam.zoom.x, default_zoom, delta * 4)
-	cam.zoom.y = lerpf(cam.zoom.y, default_zoom, delta * 4)
+	cam.zoom.y = cam.zoom.x
 	
 	if chart_notes != null:
 		while chart_notes.size() > 0 and bleh != chart_notes.size() and chart_notes[bleh][0] - Conductor.song_pos < spawn_time / SONG.speed:
 			if chart_notes[bleh][0] - Conductor.song_pos > spawn_time / SONG.speed:
 				break
 			
+			var note_info = NoteData.new(chart_notes[bleh])
 			var is_sustain:bool = chart_notes[bleh][2]
-			var new_note:Note = NOTE.instantiate()
-			new_note.length = chart_notes[bleh][3]
-			new_note.strum_time = floor(chart_notes[bleh][0])
-			new_note.dir = chart_notes[bleh][1] % 4
-			new_note.must_press = chart_notes[bleh][4]
+			var new_note:Note = Note.new(note_info)
 			new_note.speed = SONG.speed
 			new_note.spawned = true
 
@@ -124,15 +121,11 @@ func _process(delta):
 		for note in notes:
 			if note != null and note.spawned:
 				var strum:Strum = ui.player_strums[note.dir] if note.must_press else ui.opponent_strums[note.dir]
-			
-				var pos:float = (0.45 * (Conductor.song_pos - note.strum_time) * SONG.speed)
-				if !Prefs.get_pref('downscroll'): pos *= -1
-				note.position.x = strum.position.x
-				note.position.y = strum.position.y + pos
-					
-				if note.strum_time < Conductor.song_pos - 250 and note.must_press and !note.was_good_hit:
+				note.follow_song_pos(strum)
+				
+				if !auto_play and note.strum_time < Conductor.song_pos - 250 and note.must_press and !note.was_good_hit:
 					note_miss(note)
-				if note.was_good_hit && not note.must_press:
+				if note.was_good_hit and !note.must_press:
 					opponent_note_hit(note)
 					
 				if auto_play and note.strum_time <= Conductor.song_pos and note.must_press:
@@ -162,11 +155,11 @@ func _process(delta):
 				sustain.queue_free()
 
 func beat_hit(beat):
-	if beat % 2 == 0:
-		if boyfriend.animation == 'idle':
-			boyfriend.dance()
-		if dad.animation == 'idle':
-			dad.dance()
+	#if beat % 2 == 0:
+	if !boyfriend.animation.contains('sing') and boyfriend.hold_timer == 0:
+		boyfriend.dance()
+	if !dad.animation.contains('sing') and dad.hold_timer == 0:
+		dad.dance()
 	ui.icon_p1.bump()
 	ui.icon_p2.bump()
 	#var tick = AudioStreamPlayer.new()
@@ -182,8 +175,8 @@ func section_hit(section):
 	if SONG.notes.size() <= cur_section + 1: return
 	cur_section += 1
 	section_data = SONG.notes[cur_section]
-	cam.zoom.x += 0.1
-	cam.zoom.y += 0.1
+	cam.zoom.x += 0.08
+	cam.zoom.y += 0.08
 	
 	move_cam(section_data.mustHitSection)
 	if section_data.has('changeBPM') and section_data.has('bpm'):
@@ -192,7 +185,8 @@ func section_hit(section):
 			print('bpm changeded ' + str(section_data.bpm))
 
 func move_cam(to_player:bool = true):
-	var new_pos = Vector2(820, 360) if to_player else Vector2(600, 360)
+	var char_pos = boyfriend.position if to_player else dad.position
+	var new_pos = Vector2(char_pos.x - 30, char_pos.y + 150) if to_player else Vector2(char_pos.x + 100, char_pos.y + 150)
 	cam.position = new_pos
 	
 func _input(event): 
@@ -244,7 +238,7 @@ func get_key(key:int) -> int:
 
 func song_end():
 	Conductor.reset()
-	Game.switch_scene("debug_song_select")
+	Game.switch_scene("menus/freeplay")
 	#get_tree().reload_current_scene()
 
 func good_note_hit(note:Note):
@@ -252,36 +246,27 @@ func good_note_hit(note:Note):
 	boyfriend.sing(note.dir)
 	
 	combo += 1
-	var new_rating = RATING.instantiate()
+	var new_rating = Judge.make_rating(Judge.get_rating(Conductor.song_pos - note.strum_time))
 	ui.add_behind(new_rating)
-	new_rating.spr.velocity.y = randi_range(-140, -175)
-	new_rating.spr.acceleration.y = 550
-	#new_rating.linear_velocity.x -= randi_range(0, 10)
+	var r_tween = create_tween()
+	r_tween.tween_property(new_rating, "modulate:a", 0, 0.2).set_delay(Conductor.crochet * 0.001)
+	r_tween.finished.connect(new_rating.queue_free)
 	
-	var data = new_rating.get_rating_data(note.strum_time - Conductor.song_pos)
-	score += data[1]
+	score += Judge.ratings_data.score[new_rating.frame]
 	ui.hp += 2.3
 	
-	var loops:int = 0
-	for i in str(combo).split():
-		var new_num = NUMS.instantiate()
-		new_num.frame = int(i)
-		ui.add_behind(new_num)
+	var new_nums = Judge.make_combo(combo)
+	for num in new_nums:
+		ui.add_behind(num)
+		var n_tween = create_tween()
+		n_tween.tween_property(num, "modulate:a", 0, 0.2).set_delay(Conductor.crochet * 0.002)
+		n_tween.finished.connect(num.queue_free)
 
-		new_num.position.x += (38 * loops)
-		loops += 1
-
-		
 	ui.update_score_txt()
 	
 	kill_note(note)
 	#if Prefs.get_pref('hitsounds'):
-	#	var hit = AudioStreamPlayer.new()
-	#	add_child(hit)
-	#	hit.stream = load('res://assets/sounds/hitsound.ogg')
-	#	hit.play()
-	#	await hit.finished
-	#	hit.queue_free()
+	#	ui
 	
 func good_sustain_press(sustain:Sustain):
 	if ui.player_strums[sustain.dir].anim_timer <= 0:
