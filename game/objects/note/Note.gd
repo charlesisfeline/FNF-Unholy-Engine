@@ -18,8 +18,13 @@ var type:String = "":
 	set(type): pass
 
 var must_press:bool = false
-var can_hit:bool = false
-var was_good_hit:bool = false
+# god this is long asf but i dont remember if godot lets you
+# continue it onto a new line or not
+# - Zyflx
+var can_hit:bool = false:
+	get: return (not must_press and strum_time >= Conductor.song_pos - (Conductor.safe_zone * 0.8) and strum_time <= Conductor.song_pos + (Conductor.safe_zone * 1))
+var was_good_hit:bool = false:
+	get: not must_press and strum_time <= Conductor.song_pos
 var too_late:bool = false
 
 # for sustains
@@ -53,16 +58,11 @@ func _ready():
 		sustain.texture = load('res://assets/images/ui/notes/'+ '' +'.png')
 
 func _process(_delta):
+	# keeping this here because idk if this is important or not - Zyflx
 	var safe_zone:float = Conductor.safe_zone
 	if must_press:
-		can_hit = (Conductor.song_pos - (safe_zone * 0.8) and strum_time <= Conductor.song_pos + (safe_zone * 1))
-		
 		if strum_time < Conductor.song_pos - safe_zone and !was_good_hit:
 			pass
-	else:
-		can_hit = false
-		if(strum_time <= Conductor.song_pos): #is_sustain && prev_note.wasGoodHit) || 
-			was_good_hit = true
 
 #func copy_from(note:Note):
 #	pass
