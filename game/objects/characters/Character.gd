@@ -40,7 +40,7 @@ func _ready():
 		antialiasing = false
 
 	json = JsonHandler.get_character(cur_char) # get offsets and anim names...
-	var lol
+
 	for anim in json.animations:
 		offsets[anim.anim] = [-anim.offsets[0], -anim.offsets[1]]
 	

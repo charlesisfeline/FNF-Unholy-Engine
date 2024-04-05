@@ -6,7 +6,6 @@ extends Node2D
 
 # "import" stuff
 var NOTE = preload("res://game/objects/note/note.tscn")
-var SUSTAIN = preload("res://game/objects/note/sustain.tscn")
 var Judge:Rating = Rating.new()
 var NUMS = preload("res://game/objects/combo_nums.tscn")
 #var CHARACTER = preload('res://game/objects/characters/Character.gd')
@@ -16,7 +15,6 @@ var default_zoom:float = 0.8
 var SONG
 var chart_notes
 var notes:Array[Note] = []
-var sustains:Array[Sustain] = []
 var spawn_time:int = 2000
 
 var boyfriend:Character
@@ -90,76 +88,57 @@ func _process(delta):
 				break
 			
 			var note_info = NoteData.new(chart_notes[bleh])
-			var is_sustain:bool = chart_notes[bleh][2]
 			var new_note:Note = Note.new(note_info)
+			
 			new_note.speed = SONG.speed
-			new_note.spawned = true
-
 			notes.append(new_note)
 
-			if is_sustain:
-				var _note:Note = new_note
-				
-				last_note = notes[notes.size() - 1]
-				var new_sustain:Sustain = SUSTAIN.instantiate()
-				new_sustain.parent = _note
-				new_sustain.copy_parent()
-
-				#new_sustain.strum_time = _note.strum_time #+ (Conductor.step_crochet / 16)
-				new_sustain.da = roundf((new_sustain.length / 50) * (0.45 * SONG.speed))
-				if Prefs.get_pref('downscroll'): new_sustain.da *= -1
+			if chart_notes[bleh][2]: # if it has a sustain
+				var new_sustain:Note = Note.new(new_note, true)
+				new_sustain.speed = SONG.speed
+		
+				#if Prefs.get_pref('downscroll'): new_sustain.da *= -1
 				#new_sustain.z_index = -1
+				notes.append(new_sustain)
 				ui.add_to_strum_group(new_sustain, new_sustain.must_press)
 
-				sustains.append(new_sustain)
-			#cam_notes.add_child(new_note)
 			ui.add_to_strum_group(new_note, new_note.must_press)
 			notes.sort_custom(sort_notes)
 			bleh += 1
 
-	if notes != null and notes.size() > 0:
+	if notes.size() != 0:
 		for note in notes:
-			if note != null and note.spawned:
+			if note.spawned:
 				var strum:Strum = ui.player_strums[note.dir] if note.must_press else ui.opponent_strums[note.dir]
 				note.follow_song_pos(strum)
-				
-				if !auto_play and note.strum_time < Conductor.song_pos - 250 and note.must_press and !note.was_good_hit:
-					note_miss(note)
-				if note.was_good_hit and !note.must_press:
-					opponent_note_hit(note)
+				if note.is_sustain:
+					if note.must_press:
+						var check = (auto_play or Input.is_action_pressed(key_names[note.dir]))
+						note.holding = check and note.can_hit
+						if note.holding:
+							good_sustain_press(note)
+					else:
+						if note.can_hit and !note.was_good_hit:
+							opponent_sustain_press(note)
 					
-				if auto_play and note.strum_time <= Conductor.song_pos and note.must_press:
-					good_note_hit(note)
+					if note.was_good_hit and note.temp_len <= 0: kill_note(note)
+				else:
+					if note.must_press:
+						if auto_play and note.strum_time <= Conductor.song_pos:
+							good_note_hit(note)
+						if !auto_play and note.strum_time < Conductor.song_pos - 250 and !note.was_good_hit:
+							note_miss(note)
+					else:
+						if note.was_good_hit:
+							opponent_note_hit(note)
 					
-	for sustain in sustains:
-		var strum = ui.player_strums[sustain.dir] if sustain.must_press else ui.opponent_strums[sustain.dir]
-		var pos:float = (0.45 * (Conductor.song_pos - sustain.strum_time) * SONG.speed)
-		if !Prefs.get_pref('downscroll'): pos *= -1;
-		sustain.position.y = strum.position.y + pos + sustain.offset
-		
-		if sustain.can_hit:
-			if !sustain.must_press:
-				opponent_sustain_press(sustain)
-			else:
-				var check = (Input.is_action_pressed(key_names[sustain.dir]) or auto_play)
-				sustain.holding = check
-				if check: good_sustain_press(sustain)
-				
-			if sustain.was_good_hit:
-				sustains.remove_at(sustains.find(sustain))
-				sustain.queue_free()
-				
-			if sustain.strum_time < (Conductor.song_pos - sustain.length) and !sustain.holding:
-				print('limit')
-				sustains.remove_at(sustains.find(sustain))
-				sustain.queue_free()
 
 func beat_hit(beat):
-	#if beat % 2 == 0:
-	if !boyfriend.animation.contains('sing') and boyfriend.hold_timer == 0:
-		boyfriend.dance()
-	if !dad.animation.contains('sing') and dad.hold_timer == 0:
-		dad.dance()
+	if beat % 2 == 0:
+		if !boyfriend.animation.contains('sing') and boyfriend.hold_timer == 0:
+			boyfriend.dance()
+		if !dad.animation.contains('sing') and dad.hold_timer == 0:
+			dad.dance()
 	ui.icon_p1.bump()
 	ui.icon_p2.bump()
 	#var tick = AudioStreamPlayer.new()
@@ -188,45 +167,39 @@ func move_cam(to_player:bool = true):
 	var char_pos = boyfriend.position if to_player else dad.position
 	var new_pos = Vector2(char_pos.x - 30, char_pos.y + 150) if to_player else Vector2(char_pos.x + 100, char_pos.y + 150)
 	cam.position = new_pos
-	
-func _input(event): 
-	if auto_play || !(event is InputEventKey): return
 
-	var key:int = get_key(event.physical_keycode)
-	if key < 0: return
-	
-	# i dont use this for hold notes because it takes like half a second before a key counts as "held"
-	var press_array:Array[bool] = []
-	for i in key_names:
-		press_array.append(Input.is_action_just_pressed(i))
-
-	var hittable_notes:Array[Note] = []
-		
-	for i in notes:
-		var can_hit:bool = i.spawned and i.must_press and i.can_hit and i.dir == key and !i.was_good_hit
-		if can_hit: hittable_notes.append(i)
+func _unhandled_key_input(event):
+	if auto_play: return
+	for i in 4:
+		if Input.is_action_just_pressed(key_names[i]): key_press(i)
+		if Input.is_action_just_released(key_names[i]): key_release(i)
+			
+func key_press(key:int = 0):
+	var hittable_notes:Array[Note] = notes.filter(func(i:Note):
+		return i.spawned and !i.is_sustain and i.must_press and i.can_hit and i.dir == key and !i.was_good_hit
+	)
 	hittable_notes.sort_custom(sort_notes)
 	
-	if press_array[key]:
-		if hittable_notes.size() != 0:
-			var note:Note = hittable_notes[0]
+	if hittable_notes.size() != 0:
+		var note:Note = hittable_notes[0]
 			
-			if hittable_notes.size() > 1:
-				var behind_note:Note = hittable_notes[1]
-				
-				if absf(behind_note.strum_time - note.strum_time) < 1.0:
-					kill_note(behind_note)
-				elif behind_note.dir == note.dir and behind_note.strum_time < note.strum_time:
-					note = behind_note
-			
-			good_note_hit(note)
+		if hittable_notes.size() > 1:
+			for funny in hittable_notes: # temp dupe note thing killer bwargh i hate it
+				if note == funny: continue 
+				if funny.dir == note.dir:
+					if absf(funny.strum_time - note.strum_time) < 1.0:
+						kill_note(funny)
+					elif funny.strum_time < note.strum_time:
+						note = funny; break
+		good_note_hit(note)
 
 	var strum = ui.player_strums[key]
-	if event.pressed and !strum.animation.contains('confirm') and !strum.animation.contains('press'):
+	if !strum.animation.contains('confirm') and !strum.animation.contains('press'):
 		strum.play_anim('press')
 		strum.reset_timer = 0
-	elif event.is_released():
-		strum.play_anim('static')
+
+func key_release(key:int = 0):
+	ui.player_strums[key].play_anim('static')
 
 func get_key(key:int) -> int:
 	for i in keys.size():
@@ -247,7 +220,8 @@ func good_note_hit(note:Note):
 	
 	combo += 1
 	var new_rating = Judge.make_rating(Judge.get_rating(Conductor.song_pos - note.strum_time))
-	ui.add_behind(new_rating)
+	#ui.add_behind(new_rating)
+	add_child(new_rating)
 	var r_tween = create_tween()
 	r_tween.tween_property(new_rating, "modulate:a", 0, 0.2).set_delay(Conductor.crochet * 0.001)
 	r_tween.finished.connect(new_rating.queue_free)
@@ -257,7 +231,8 @@ func good_note_hit(note:Note):
 	
 	var new_nums = Judge.make_combo(combo)
 	for num in new_nums:
-		ui.add_behind(num)
+		#ui.add_behind(num)
+		add_child(num)
 		var n_tween = create_tween()
 		n_tween.tween_property(num, "modulate:a", 0, 0.2).set_delay(Conductor.crochet * 0.002)
 		n_tween.finished.connect(num.queue_free)
@@ -268,7 +243,7 @@ func good_note_hit(note:Note):
 	#if Prefs.get_pref('hitsounds'):
 	#	ui
 	
-func good_sustain_press(sustain:Sustain):
+func good_sustain_press(sustain:Note):
 	if ui.player_strums[sustain.dir].anim_timer <= 0:
 		strum_anim(sustain.dir, true)
 		boyfriend.sing(sustain.dir)
@@ -278,7 +253,7 @@ func opponent_note_hit(note:Note):
 	dad.sing(note.dir)
 	kill_note(note)
 
-func opponent_sustain_press(sustain:Sustain):
+func opponent_sustain_press(sustain:Note):
 	if ui.opponent_strums[sustain.dir].anim_timer <= 0:
 		strum_anim(sustain.dir, false)
 		dad.sing(sustain.dir)
@@ -293,7 +268,7 @@ func note_miss(note:Note):
 	ui.update_score_txt()
 	kill_note(note)
 	
-func kill_note(note):
+func kill_note(note:Note):	
 	note.spawned = false
 	notes.remove_at(notes.find(note))
 	note.queue_free()

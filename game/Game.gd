@@ -25,9 +25,6 @@ func center_obj(obj = null, axis:String = 'xy'):
 		'y': obj.position.y = (screen[1] / 2) #- (obj_size.y / 2)
 		_: obj.position = Vector2(screen[0] / 2, screen[1] / 2)
 
-func get_rating(diff:float):
-	pass
-
 func reset_scene(_skip_trans:bool = false):
 	get_tree().reload_current_scene()
 

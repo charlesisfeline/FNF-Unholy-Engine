@@ -7,11 +7,10 @@ signal song_end
 
 var bpm:float = 100:
 	set(new_bpm):
-		if new_bpm != bpm:
-			bpm = new_bpm
-			crochet = ((60 / bpm) * 1000)
-			step_crochet = crochet / 4
-		
+		bpm = new_bpm
+		crochet = ((60 / bpm) * 1000)
+		step_crochet = crochet / 4
+
 var crochet:float = ((60 / bpm) * 1000)
 var step_crochet:float = crochet / 4
 var song_pos:float = 0.0
@@ -30,11 +29,14 @@ var last_beat:int = -1
 var last_step:int = -1
 var last_section:int = -1
 
-var embedded_song:String = 'tutorial': # if load_song has no param, we'll check this var instead
+var embedded_song:String = '-!sustain-test': # if load_song has no param, we'll check this var instead
 	set(song): embedded_song = song.replace(' ', '-')
 var song_prepped:bool = false
-var inst:AudioStreamPlayer
-var vocals:AudioStreamPlayer
+var inst = AudioStreamPlayer.new()
+var vocals = AudioStreamPlayer.new()
+func _ready():
+	add_child(inst)
+	add_child(vocals)
 
 func load_song(song:String = ''):
 	if song.length() < 1:
@@ -46,10 +48,8 @@ func load_song(song:String = ''):
 		
 	var path:String = 'res://assets/songs/'+ song.replace(' ', '-') +'/audio/'
 	if FileAccess.file_exists(path + 'Inst.ogg'):
-		inst = get_tree().current_scene.get_node('InstPlayer')
 		inst.stream = load(path + 'Inst.ogg')
 	if FileAccess.file_exists(path + 'Voices.ogg'):
-		vocals = get_tree().current_scene.get_node('VoicePlayer')
 		vocals.stream = load(path + 'Voices.ogg')
 	
 	var json = FileAccess.open(path.replace('audio/', 'charts/hard.json'), FileAccess.READ)
@@ -68,9 +68,6 @@ func start_song():
 	if inst != null: inst.play()
 	if vocals != null: vocals.play()
 	
-func _ready():
-	pass
-
 var test:float = 0
 func _process(delta):
 	if paused: return
@@ -131,6 +128,8 @@ func reset():
 	#embedded_song = ''
 	played_audio = false
 	song_prepped = false
+	inst.stream = null
+	vocals.stream = null
 
 func soft_reset():
 	song_pos = 0

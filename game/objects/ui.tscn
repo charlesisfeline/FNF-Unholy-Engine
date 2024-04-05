@@ -25,12 +25,12 @@ script = ExtResource("8_ojola")
 
 [node name="Strum_Group" type="CanvasGroup" parent="."]
 
+[node name="Opponent" parent="Strum_Group" instance=ExtResource("2_fxgad")]
+position = Vector2(55, 55)
+
 [node name="Player" parent="Strum_Group" instance=ExtResource("2_fxgad")]
 position = Vector2(730, 55)
 is_cpu = false
-
-[node name="Opponent" parent="Strum_Group" instance=ExtResource("2_fxgad")]
-position = Vector2(55, 55)
 
 [node name="Score_Txt" type="Label" parent="."]
 anchors_preset = 5

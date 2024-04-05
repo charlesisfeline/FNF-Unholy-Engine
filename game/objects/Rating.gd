@@ -1,8 +1,8 @@
 class_name Rating; extends Node2D;
 
-var rating_pos:Vector2 = Vector2(610, 300)
-var combo_pos:Vector2 = Vector2(620, 350)
-var spacing:float = 38
+var rating_pos:Vector2 = Vector2(610, 500)
+var combo_pos:Vector2 = Vector2(580, 560)
+var spacing:float = 43
 
 var ratings_data:Dictionary = {
 	'name':       ['sick', 'good', 'bad', 'shit'],
@@ -30,7 +30,7 @@ func make_rating(rate:String = 'sick'):
 	rating.moving = true
 	rating.velocity.y = randi_range(-140, -175)
 	rating.acceleration.y = 550
-	#rating.scale = Vector2(0.5, 0.5)
+	rating.scale = Vector2(0.7, 0.7)
 	return rating
 
 func make_combo(combo):
@@ -50,6 +50,7 @@ func make_combo(combo):
 		num.velocity.y = randi_range(-140, -160)
 		num.velocity.x = randf_range(-5, 5)
 		
+		num.scale = Vector2(0.5, 0.5)
 		loops += 1
 
 	return all_nums

@@ -46,7 +46,6 @@ var hp:float = 50:
 func _process(delta):
 	health_bar.value = lerpf(health_bar.value, hp, delta * 7)
 
-
 func update_score_txt():
 	score_txt.text = 'Score: %s - Misses: %s' % [cur_scene.score, cur_scene.misses]
 
