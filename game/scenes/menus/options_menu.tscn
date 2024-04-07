@@ -1,8 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://c5ko4826y6h5x"]
+[gd_scene load_steps=3 format=3 uid="uid://c5ko4826y6h5x"]
 
 [ext_resource type="Script" path="res://game/scenes/menus/Options_Menu.gd" id="1_b1snu"]
 [ext_resource type="Texture2D" uid="uid://db7syx1e2ip5t" path="res://assets/images/menuBGBlue.png" id="1_xcv5o"]
-[ext_resource type="SpriteFrames" uid="uid://bbo2suoc5vxex" path="res://assets/images/checkbox.res" id="3_jlmyb"]
 
 [node name="Options_Menu" type="Node2D"]
 script = ExtResource("1_b1snu")
@@ -10,7 +9,3 @@ script = ExtResource("1_b1snu")
 [node name="MenuBG" type="Sprite2D" parent="."]
 position = Vector2(640, 361)
 texture = ExtResource("1_xcv5o")
-
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-sprite_frames = ExtResource("3_jlmyb")
-animation = &"selected"

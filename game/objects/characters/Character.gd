@@ -2,22 +2,24 @@ class_name Character; extends AnimatedSprite2D;
 
 var json
 var offsets:Dictionary = {}
-var focus_point:Vector2 = Vector2(0, 0)
+var focus_offsets:Vector2 = Vector2.ZERO # cam offset type shit
 var cur_char:String = ''
 var char_path:String = ''
 
 var is_player:bool = false
 var dance_idle:bool = false
 var danced:bool = false
+var dance_beat:int = 2 # dance every %dance_beat%
 var hold_timer:float = 0
 var sing_duration:float = 4
 
 var antialiasing:bool = true:
+	get: return texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST
 	set(anti):
 		var filter = CanvasItem.TEXTURE_FILTER_LINEAR if anti else CanvasItem.TEXTURE_FILTER_NEAREST
 		texture_filter = filter
 
-var dir_anims:Array[String] = ['singLEFT', 'singDOWN', 'singUP', 'singRIGHT']
+var sing_anims:Array[String] = ['singLEFT', 'singDOWN', 'singUP', 'singRIGHT']
 func _init(pos:Array = [0, 0], char:String = 'bf', player:bool = false):
 	centered = false
 	var split = char.split('-')
@@ -25,6 +27,7 @@ func _init(pos:Array = [0, 0], char:String = 'bf', player:bool = false):
 	cur_char = char
 	is_player = player
 	position = Vector2(pos[0], pos[1])
+	focus_offsets = Vector2()
 	#focus_point = Vector2(0, 0)
 	print('init ' + cur_char)
 	
@@ -45,9 +48,10 @@ func _ready():
 		offsets[anim.anim] = [-anim.offsets[0], -anim.offsets[1]]
 	
 	dance_idle = offsets.has('danceLeft')
+	if dance_idle: dance_beat = 1
 	dance()
 
-	if !is_player:
+	if !is_player and json.flip_x:
 		scale.x *= -1
 		swap_anim('singLEFT', 'singRIGHT')
 
@@ -72,13 +76,13 @@ func dance(forced:bool = false):
 func sing(dir:int = 0, suffix:String = ''):
 	frame = 0
 	hold_timer = 0
-	play_anim(dir_anims[dir] + suffix)
+	play_anim(sing_anims[dir] + suffix)
 	
 func swap_anim(anim1:String, anim2:String):
-	var index1 = dir_anims.find(anim1)
-	var index2 = dir_anims.find(anim2)
-	dir_anims[index1] = anim2
-	dir_anims[index2] = anim1
+	var index1 = sing_anims.find(anim1)
+	var index2 = sing_anims.find(anim2)
+	sing_anims[index1] = anim2
+	sing_anims[index2] = anim1
 
 func play_anim(anim:String, forced:bool = true):
 	play(anim)
@@ -87,9 +91,8 @@ func play_anim(anim:String, forced:bool = true):
 		if anim_offset.size() == 2:
 			offset = Vector2(anim_offset[0], anim_offset[1])
 
-func get_anim(anim:String): # get the animation from the json file
-	if json == null: return anim
-	for name in json.animations:
-		if json.anim == anim: return json.name
-	return anim
-
+#func get_anim(anim:String): # get the animation from the json file
+#	if json == null: return anim
+#	for name in json.animations:
+#		if json.anim == anim: return json.name
+#	return anim

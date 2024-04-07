@@ -5,10 +5,7 @@ extends Node2D
 @onready var ui:UI = $UI
 
 # "import" stuff
-var NOTE = preload("res://game/objects/note/note.tscn")
 var Judge:Rating = Rating.new()
-var NUMS = preload("res://game/objects/combo_nums.tscn")
-#var CHARACTER = preload('res://game/objects/characters/Character.gd')
 
 @onready var cam = $Camera
 var default_zoom:float = 0.8
@@ -61,8 +58,8 @@ func _ready():
 	
 	#ui = UI.new()
 	#camHUD.add_child(ui)
-	
-	Conductor.song_pos -= Conductor.crochet * 4
+	ui.start_countdown(true)
+
 	section_hit(0)
 	#await thread.wait_to_finish()
 
@@ -134,11 +131,11 @@ func _process(delta):
 					
 
 func beat_hit(beat):
-	if beat % 2 == 0:
-		if !boyfriend.animation.contains('sing') and boyfriend.hold_timer == 0:
-			boyfriend.dance()
-		if !dad.animation.contains('sing') and dad.hold_timer == 0:
-			dad.dance()
+	if beat % boyfriend.dance_beat == 0 and !boyfriend.animation.contains('sing'):
+		boyfriend.dance()
+	if beat % dad.dance_beat == 0 and !dad.animation.contains('sing'):
+		dad.dance()
+		
 	ui.icon_p1.bump()
 	ui.icon_p2.bump()
 	#var tick = AudioStreamPlayer.new()
@@ -164,8 +161,13 @@ func section_hit(section):
 			print('bpm changeded ' + str(section_data.bpm))
 
 func move_cam(to_player:bool = true):
-	var char_pos = boyfriend.position if to_player else dad.position
-	var new_pos = Vector2(char_pos.x - 30, char_pos.y + 150) if to_player else Vector2(char_pos.x + 100, char_pos.y + 150)
+	var new_pos = Vector2.ZERO
+	if to_player:
+		var char_pos = boyfriend.position# + boyfriend.focus_offsets
+		new_pos = Vector2(char_pos.x, char_pos.y)
+	else:
+		var char_pos = dad.position #+ dad.size()
+		new_pos = Vector2(char_pos.x + 100, char_pos.y + 150)
 	cam.position = new_pos
 
 func _unhandled_key_input(event):
@@ -186,11 +188,10 @@ func key_press(key:int = 0):
 		if hittable_notes.size() > 1:
 			for funny in hittable_notes: # temp dupe note thing killer bwargh i hate it
 				if note == funny: continue 
-				if funny.dir == note.dir:
-					if absf(funny.strum_time - note.strum_time) < 1.0:
-						kill_note(funny)
-					elif funny.strum_time < note.strum_time:
-						note = funny; break
+				if absf(funny.strum_time - note.strum_time) < 1.0:
+					kill_note(funny)
+				elif funny.strum_time < note.strum_time:
+					note = funny; break
 		good_note_hit(note)
 
 	var strum = ui.player_strums[key]

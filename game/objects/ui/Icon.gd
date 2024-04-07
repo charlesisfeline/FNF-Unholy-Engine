@@ -45,14 +45,10 @@ func _process(delta):
 			
 			if has_lose:
 				if is_player:
-					if follow_spr.value <= 20:
-						frame = 1
-					else: frame = 0
+					frame = 1 if follow_spr.value <= 20 else 0
 				else:
-					if follow_spr.value >= 80:
-						frame = 1
-					else: frame = 0
+					frame = 1 if follow_spr.value >= 80 else 0
 		else:
 			position = follow_spr.position
-			position.x += follow_spr.width + 50
-			position.y += 13
+			position.x += follow_spr.width + 80
+			position.y += 40

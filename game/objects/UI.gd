@@ -10,6 +10,9 @@ class_name UI; extends CanvasLayer;
 @onready var opponent_strums:Array = $Strum_Group/Opponent.get_strums()
 var strums:Array = []
 
+var style:String = 'default'
+var countdown_spr:Array[String] = ['ready', 'set', 'go']
+
 var total_hit:float = 0
 var hit_count:Dictionary = {'sick': 0, 'good': 0, 'bad': 0, 'shit': 0}
 
@@ -28,9 +31,10 @@ func _ready():
 		#cur_strum.position.x = 150 / (1.5 if play else 0.45)
 		#cur_strum.position.x += (110 * i)
 		i.position.y = 560 if downscroll else 55
+		i.downscroll = downscroll
 		#cur_strum.is_player = (i > 3)
-	icon_p1.change_icon('bf', true)
-	icon_p2.change_icon('dad')
+	#icon_p1.change_icon('bf', true)
+	#icon_p2.change_icon('dad')
 	
 	health_bar.position.x = (Game.screen[0] / 2.0) - (health_bar.texture_under.get_width() / 2.0) # 340
 	health_bar.position.y = 85 if downscroll else 630
@@ -58,6 +62,28 @@ func add_to_strum_group(item = null, to_player:bool = true):
 
 func add_behind(item):
 	$Back.add_child(item)
+
+var count_down:Timer
+var times_looped:int = -1
+var sounds:Array = ['intro3', 'intro2', 'intro1', 'introGo']
+var images:Array = ['ready', 'set', 'go']
+func start_countdown(from_beginning:bool = false):
+	if from_beginning:
+		Conductor.song_pos = -Conductor.crochet * 5
+		count_down = Timer.new() # get_tree.create_timer starts automatically and isn't reusable
+		add_child(count_down)
 	
-#func swap_group(item):
-#	pass
+	count_down.start(Conductor.crochet / 1000)
+	await count_down.timeout
+	times_looped += 1
+	
+	if times_looped < 4:
+		if times_looped > 0:
+			var spr = Sprite2D.new()
+			spr.texture = load('res://assets/images/ui/'+ images[times_looped - 1] +'.png')
+			add_child(spr)
+			Game.center_obj(spr)
+			var tween = create_tween().tween_property(spr, 'modulate:a', 0, Conductor.crochet / 1000)
+			tween.finished.connect(spr.queue_free)
+		GlobalMusic.play_sound('ui/'+ style +'/'+ sounds[times_looped])
+		start_countdown()

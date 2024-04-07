@@ -1,9 +1,0 @@
-[gd_scene load_steps=3 format=3 uid="uid://cv34yc8jdcdf7"]
-
-[ext_resource type="Texture2D" uid="uid://b12r02ueojgsm" path="res://assets/images/ui/nums.png" id="1_7xyhw"]
-[ext_resource type="Script" path="res://game/objects/ComboNums.gd" id="1_uwrnc"]
-
-[node name="ComboNums" type="Sprite2D"]
-texture = ExtResource("1_7xyhw")
-hframes = 10
-script = ExtResource("1_uwrnc")

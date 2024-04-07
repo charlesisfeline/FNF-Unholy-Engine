@@ -9,7 +9,7 @@ func _ready():
 	for i in 4: # i can NOT be bothered to position these mfs manually
 		var cur_strum:Strum = get_strums()[i]
 		cur_strum.dir = (i % 4)
-		cur_strum.downscroll = Prefs.get_pref('downscroll')
+		#cur_strum.downscroll = Prefs.get_pref('downscroll')
 		#cur_strum.position.x = 150 / (1.5 if is_cpu else 0.45)
 		#cur_strum.position.x += (spacing * i)
 		#cur_strum.position.y = 550 if Prefs.get_pref('downscroll') else 110

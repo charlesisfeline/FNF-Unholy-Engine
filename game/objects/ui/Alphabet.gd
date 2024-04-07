@@ -14,6 +14,7 @@ var text:String = '':
 			get_child(0).queue_free()
 			remove_child(get_child(0))
 		text = new_txt.replace("\\n", "\n")
+		if bold: text = text.to_lower() #picky lil bitch
 		make_text(text)
 
 var is_menu:bool = false
@@ -42,23 +43,26 @@ func make_text(text:String):
 			offsets.x = 0
 			offsets.y += y_diff * rows
 		rows = 0
+		if is_space: continue
 		
 		var anim = get_anim(i)
 		var letter = Letter.new(offsets, i, cur_loop, rows)
 		if anim != '' and is_instance_valid(sheet):
 			var e:= sheet.get_frame_texture(anim, 0)
 			var let:String = anim if e != null else "?"
-
+			
+			letter.char = anim # just in case
 			letter.sprite_frames = sheet
+			letter.centered = false
 			letter.play(let)
-			letter.offset = Vector2.ZERO #true_offsets
-			offsets.x += 47 #letter._width
+			letter.offset = offset_letter(i) #Vector2.ZERO #true_offsets
+			offsets.x += letter._width
 			
 		letters_made.append(letter)
 		cur_loop += 1
 		
 	for i in letters_made:
-		if i.char != '': width += 47 #i._width
+		if i.char != '': width += i._width
 		add_child(i)
 	height = letters_made.back()._height
 	letters_made.clear()
@@ -90,6 +94,12 @@ func get_anim(item):
 					var casing = (' upper' if item.to_lower() != item else ' lower') + 'case'
 					return "%s".dedent() % [item.to_lower() + casing]
 			return item.to_lower().dedent()
+
+func offset_letter(item):
+	match item:
+		'-': return Vector2(0, 25)
+		'!': return Vector2(0, -5)
+		_: return Vector2.ZERO
 
 class Letter extends AnimatedSprite2D:
 	const ALPHABET = 'abcdefghijklmnopqrstuvwxyz'

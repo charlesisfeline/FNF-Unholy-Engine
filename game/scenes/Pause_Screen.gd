@@ -6,7 +6,6 @@ var cur_option:int = 0
 func _ready():
 	Conductor.pause(true)
 	GlobalMusic.set_music('breakfast')
-	print(GlobalMusic.loop)
 	$BG.modulate.a = 0
 	var twen = create_tween()
 	twen.tween_property($BG, 'modulate:a', 0.6, 0.4).set_trans(Tween.TRANS_CIRC).set_ease(Tween.EASE_OUT)
@@ -29,16 +28,16 @@ func _process(_delta):
 		change_selection(1)
 		
 	if Input.is_action_just_pressed('Accept'):
-		match options[cur_option].text:
-			'Resume':
+		match options[cur_option].text.to_lower():
+			'resume':
 				close()
 				Conductor.pause(false)
 				get_tree().paused = false
-			'Restart Song':
+			'restart song':
 				close()
 				Conductor.reset()
 				Game.reset_scene()
-			'Exit To Menu':
+			'exit to menu':
 				close()
 				Conductor.reset()
 				Game.switch_scene('menus/freeplay')
