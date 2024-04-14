@@ -57,9 +57,12 @@ func load_list(list:Array[String]):
 		icon.follow_spr = alphabet
 		icons.append(icon)
 
+var swapped:bool = false
+var wait_time:float = 0
 var lerp_score:int = 0
 var actual_score:int = 2384397
 func _process(delta):
+	if wait_time > 0: wait_time -= delta
 	lerp_score = lerp(actual_score, lerp_score, exp(-delta * 24))
 	$SongInfo/Score.text = 'Personal Best: ' + str(lerp_score)
 	$SongInfo/Score.position.x = Game.screen[0] - $SongInfo/Score.size[0] - 6
@@ -81,16 +84,14 @@ func _process(delta):
 	if Input.is_action_just_pressed('menu_up'):
 		update_list(-1)
 	if Input.is_action_just_pressed('menu_left'):
-		if Input.is_key_pressed(KEY_SHIFT):
-			switch_list(-1)
-		else:
-			change_diff(-1)
+		change_diff(-1)
 	if Input.is_action_just_pressed('menu_right'):
-		if Input.is_key_pressed(KEY_SHIFT):
-			switch_list(1)
-		else:
-			change_diff(1)
+		change_diff(1)
 	
+	if Input.is_physical_key_pressed(KEY_TAB) and wait_time <= 0:
+		wait_time = 1
+		switch_list()
+
 	if Input.is_action_just_pressed('back'):
 		GlobalMusic.play_sound('cancelMenu')
 		Game.switch_scene('menus/main_menu')
@@ -104,9 +105,10 @@ func update_list(amount:int = 0):
 		item.target_y = i - cur_song
 		item.modulate.a = 1 if i == cur_song else 0.6
 
-func switch_list(amount:int = 0):
-	cur_list = wrapi(cur_list + amount, 0, list_list.size())
-	var new_list = list_list[cur_list]
+func switch_list():
+	var new_list = list_list[(0 if swapped else 1)]
+	swapped = !swapped
+	
 	load_list(new_list)
 	update_list()
 
