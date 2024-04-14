@@ -65,7 +65,6 @@ func _process(delta):
 
 func dance(forced:bool = false):
 	if dance_idle:
-		print('dancei!!!')
 		play_anim('dance'+ ('Right' if danced else 'Left'))
 		danced = !danced
 	else:

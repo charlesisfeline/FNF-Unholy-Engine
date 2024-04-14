@@ -1,5 +1,7 @@
 class_name UI; extends CanvasLayer;
 
+var SPLASH = preload('res://game/objects/note/note_splash.tscn')
+# probably gonna move some note shit in here
 @onready var cur_scene = get_tree().current_scene
 @onready var score_txt:Label = $Score_Txt
 @onready var health_bar:TextureProgressBar = $HealthBar
@@ -15,14 +17,18 @@ var countdown_spr:Array[String] = ['ready', 'set', 'go']
 
 var total_hit:float = 0
 var hit_count:Dictionary = {'sick': 0, 'good': 0, 'bad': 0, 'shit': 0}
+var zoom:float = 1:
+	set(new_zoom):
+		zoom = new_zoom
+		scale = Vector2(zoom, zoom)
 
 func _ready():
 	strums.append_array(opponent_strums)
 	strums.append_array(player_strums)
 	
-	var downscroll = Prefs.get_pref('downscroll') 
-	#var middscroll = Prefs.get_pref('middlescroll')
-	#var spltscroll = Prefs.get_pref('splitscroll')
+	var downscroll = Prefs.downscroll
+	#var middscroll = Prefs.middlescroll
+	#var spltscroll = Prefs.splitscroll
 	
 	for i in strums: # i can NOT be bothered to position these mfs manually
 		#var play = i < 4
@@ -46,13 +52,23 @@ func _ready():
 		score_txt.position.y = 130
 
 var hp:float = 50:
-	set(val): hp = min(max(val, health_bar.min_value), health_bar.max_value)
+	set(val): hp = clampf(val, health_bar.min_value, health_bar.max_value)
 func _process(delta):
 	health_bar.value = lerpf(health_bar.value, hp, delta * 7)
-
+	offset.x = (scale.x - 1.0) * -(Game.screen[0] * 0.5)
+	offset.y = (scale.y - 1.0) * -(Game.screen[1] * 0.5)
+	
 func update_score_txt():
 	score_txt.text = 'Score: %s - Misses: %s' % [cur_scene.score, cur_scene.misses]
 
+func spawn_splash(dir:int = 0):
+	var new_splash = SPLASH.instantiate()
+	new_splash.strum = player_strums[dir]
+	add_to_strum_group(new_splash, true)
+	await new_splash.animation_finished
+	$Strum_Group/Player.remove_child(new_splash)
+	new_splash.queue_free()
+	
 func add_to_strum_group(item = null, to_player:bool = true):
 	if item == null: return
 	if to_player:

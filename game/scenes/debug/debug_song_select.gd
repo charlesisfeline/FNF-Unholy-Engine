@@ -129,22 +129,22 @@ func load_list(list:Array[String]):
 	#i = 0
 
 func _process(delta):
-	if Input.is_action_just_pressed('Accept'):
+	if Input.is_action_just_pressed('accept'):
 		update_hit_windows()
 		GlobalMusic.stop()
 		Conductor.embedded_song = songs[cur_song].text
 		Game.switch_scene('play_scene')
 
-	if Input.is_action_just_pressed('ui_down'):
+	if Input.is_action_just_pressed('menu_down'):
 		update_list(1)
-	if Input.is_action_just_pressed('ui_up'):
+	if Input.is_action_just_pressed('menu_up'):
 		update_list(-1)
-	if Input.is_action_just_pressed('ui_left'):
+	if Input.is_action_just_pressed('menu_left'):
 		switch_list(-1)
-	if Input.is_action_just_pressed('ui_right'):
+	if Input.is_action_just_pressed('menu_right'):
 		switch_list(1)
 	
-	if Input.is_action_just_pressed('ui_cancel'):
+	if Input.is_action_just_pressed('back'):
 		GlobalMusic.play_sound('cancelMenu')
 		Game.switch_scene('menus/main_menu')
 		

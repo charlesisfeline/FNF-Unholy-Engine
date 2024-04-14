@@ -1,10 +1,12 @@
 extends Node2D;
 
 var base_diffs:Array[String] = ['easy', 'normal', 'hard']
-var check_diff:String
-func parse_song(song:String = 'test', type:String = 'psych', diff:String = 'hard'):
+var get_diff:String
+var _SONG
+func parse_song(song:String, diff:String, type:String = 'psych'):
 	var parsed_song
-	check_diff = diff
+	song = song.to_lower().strip_edges(true, true).replace(' ', '-')
+	get_diff = diff
 	match type:
 		#'base'    : parsed_song = base(song)
 		'psych'   : parsed_song = psych(song)
@@ -12,7 +14,7 @@ func parse_song(song:String = 'test', type:String = 'psych', diff:String = 'hard
 		#'maru'    : parsed_song = maru(song)
 		#'osu'     : parsed_song = osu(song)
 		#'': parsed_song = psych(song)
-	return parsed_song
+	_SONG = parsed_song
 
 #func base(song:String): pass
 func psych(song:String):
@@ -25,16 +27,18 @@ func psych(song:String):
 #func osu(song:String): pass
 
 func you_WILL_get_a_json(song:String):
-	var path:String = 'res://assets/songs/'+ song + '/charts'
-	var return_file:String = 'test.json'
+	var path:String = 'res://assets/songs/%s/charts/' % [song]
+	
+	if !FileAccess.file_exists(path + get_diff +'.json'):
+		printerr(song +' has no '+ get_diff +'.json')
+		return you_WILL_get_a_json('tutorial')
 	#var dir_files = DirAccess.get_files_at(path)
 
-	#if dir_files.has(check_diff):
-	return_file = 'hard' #check_diff
+	#if dir_files.has(get_diff):
 	#else:
-	#	printerr('COULD NOT FIND JSON: "' + song + '/' + check_diff + '.json"')
+	#	printerr('COULD NOT FIND JSON: "' + song + '/' + get_diff + '.json"')
 		
-	return FileAccess.open(path + '/' + return_file + '.json', FileAccess.READ)
+	return FileAccess.open(path + get_diff +'.json', FileAccess.READ)
 
 func generate_chart(data):
 	var chart_notes = []

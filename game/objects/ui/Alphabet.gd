@@ -21,6 +21,12 @@ var is_menu:bool = false
 var lock = Vector2(-1, -1)
 var target_y:int = 0
 var spacing:int = 150
+
+func _init(init_text:String = '', bold:bool = true):
+	self.bold = bold
+	if init_text.length() > 0:
+		text = init_text
+	
 func make_text(text:String):
 	var letters_made:Array[Letter] = []
 	
@@ -46,6 +52,7 @@ func make_text(text:String):
 		if is_space: continue
 		
 		var anim = get_anim(i)
+		if anim.length() < 1: continue
 		var letter = Letter.new(offsets, i, cur_loop, rows)
 		if anim != '' and is_instance_valid(sheet):
 			var e:= sheet.get_frame_texture(anim, 0)
@@ -56,6 +63,7 @@ func make_text(text:String):
 			letter.centered = false
 			letter.play(let)
 			letter.offset = offset_letter(i) #Vector2.ZERO #true_offsets
+			if !bold: letter.offset.y -= letter._height / 1.2
 			offsets.x += letter._width
 			
 		letters_made.append(letter)
@@ -71,7 +79,7 @@ func _process(delta):
 	if is_menu:
 		var remap_y:float = remap(target_y, 0, 1, 0, 1.1)
 		var scroll:Vector2 = Vector2(
-			lock.x if lock.x != -1 else lerpf(position.x, (target_y * 35) + 230, (delta / 0.16)),
+			lock.x if lock.x != -1 else lerpf(position.x, (target_y * 35) + 150, (delta / 0.16)),
 			lock.y if lock.y != -1 else lerpf(position.y, (remap_y * spacing) +
 			 (Game.screen[0] * 0.28), (delta / 0.16))
 		)
@@ -99,6 +107,7 @@ func offset_letter(item):
 	match item:
 		'-': return Vector2(0, 25)
 		'!': return Vector2(0, -5)
+		':': return Vector2(0, 7)
 		_: return Vector2.ZERO
 
 class Letter extends AnimatedSprite2D:
@@ -114,7 +123,7 @@ class Letter extends AnimatedSprite2D:
 	var _width = 0: 
 		get: return sprite_frames.get_frame_texture(char, 0).get_width() if sprite_frames.get_frame_texture(char, 0) != null else 0
 	var _height = 0: 
-		get: return sprite_frames.get_frame_texture(char, 0).get_height()
+		get: return sprite_frames.get_frame_texture(char, 0).get_height() if sprite_frames.get_frame_texture(char, 0) != null else 0
 	
 	func _init(pos:Vector2, char:String, id:int, row:int):
 		self.position = pos; self.char = char;

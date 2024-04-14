@@ -35,7 +35,7 @@ func _process(delta):
 	$Funkin.scale.y = $Funkin.scale.x
 	
 	Conductor.song_pos = GlobalMusic.pos #im lazy dont judge me
-	if Input.is_action_just_pressed("Accept") and !accepted:
+	if Input.is_action_just_pressed("accept") and !accepted:
 		accepted = true
 		add_child(flash)
 		

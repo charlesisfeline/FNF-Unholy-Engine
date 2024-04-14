@@ -11,8 +11,14 @@ var screen = [
 func _ready():
 	print(scene.name)
 
-func _process(_delta):
-	pass
+var mo = false
+#func _process(_delta):
+	#if NOTIFICATION_APPLICATION_FOCUS_IN and mo:
+	#	mo = false
+	#	print('op')
+	#if NOTIFICATION_APPLICATION_FOCUS_OUT and !mo:
+	#	mo = true
+	#	print('wo')
 
 func center_obj(obj = null, axis:String = 'xy'):
 	if obj == null: return

@@ -16,28 +16,36 @@ var spawn_time:int = 2000
 
 var boyfriend:Character
 var dad:Character
+var gf:Character
 
 var player_strums:Array[Strum] = []
 var opponent_strums:Array[Strum] = []
 var keys = [
-	InputMap.action_get_events('Note_Left'),
-	InputMap.action_get_events('Note_Down'),
-	InputMap.action_get_events('Note_Up'),
-	InputMap.action_get_events('Note_Right')
+	InputMap.action_get_events('note_left'),
+	InputMap.action_get_events('note_down'),
+	InputMap.action_get_events('note_up'),
+	InputMap.action_get_events('note_right')
 ]
-var key_names = ['Note_Left', 'Note_Down', 'Note_Up', 'Note_Right']
+var key_names = ['note_left', 'note_down', 'note_up', 'note_right']
 
-@onready var auto_play:bool = Prefs.get_pref('auto_play')
+@onready var auto_play:bool = Prefs.auto_play
 
 var score:int = 0
 var combo:int = 0
 var misses:int = 0
 
 func _ready():
+	SONG = JsonHandler._SONG
+	Conductor.load_song(SONG.song)
+	Conductor.bpm = SONG.bpm
+	
 	var stage = load('res://game/scenes/stages/stage.tscn').instantiate() # im sick of grey bg FUCK
 	add_child(stage)
 	
-	dad = Character.new([380, 340], 'bf-pixel')
+	gf = Character.new([300, 70], 'gf')
+	add_child(gf)
+	
+	dad = Character.new([300, 340], 'bf-pixel')
 	add_child(dad)
 	
 	boyfriend = Character.new([770, 400], 'bf', true)
@@ -45,9 +53,9 @@ func _ready():
 	ui.icon_p1.change_icon(boyfriend.cur_char, true)
 	ui.icon_p2.change_icon(dad.cur_char)
 	
-	SONG = JsonHandler.parse_song(Conductor.embedded_song)
-	Conductor.load_song()
 	print(SONG.song)
+	
+	Discord.change_presence('Playing '+ SONG.song.capitalize())
 	
 	#SONG.speed = 10
 	#var thread = Thread.new()
@@ -69,13 +77,14 @@ var section_data
 var bleh:int = 0
 var last_note:Note
 func _process(delta):
-	if Input.is_action_just_pressed("ui_cancel"):
+	if Input.is_action_just_pressed("back"):
 		auto_play = !auto_play
-	if Input.is_action_just_pressed("Accept"): # lol
+	if Input.is_action_just_pressed("accept"): # lol
 		get_tree().paused = true
 		var pause = load('res://game/scenes/pause_screen.tscn').instantiate()
 		ui.add_child(pause)
-
+	
+	ui.zoom = lerpf(ui.zoom, 1, delta * 4)
 	cam.zoom.x = lerpf(cam.zoom.x, default_zoom, delta * 4)
 	cam.zoom.y = cam.zoom.x
 	
@@ -92,7 +101,7 @@ func _process(delta):
 
 			if chart_notes[bleh][2]: # if it has a sustain
 				var new_sustain:Note = Note.new(new_note, true)
-				new_sustain.speed = SONG.speed
+				new_sustain.speed = new_note.speed
 		
 				#if Prefs.get_pref('downscroll'): new_sustain.da *= -1
 				#new_sustain.z_index = -1
@@ -123,7 +132,7 @@ func _process(delta):
 					if note.must_press:
 						if auto_play and note.strum_time <= Conductor.song_pos:
 							good_note_hit(note)
-						if !auto_play and note.strum_time < Conductor.song_pos - 250 and !note.was_good_hit:
+						if !auto_play and note.strum_time < Conductor.song_pos - (300 / note.speed) and !note.was_good_hit:
 							note_miss(note)
 					else:
 						if note.was_good_hit:
@@ -131,10 +140,9 @@ func _process(delta):
 					
 
 func beat_hit(beat):
-	if beat % boyfriend.dance_beat == 0 and !boyfriend.animation.contains('sing'):
-		boyfriend.dance()
-	if beat % dad.dance_beat == 0 and !dad.animation.contains('sing'):
-		dad.dance()
+	for i in [boyfriend, dad, gf]:
+		if beat % i.dance_beat == 0 and !i.animation.contains('sing'):
+			i.dance()
 		
 	ui.icon_p1.bump()
 	ui.icon_p2.bump()
@@ -151,8 +159,8 @@ func section_hit(section):
 	if SONG.notes.size() <= cur_section + 1: return
 	cur_section += 1
 	section_data = SONG.notes[cur_section]
-	cam.zoom.x += 0.08
-	cam.zoom.y += 0.08
+	ui.zoom += 0.04
+	cam.zoom += Vector2(0.08, 0.08)
 	
 	move_cam(section_data.mustHitSection)
 	if section_data.has('changeBPM') and section_data.has('bpm'):
@@ -202,14 +210,6 @@ func key_press(key:int = 0):
 func key_release(key:int = 0):
 	ui.player_strums[key].play_anim('static')
 
-func get_key(key:int) -> int:
-	for i in keys.size():
-		for event in keys[i]:
-			if event is InputEventKey:
-				if key == event.physical_keycode:
-					return i
-	return -1
-
 func song_end():
 	Conductor.reset()
 	Game.switch_scene("menus/freeplay")
@@ -220,9 +220,11 @@ func good_note_hit(note:Note):
 	boyfriend.sing(note.dir)
 	
 	combo += 1
-	var new_rating = Judge.make_rating(Judge.get_rating(Conductor.song_pos - note.strum_time))
+	var hit_rating = Judge.get_rating(Conductor.song_pos - note.strum_time)
+	var new_rating = Judge.make_rating(hit_rating)
 	#ui.add_behind(new_rating)
 	add_child(new_rating)
+	
 	var r_tween = create_tween()
 	r_tween.tween_property(new_rating, "modulate:a", 0, 0.2).set_delay(Conductor.crochet * 0.001)
 	r_tween.finished.connect(new_rating.queue_free)
@@ -238,6 +240,10 @@ func good_note_hit(note:Note):
 		n_tween.tween_property(num, "modulate:a", 0, 0.2).set_delay(Conductor.crochet * 0.002)
 		n_tween.finished.connect(num.queue_free)
 
+	if Prefs.note_splashes != 'none':
+		if Prefs.note_splashes == 'all' or (Prefs.note_splashes == 'sicks' and hit_rating == 'sick'):
+			ui.spawn_splash(note.dir)
+			
 	ui.update_score_txt()
 	
 	kill_note(note)

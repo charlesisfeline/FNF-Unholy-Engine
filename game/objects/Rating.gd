@@ -14,7 +14,7 @@ var cur_index = 0
 func get_rating(diff:float):
 	cur_index = 0
 	for i in ratings_data.hit_window.size() - 1:
-		var win = Prefs.get_pref(ratings_data.name[i] + '_window')
+		var win = Prefs.get(ratings_data.name[i] + '_window')
 		if absf(diff) <= win:
 			return ratings_data.name[i]
 		cur_index += 1

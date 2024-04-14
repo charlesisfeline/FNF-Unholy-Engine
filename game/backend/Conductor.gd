@@ -29,7 +29,7 @@ var last_beat:int = -1
 var last_step:int = -1
 var last_section:int = -1
 
-var embedded_song:String = '-!sustain-test': # if load_song has no param, we'll check this var instead
+var embedded_song:String = 'tutorial': # if load_song has no param, we'll check this var instead
 	set(song): embedded_song = song.replace(' ', '-')
 var song_prepped:bool = false
 var inst = AudioStreamPlayer.new()
@@ -46,17 +46,13 @@ func load_song(song:String = ''):
 			printerr('Conductor.load_song: NO SONG ENTERED')
 			song = 'tutorial' #DirAccess.get_directories_at('res://assets/songs')[0]
 		
-	var path:String = 'res://assets/songs/'+ song.replace(' ', '-') +'/audio/'
-	if FileAccess.file_exists(path + 'Inst.ogg'):
-		inst.stream = load(path + 'Inst.ogg')
-	if FileAccess.file_exists(path + 'Voices.ogg'):
-		vocals.stream = load(path + 'Voices.ogg')
+	var path:String = 'res://assets/songs/'+ song.replace(' ', '-') +'/audio/%s.ogg'
+	if FileAccess.file_exists(path % ['Inst']):
+		inst.stream = load(path % ['Inst'])
+	if FileAccess.file_exists(path % ['Voices']):
+		vocals.stream = load(path % ['Voices'])
 	
-	var json = FileAccess.open(path.replace('audio/', 'charts/hard.json'), FileAccess.READ)
-	var parsed = JSON.parse_string(json.get_as_text()).song
-	bpm = parsed.bpm
 	song_prepped = true
-	return parsed
 
 var played_audio:bool = false
 var paused:bool = false

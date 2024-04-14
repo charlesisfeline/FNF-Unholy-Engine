@@ -77,6 +77,9 @@ func _ready():
 
 		hold_group.add_child(sustain)
 		hold_group.add_child(end)
+		
+		if Prefs.downscroll: hold_group.scale.y = -1
+		if Prefs.behind_strums: hold_group.z_index = -1
 	else:
 		note = Sprite2D.new()
 		note.texture = load('res://assets/images/ui/notes/'+ col_array[dir] +'.png')
@@ -92,7 +95,7 @@ func _process(delta):
 			
 			if holding and length != temp_len: #end piece kinda fucks off a bit every now and then
 				length = temp_len
-				position.y = 55
+				position.y = 560 if Prefs.downscroll else 55
 				hold_group.size.y = ((length * 0.63) * speed)
 				
 				if length <= min_len:
@@ -110,8 +113,8 @@ func _process(delta):
 		if must_press:
 			can_hit = (Conductor.song_pos - (safe_zone * 0.8) and strum_time <= Conductor.song_pos + (safe_zone * 1))
 		
-			#if strum_time < Conductor.song_pos - safe_zone and !was_good_hit:
-				#pass
+			if strum_time < Conductor.song_pos - safe_zone and !was_good_hit:
+				too_late = true
 		else:
 			can_hit = false
 			was_good_hit = strum_time <= Conductor.song_pos
@@ -124,11 +127,6 @@ func follow_song_pos(strum:Strum):
 	position.x = strum.position.x
 	position.y = strum.position.y + pos
 
-func cut(mills:float):
-	var lol = (absf(mills) / 45) * 0.45 * speed
-	sustain.scale.y = lol if length > 0 else 0
-	
-	
 func copy_from(item):
 	if item != null and (item is Note or item is NoteData):
 		strum_time = item.strum_time

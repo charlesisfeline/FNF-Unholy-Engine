@@ -10,11 +10,9 @@ func _ready():
 	var twen = create_tween()
 	twen.tween_property($BG, 'modulate:a', 0.6, 0.4).set_trans(Tween.TRANS_CIRC).set_ease(Tween.EASE_OUT)
 	for i in option_list.size():
-		var option = Alphabet.new()
-		option.bold = true
+		var option = Alphabet.new(option_list[i])
 		option.is_menu = true
 		option.target_y = i
-		option.text = option_list[i]
 		options.append(option)
 		add_child(option)
 	#options = [$Option1, $Option2, $Option3]
@@ -22,12 +20,12 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
-	if Input.is_action_just_pressed('ui_up'):
+	if Input.is_action_just_pressed('menu_up'):
 		change_selection(-1)
-	if Input.is_action_just_pressed('ui_down'):
+	if Input.is_action_just_pressed('menu_down'):
 		change_selection(1)
 		
-	if Input.is_action_just_pressed('Accept'):
+	if Input.is_action_just_pressed('accept'):
 		match options[cur_option].text.to_lower():
 			'resume':
 				close()
