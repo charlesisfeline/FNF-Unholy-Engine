@@ -19,6 +19,7 @@ centered = false
 
 [node name="Front" type="Sprite2D" parent="."]
 position = Vector2(-650, 600)
+scale = Vector2(1.1, 1.1)
 texture = ExtResource("2_mlch0")
 centered = false
 

@@ -34,6 +34,6 @@ func _process(delta):
 	fps_txt.text = 'FPS: ' + str(Engine.get_frames_per_second())+'\n' + 'Mem: ' + mem + ' / ' + mem_peak
 	
 	
-func _unhandled_key_input(event):
+func _unhandled_key_input(_event):
 	if Input.is_action_just_pressed('vol_up'): volume = min(volume + 0.1, 1)
 	if Input.is_action_just_pressed('vol_down'): volume = max(volume - 0.1, 0)

@@ -8,7 +8,7 @@ func _ready():
 	play('note impact '+ str(randi_range(1, 2)) +' '+ col[strum.dir])
 	position = strum.position
 
-func _process(delta):
+func _process(_delta):
 	pass
 
 func _on_animation_finished():

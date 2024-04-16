@@ -5,15 +5,15 @@ signal changed_music
 
 var Player = AudioStreamPlayer.new()
 var pos:float = 0 # in case you need the position for something or whatever
-var volume:float = 1
+#var volume:float = 1
 var loop:bool = true
 var music:String = "freakyMenu" # setter for if you KNOW the file exists, set_music for null checks
 
 func _ready():
 	add_child(Player)
 	Player.finished.connect(finished)
-	if (music != null or music.length() > 0) and Game.scene.name != 'Play_Scene':
-		set_music(music)
+	#if (music != null or music.length() > 0) and Game.scene.name != 'Play_Scene':
+	#	set_music(music)
 
 func _process(delta):
 	if Player.stream != null:
@@ -47,10 +47,11 @@ func stop():
 	Player.stop()
 	Player.stream = null
 
-func play_sound(sound:String):
+func play_sound(sound:String, vol:float = 1):
 	var we_playin = AudioStreamPlayer.new()
 	add_child(we_playin)
 	we_playin.stream = load('res://assets/sounds/'+ sound +'.ogg')
+	we_playin.volume_db = linear_to_db(vol)
 	we_playin.play()
 	await we_playin.finished
 	we_playin.queue_free()

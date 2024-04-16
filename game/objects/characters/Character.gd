@@ -4,7 +4,8 @@ var json
 var offsets:Dictionary = {}
 var focus_offsets:Vector2 = Vector2.ZERO # cam offset type shit
 var cur_char:String = ''
-var char_path:String = ''
+var char_path:String = '' # used if its a folder
+var icon:String = 'bf'
 
 var is_player:bool = false
 var dance_idle:bool = false
@@ -33,19 +34,27 @@ func _init(pos:Array = [0, 0], char:String = 'bf', player:bool = false):
 	
 func _ready():
 	var path = '/characters/'+ cur_char +'.res'
-
+	
 	if DirAccess.dir_exists_absolute('res://assets/images/characters/'+ char_path):
 		path = '/characters/'+ char_path +'/char.res'
+		
+	if !FileAccess.file_exists('res://assets/images/'+ path): # make them bf if no file is found for the char
+		printerr('CHARACTER '+ cur_char +' does NOT exist')
+		path = '/characters/bf/char.res'
+		cur_char = 'bf'; char_path = 'bf';
 
 	sprite_frames = load('res://assets/images/'+ path)
-	if cur_char.ends_with('-pixel'): 
-		scale = Vector2(6, 6)
-		antialiasing = false
 
 	json = JsonHandler.get_character(cur_char) # get offsets and anim names...
 
 	for anim in json.animations:
 		offsets[anim.anim] = [-anim.offsets[0], -anim.offsets[1]]
+	
+	icon = json.healthicon
+	scale = Vector2(json.scale, json.scale)
+	antialiasing = !json.no_antialiasing #probably gonna make my own char json format eventually
+	position.x += json.position[0]
+	position.y += json.position[1]
 	
 	dance_idle = offsets.has('danceLeft')
 	if dance_idle: dance_beat = 1
@@ -55,6 +64,7 @@ func _ready():
 		scale.x *= -1
 		swap_anim('singLEFT', 'singRIGHT')
 
+	
 func _process(delta):
 	#if !is_player:
 	if animation.begins_with('sing'):
@@ -73,9 +83,8 @@ func dance(forced:bool = false):
 	hold_timer = 0
 
 func sing(dir:int = 0, suffix:String = ''):
-	frame = 0
 	hold_timer = 0
-	play_anim(sing_anims[dir] + suffix)
+	play_anim(sing_anims[dir] + suffix, true)
 	
 func swap_anim(anim1:String, anim2:String):
 	var index1 = sing_anims.find(anim1)
@@ -83,8 +92,10 @@ func swap_anim(anim1:String, anim2:String):
 	sing_anims[index1] = anim2
 	sing_anims[index2] = anim1
 
-func play_anim(anim:String, forced:bool = true):
+func play_anim(anim:String, forced:bool = false):
+	if forced: frame = 0
 	play(anim)
+
 	if offsets.has(anim):
 		var anim_offset = offsets[anim]
 		if anim_offset.size() == 2:

@@ -45,7 +45,7 @@ func change_selection(amount:int = 0):
 	cur_option = wrapi(cur_option + amount, 0, options.size())
 	for i in options.size():
 		options[i].target_y = i - cur_option
-		options[i].modulate.a = (1 if i == cur_option else 0.6)
+		options[i].modulate.a = (1.0 if i == cur_option else 0.6)
 
 func close():
 	GlobalMusic.stop()

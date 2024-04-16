@@ -36,11 +36,12 @@ func reset_scene(_skip_trans:bool = false):
 
 func switch_scene(new_scene, _skip_trans:bool = false):
 	if new_scene is String:
-		get_tree().change_scene_to_file('res://game/scenes/'+ new_scene +'.tscn')
+		var path = 'res://game/scenes/%s.tscn'
+		get_tree().change_scene_to_file(path % new_scene)
 	if new_scene is PackedScene:
 		get_tree().change_scene_to_packed(new_scene)
 
-func call_func(to_call:String, args:Array = [], on_scene:bool = true): # call function on nodes or something
+func call_func(to_call:String, args:Array = [], _on_scene:bool = true): # call function on nodes or something
 	if to_call.length() < 1: return
 	#if on_scene:
 	if scene.has_method(to_call):

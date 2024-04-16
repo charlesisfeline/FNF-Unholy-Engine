@@ -9,7 +9,7 @@ func _ready():
 	DiscordRPC.start_timestamp = int(Time.get_unix_time_from_system())
 	DiscordRPC.refresh()
 
-func _process(delta):
+func _process(_delta):
 	DiscordRPC.run_callbacks()
 
 func change_presence(main:String = 'uhm', sub:String = 'Yuhhh I love daniel'):

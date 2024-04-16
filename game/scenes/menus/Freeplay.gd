@@ -103,7 +103,7 @@ func update_list(amount:int = 0):
 	for i in songs.size():
 		var item = songs[i]
 		item.target_y = i - cur_song
-		item.modulate.a = 1 if i == cur_song else 0.6
+		item.modulate.a = (1.0 if i == cur_song else 0.6)
 
 func switch_list():
 	var new_list = list_list[(0 if swapped else 1)]

@@ -22,12 +22,12 @@ var lock = Vector2(-1, -1)
 var target_y:int = 0
 var spacing:int = 150
 
-func _init(init_text:String = '', bold:bool = true):
-	self.bold = bold
+func _init(init_text:String = '', is_bold:bool = true):
+	bold = is_bold
 	if init_text.length() > 0:
 		text = init_text
 	
-func make_text(text:String):
+func make_text(tx:String):
 	var letters_made:Array[Letter] = []
 	
 	var sheet:SpriteFrames = load('res://assets/images/ui/alphabet/%s.res' % ['bold' if bold else 'normal'])
@@ -37,7 +37,7 @@ func make_text(text:String):
 	height = 0
 	
 	var cur_loop:int = 0
-	for i in text.split():
+	for i in tx.split():
 		var is_space = (i == ' ')
 		if is_space: spaces += 1
 		if i == '\n': rows += 1

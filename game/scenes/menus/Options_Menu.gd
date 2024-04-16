@@ -8,6 +8,7 @@ var gameplay = [
 	['auto_play', 'bool'],
 	['downscroll', 'bool'], 
 	['middlescroll', 'bool'], 
+	['hitsounds', 'bool'],
 	['offset', 'int', [0, 300]], 
 	['sick_window', 'int', [15, 45]], 
 	['good_window', 'int', [15, 90]], 
@@ -125,11 +126,11 @@ func update_scroll():
 	#GlobalMusic.play_sound('scrollMenu')
 	if in_sub:
 		for i in sec_prefs.size():
-			sec_prefs[i].modulate.a = 1 if i == cur_sub else 0.6
+			sec_prefs[i].modulate.a = (1.0 if i == cur_sub else 0.6)
 			sec_prefs[i].target_y = i - cur_sub
 	else:
 		for i in main_text.size():
-			main_text[i].modulate.a = 1 if i == cur_cata else 0.6
+			main_text[i].modulate.a = (1.0 if i == cur_cata else 0.6)
 
 class Option extends Alphabet:
 	var option:String = ''
@@ -137,7 +138,7 @@ class Option extends Alphabet:
 	var cur_op:int = 0
 	var choices:Array = [] # if the option is an array, will hold all possible options
 	
-	var min:float = 0;  var max:float = 0
+	var min_val:float = 0;  var max_val:float = 0
 	var cur_val:float = 0
 	
 	func _init(option_array):#, type:String = 'bool', choices:Array = []):
@@ -150,8 +151,8 @@ class Option extends Alphabet:
 			choices = option_array[2]
 			cur_op = choices.find(str(Prefs.get(option)))
 		elif type == 'int' or type == 'float':
-			min = option_array[2][0]
-			max = option_array[2][1]
+			min_val = option_array[2][0]
+			max_val = option_array[2][1]
 			cur_val = Prefs.get(option)
 		
 		#if option == null or Prefs.get(option) == null: 
@@ -165,13 +166,13 @@ class Option extends Alphabet:
 				var new_val = choices[cur_op]
 				Prefs.set(option, new_val)
 			'int':
-				cur_val = clampi(cur_val + diff, min, max)
+				cur_val = clampi(cur_val + diff, min_val, max_val)
 				Prefs.set(option, cur_val)
 			'float':
-				cur_val = clampf(cur_val + diff, min, max)
+				cur_val = clampf(cur_val + diff, min_val, max_val)
 				Prefs.set(option, cur_val)
 			'bool': 
 				Prefs.set(option, !Prefs.get(option))
-			_: true
+			#_: true
 		text = option.capitalize() +' '+str(Prefs.get(option))
 		Prefs.save_prefs()

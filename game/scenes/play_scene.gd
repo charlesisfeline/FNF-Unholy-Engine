@@ -42,17 +42,20 @@ func _ready():
 	var stage = load('res://game/scenes/stages/stage.tscn').instantiate() # im sick of grey bg FUCK
 	add_child(stage)
 	
-	gf = Character.new([300, 70], 'gf')
+	gf = Character.new([450, 70], 'gf')
 	add_child(gf)
 	
-	dad = Character.new([300, 340], 'bf-pixel')
+	dad = Character.new([100, 100], SONG.player2)
 	add_child(dad)
 	
-	boyfriend = Character.new([770, 400], 'bf', true)
+	boyfriend = Character.new([770, 100], SONG.player1, true)
 	add_child(boyfriend)
-	ui.icon_p1.change_icon(boyfriend.cur_char, true)
-	ui.icon_p2.change_icon(dad.cur_char)
 	
+	ui.icon_p1.change_icon(boyfriend.icon, true)
+	ui.icon_p2.change_icon(dad.icon)
+	
+	Judge.rating_pos = boyfriend.position + Vector2(-15, -15)
+	Judge.combo_pos = boyfriend.position + Vector2(-45, 50)
 	print(SONG.song)
 	
 	Discord.change_presence('Playing '+ SONG.song.capitalize())
@@ -119,15 +122,15 @@ func _process(delta):
 				note.follow_song_pos(strum)
 				if note.is_sustain:
 					if note.must_press:
-						var check = (auto_play or Input.is_action_pressed(key_names[note.dir]))
-						note.holding = check and note.can_hit
-						if note.holding:
-							good_sustain_press(note)
+						if note.can_hit:
+							#var check = (auto_play or Input.is_action_pressed(key_names[note.dir]))
+							note.holding = (auto_play or Input.is_action_pressed(key_names[note.dir]))
+							good_sustain_press(note, delta)
 					else:
 						if note.can_hit and !note.was_good_hit:
 							opponent_sustain_press(note)
 					
-					if note.was_good_hit and note.temp_len <= 0: kill_note(note)
+					if note.temp_len <= 0: kill_note(note)
 				else:
 					if note.must_press:
 						if auto_play and note.strum_time <= Conductor.song_pos:
@@ -153,9 +156,9 @@ func beat_hit(beat):
 	#await tick.finished
 	#tick.queue_free()
 
-func step_hit(step): pass
+func step_hit(_step): pass
 
-func section_hit(section):
+func section_hit(_section):
 	if SONG.notes.size() <= cur_section + 1: return
 	cur_section += 1
 	section_data = SONG.notes[cur_section]
@@ -178,7 +181,7 @@ func move_cam(to_player:bool = true):
 		new_pos = Vector2(char_pos.x + 100, char_pos.y + 150)
 	cam.position = new_pos
 
-func _unhandled_key_input(event):
+func _unhandled_key_input(_event):
 	if auto_play: return
 	for i in 4:
 		if Input.is_action_just_pressed(key_names[i]): key_press(i)
@@ -247,13 +250,23 @@ func good_note_hit(note:Note):
 	ui.update_score_txt()
 	
 	kill_note(note)
-	#if Prefs.get_pref('hitsounds'):
+	if Prefs.hitsounds:
+		GlobalMusic.play_sound('hitsound', 0.7)
 	#	ui
 	
-func good_sustain_press(sustain:Note):
-	if ui.player_strums[sustain.dir].anim_timer <= 0:
-		strum_anim(sustain.dir, true)
-		boyfriend.sing(sustain.dir)
+func good_sustain_press(sustain:Note, delt:float = 0.0):
+	if Input.is_action_just_released(key_names[sustain.dir]):
+		#sustain.dropped = true
+		note_miss(sustain)
+		return
+		
+	if sustain.holding:
+		score += floor(500 * delt)
+		ui.hp += (4 * delt)
+		ui.update_score_txt()
+		if ui.player_strums[sustain.dir].anim_timer <= 0:
+			strum_anim(sustain.dir, true)
+			boyfriend.sing(sustain.dir)
 	
 func opponent_note_hit(note:Note):
 	strum_anim(note.dir, false)
@@ -267,12 +280,25 @@ func opponent_sustain_press(sustain:Note):
 		
 func note_miss(note:Note):
 	boyfriend.sing(note.dir, 'miss')
-	score -= 10
+	score -= 10 if !note.is_sustain else floor(note.length * 5)
 	misses += 1
 	ui.hp -= 4.7
+	
+	if combo > 5:
+		var miss = Judge.make_combo('000')
+		for num in miss:
+			add_child(num)
+			num.modulate = Color.DARK_RED
+			var n_tween = create_tween()
+			n_tween.tween_property(num, "modulate:a", 0, 0.2).set_delay(Conductor.crochet * 0.002)
+			n_tween.finished.connect(num.queue_free)
+		
+	combo = 0
+	
 	if Conductor.vocals != null:
 		Conductor.vocals.volume_db = -100
 	ui.update_score_txt()
+	#if !note.sustain: 
 	kill_note(note)
 	
 func kill_note(note:Note):	

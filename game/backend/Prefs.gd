@@ -14,7 +14,8 @@ var good_window:int = 90
 var bad_window:int = 135
 
 ## VISUALS ##
-var fps:int = 0
+var fps:int = 0:
+	set(new): fps = new; Engine.max_fps = fps
 var allow_rpc:bool = true
 var note_splashes:String = 'sicks'
 var behind_strums:bool = false

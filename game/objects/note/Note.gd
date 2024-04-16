@@ -22,9 +22,18 @@ var too_late:bool = false
 var is_sustain:bool = false
 var length:float = 0
 var temp_len:float = 0 #if you dont immediately hold
+var offset_y:float = 0
 var parent:Note
+
 var holding:bool = false
 var min_len:float = 10
+var dropped:bool = false:
+	set(drop): 
+		dropped = drop
+		if dropped: 
+			modulate = Color.GRAY
+			alpha = 0.4
+			
 
 var note
 var sustain:TextureRect
@@ -89,13 +98,16 @@ func _process(delta):
 	var safe_zone:float = Conductor.safe_zone
 	if is_sustain:
 		if strum_time <= Conductor.song_pos:
-			can_hit = true
+			can_hit = true #!dropped
+			#if dropped: return
+
 			temp_len -= 1000 * delta
+			#offset_y -= 1000 * delta
 			if !must_press: holding = true
 			
 			if holding and length != temp_len: #end piece kinda fucks off a bit every now and then
 				length = temp_len
-				position.y = 560 if Prefs.downscroll else 55
+				#position.y = 560 if Prefs.downscroll else 55
 				hold_group.size.y = ((length * 0.63) * speed)
 				
 				if length <= min_len:
@@ -120,8 +132,10 @@ func _process(delta):
 			was_good_hit = strum_time <= Conductor.song_pos
 
 func follow_song_pos(strum:Strum):
-	if is_sustain and holding: return
-	var pos:float = (0.45 * (Conductor.song_pos - strum_time) * speed)
+	if is_sustain and holding: 
+		position.y = strum.position.y
+		return
+	var pos:float = (0.45 * (Conductor.song_pos - strum_time) * speed)# + offset_y
 	if !strum.downscroll: pos *= -1
 	
 	position.x = strum.position.x
