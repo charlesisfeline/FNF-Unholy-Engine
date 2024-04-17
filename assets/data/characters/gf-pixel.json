@@ -68,7 +68,7 @@
 		}
 	],
 	"no_antialiasing": true,
-	"image": "characters/gfPixel",
+	"image": "characters/gf/pixel/char",
 	"position": [
 		0,
 		0
@@ -85,5 +85,5 @@
 		80
 	],
 	"sing_duration": 4,
-	"scale": 5.99999999999999
+	"scale": 6
 }

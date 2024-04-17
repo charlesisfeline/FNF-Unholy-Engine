@@ -10,6 +10,7 @@ var Judge:Rating = Rating.new()
 @onready var cam = $Camera
 var default_zoom:float = 0.8
 var SONG
+var cur_stage:String = 'stage'
 var chart_notes
 var notes:Array[Note] = []
 var spawn_time:int = 2000
@@ -20,12 +21,7 @@ var gf:Character
 
 var player_strums:Array[Strum] = []
 var opponent_strums:Array[Strum] = []
-var keys = [
-	InputMap.action_get_events('note_left'),
-	InputMap.action_get_events('note_down'),
-	InputMap.action_get_events('note_up'),
-	InputMap.action_get_events('note_right')
-]
+
 var key_names = ['note_left', 'note_down', 'note_up', 'note_right']
 
 @onready var auto_play:bool = Prefs.auto_play
@@ -37,12 +33,38 @@ var misses:int = 0
 func _ready():
 	SONG = JsonHandler._SONG
 	Conductor.load_song(SONG.song)
+	if SONG.has('stage'):
+		cur_stage = SONG.stage.to_lower().replace(' ', '-')
+	else:
+		var song = SONG.song.to_lower().replace(' ', '-')
+		match song: # daily reminder to kiss daniel
+			'spookeez', 'south', 'monster': cur_stage = 'spooky'
+			'pico', 'philly-nice', 'blammed': cur_stage = 'philly'
+			'satin-panties', 'high', 'milf': cur_stage = 'limo'
+			'cocoa', 'eggnog': cur_stage = 'mall'
+			'winter-horrorland': cur_stage = 'mall-evil'
+			'senpai', 'roses': cur_stage = 'school'
+			'thorns': cur_stage = 'school-evil'
+			'ugh', 'guns', 'stress': cur_stage = 'tank'
+			
 	Conductor.bpm = SONG.bpm
 	
 	var stage = load('res://game/scenes/stages/stage.tscn').instantiate() # im sick of grey bg FUCK
 	add_child(stage)
 	
-	gf = Character.new([450, 70], 'gf')
+	var gf_ver = 'gf'
+	if SONG.has('gfVersion'): 
+		gf_ver = SONG.gfVersion
+	elif SONG.has('player3'): 
+		gf_ver = SONG.player3 if SONG.player3 != null else 'gf'
+	else: # base game type shit baybeee
+		match SONG.song.to_lower().replace(' ', '-'):
+			'limo': gf_ver = 'gf-car'
+			'mall', 'mall-evil': gf_ver = 'gf-christmas'
+			'tank': gf_ver = 'gf-tank'
+		
+	print(gf_ver)
+	gf = Character.new([450, 70], gf_ver)
 	add_child(gf)
 	
 	dad = Character.new([100, 100], SONG.player2)
@@ -54,8 +76,13 @@ func _ready():
 	ui.icon_p1.change_icon(boyfriend.icon, true)
 	ui.icon_p2.change_icon(dad.icon)
 	
-	Judge.rating_pos = boyfriend.position + Vector2(-15, -15)
-	Judge.combo_pos = boyfriend.position + Vector2(-45, 50)
+	if Prefs.rating_cam == 'game':
+		Judge.rating_pos = boyfriend.position + Vector2(-15, -15)
+		Judge.combo_pos = boyfriend.position + Vector2(-150, 60)
+	elif Prefs.rating_cam == 'hud':
+		Judge.rating_pos = Vector2(580, 300)
+		Judge.combo_pos = Vector2(450, 400)
+		
 	print(SONG.song)
 	
 	Discord.change_presence('Playing '+ SONG.song.capitalize())
@@ -172,13 +199,8 @@ func section_hit(_section):
 			print('bpm changeded ' + str(section_data.bpm))
 
 func move_cam(to_player:bool = true):
-	var new_pos = Vector2.ZERO
-	if to_player:
-		var char_pos = boyfriend.position# + boyfriend.focus_offsets
-		new_pos = Vector2(char_pos.x, char_pos.y)
-	else:
-		var char_pos = dad.position #+ dad.size()
-		new_pos = Vector2(char_pos.x + 100, char_pos.y + 150)
+	var char = boyfriend if to_player else dad
+	var new_pos = char.get_cam_pos()
 	cam.position = new_pos
 
 func _unhandled_key_input(_event):
@@ -223,26 +245,28 @@ func good_note_hit(note:Note):
 	boyfriend.sing(note.dir)
 	
 	combo += 1
+	
 	var hit_rating = Judge.get_rating(Conductor.song_pos - note.strum_time)
-	var new_rating = Judge.make_rating(hit_rating)
-	#ui.add_behind(new_rating)
-	add_child(new_rating)
+	if Prefs.rating_cam != 'none':
+		var cam:Callable = ui.add_behind if Prefs.rating_cam == 'hud' else add_child
+		var new_rating = Judge.make_rating(hit_rating)
+		cam.call(new_rating)
 	
-	var r_tween = create_tween()
-	r_tween.tween_property(new_rating, "modulate:a", 0, 0.2).set_delay(Conductor.crochet * 0.001)
-	r_tween.finished.connect(new_rating.queue_free)
+		var r_tween = create_tween()
+		r_tween.tween_property(new_rating, "modulate:a", 0, 0.2).set_delay(Conductor.crochet * 0.001)
+		r_tween.finished.connect(new_rating.queue_free)
 	
-	score += Judge.ratings_data.score[new_rating.frame]
+		var new_nums = Judge.make_combo(combo)
+		for num in new_nums:
+			cam.call(num)
+			var n_tween = create_tween()
+			n_tween.tween_property(num, "modulate:a", 0, 0.2).set_delay(Conductor.crochet * 0.002)
+			n_tween.finished.connect(num.queue_free)
+	
+	score += Judge.get_score(hit_rating)[0]
+	ui.hit_count[hit_rating] += 1
 	ui.hp += 2.3
 	
-	var new_nums = Judge.make_combo(combo)
-	for num in new_nums:
-		#ui.add_behind(num)
-		add_child(num)
-		var n_tween = create_tween()
-		n_tween.tween_property(num, "modulate:a", 0, 0.2).set_delay(Conductor.crochet * 0.002)
-		n_tween.finished.connect(num.queue_free)
-
 	if Prefs.note_splashes != 'none':
 		if Prefs.note_splashes == 'all' or (Prefs.note_splashes == 'sicks' and hit_rating == 'sick'):
 			ui.spawn_splash(note.dir)

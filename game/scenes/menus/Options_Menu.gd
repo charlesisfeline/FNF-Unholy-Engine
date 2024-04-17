@@ -18,7 +18,8 @@ var visuals = [
 	['fps', 'int', [0, 240]], 
 	['allow_rpc', 'bool'], 
 	['note_splashes', 'array', ['sicks', 'all', 'none']], 
-	['behind_strums', 'bool']
+	['behind_strums', 'bool'],
+	['rating_cam', 'array', ['game', 'hud', 'none']]
 ]
 #var controls = []
 
@@ -83,7 +84,7 @@ func show_main():
 		sec_prefs.remove_at(0)
 	
 	for i in main_text.size():
-		main_text[i].modulate.a = 1 if i == cur_cata else 0.6
+		main_text[i].modulate.a = (1.0 if i == cur_cata else 0.6)
 	
 func show_catagory(catagory:String):
 	in_sub = true
@@ -94,15 +95,11 @@ func show_catagory(catagory:String):
 	#main_text[cur_cata].position = Vector2(100, 100)
 	var loops:int = 0
 	if catagory.to_lower() != 'controls':
-		var op_int:int = 0
 		for pref in get(catagory):
-			#var has_choices = get(catagory)[op_int]
 			var new_pref = Option.new(pref)
-			#new_pref.text = str(pref).capitalize() + ' ' + str(Prefs.get(pref))
 			new_pref.is_menu = true
 			new_pref.target_y = loops
 			new_pref.lock.x = 550
-			new_pref.modulate = Color.BLACK
 			add_child(new_pref)
 			sec_prefs.append(new_pref)
 			loops += 1
@@ -135,6 +132,8 @@ func update_scroll():
 class Option extends Alphabet:
 	var option:String = ''
 	var type:String = 'bool' # the option's type: int, bool, array n shit
+	var check
+	
 	var cur_op:int = 0
 	var choices:Array = [] # if the option is an array, will hold all possible options
 	
@@ -144,8 +143,7 @@ class Option extends Alphabet:
 	func _init(option_array):#, type:String = 'bool', choices:Array = []):
 		option = option_array[0]
 		type = option_array[1]
-		text = option.capitalize() +' '+ str(Prefs.get(option))
-		
+		text = option.capitalize() +' '+ (str(Prefs.get(option)) if type != 'bool' else '')
 		
 		if type == 'array':
 			choices = option_array[2]
@@ -154,6 +152,11 @@ class Option extends Alphabet:
 			min_val = option_array[2][0]
 			max_val = option_array[2][1]
 			cur_val = Prefs.get(option)
+		else:
+			check = Checkbox.new()
+			add_child(check)
+			check.follow_spr = self
+			check.checked = Prefs.get(option)
 		
 		#if option == null or Prefs.get(option) == null: 
 		#	printerr('OPTION: there was an issue with getting the option entered: '+ option)
@@ -163,8 +166,7 @@ class Option extends Alphabet:
 		match type:
 			'array':
 				cur_op = wrapi(cur_op + round(diff), 0, choices.size())
-				var new_val = choices[cur_op]
-				Prefs.set(option, new_val)
+				Prefs.set(option, choices[cur_op])
 			'int':
 				cur_val = clampi(cur_val + diff, min_val, max_val)
 				Prefs.set(option, cur_val)
@@ -172,7 +174,9 @@ class Option extends Alphabet:
 				cur_val = clampf(cur_val + diff, min_val, max_val)
 				Prefs.set(option, cur_val)
 			'bool': 
-				Prefs.set(option, !Prefs.get(option))
-			#_: true
-		text = option.capitalize() +' '+str(Prefs.get(option))
+				var a_bool = Prefs.get(option)
+				Prefs.set(option, !a_bool)
+				check.checked = !a_bool
+		if type != 'bool':
+			text = option.capitalize() +' '+ str(Prefs.get(option))
 		Prefs.save_prefs()

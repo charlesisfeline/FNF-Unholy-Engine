@@ -181,7 +181,7 @@
 		}
 	],
 	"no_antialiasing": false,
-	"image": "characters/bfCar",
+	"image": "characters/bf/car/char",
 	"position": [
 		0,
 		350

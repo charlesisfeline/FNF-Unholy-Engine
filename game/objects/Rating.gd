@@ -7,7 +7,8 @@ var spacing:float = 43
 var ratings_data:Dictionary = {
 	'name':       ['sick', 'good', 'bad', 'shit'],
 	'score':      [  350,    200,   100,    50],
-	'hit_window': [   45,     90,   135,  null]
+	'hit_window': [   45,     90,   135,  null],
+	'hit_mod':    [    1,   0.75,   0.5,   0.2]
 }
 
 var cur_index = 0
@@ -19,6 +20,13 @@ func get_rating(diff:float):
 			return ratings_data.name[i]
 		cur_index += 1
 	return ratings_data.name[ratings_data.name.size() - 1]
+
+func get_score(rating:String):
+	var to_return = []
+	var index = ratings_data.name.find(rating)
+	to_return.append(ratings_data.score[index])
+	to_return.append(ratings_data.hit_mod[index])
+	return to_return
 
 func make_rating(rate:String = 'sick'):
 	var rating = VelocitySprite.new()

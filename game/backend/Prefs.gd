@@ -19,6 +19,7 @@ var fps:int = 0:
 var allow_rpc:bool = true
 var note_splashes:String = 'sicks'
 var behind_strums:bool = false
+var rating_cam:String = 'game'
 
 const DANIEL_IS_CUTE:bool = true
 ## KEYBINDS ##
@@ -41,14 +42,10 @@ var ui_keys:Array = [
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	var test = get_list()
-	cfg_file = ConfigFile.new()
-	for i in test:
-		#print(i.name + str(get(i.name)))
-		cfg_file.set_value('Preferences', i.name, get(i.name))
+	cfg_file = load_prefs()
 	
 	#save_prefs()
-	load_prefs()
+	#load_prefs()
 	#set_keybinds()
 
 func set_keybinds():
@@ -78,6 +75,7 @@ func get_list():
 func save_prefs():
 	if cfg_file == null: 
 		printerr('CONFIG FILE is NOT loaded, couldn\'t save')
+		load_prefs()
 		return
 		
 	for i in get_list():
@@ -93,7 +91,9 @@ func load_prefs():
 		if saved_cfg.has_section('Preferences'):
 			var list = get_list()
 			for pref in list:
-				print(saved_cfg.get_value('Preferences', pref.name))
 				Prefs.set(pref.name, saved_cfg.get_value('Preferences', pref.name))
+		return saved_cfg
 	else:
+		cfg_file = ConfigFile.new()
 		save_prefs()
+		load_prefs()

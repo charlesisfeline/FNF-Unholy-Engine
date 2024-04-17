@@ -1,5 +1,6 @@
 class_name Alphabet; extends Control;
 
+var all_letters:Array = []
 var width:float = 0
 var height:float = 0
 var spaces:int = 0
@@ -10,9 +11,10 @@ var y_diff:int = 65
 @export var bold:bool = false
 var text:String = '':
 	set(new_txt):
-		while get_child_count() > 0:
-			get_child(0).queue_free()
-			remove_child(get_child(0))
+		while all_letters.size() > 0:
+			all_letters[0].queue_free()
+			remove_child(all_letters[0])
+			all_letters.remove_at(0)
 		text = new_txt.replace("\\n", "\n")
 		if bold: text = text.to_lower() #picky lil bitch
 		make_text(text)
@@ -26,8 +28,10 @@ func _init(init_text:String = '', is_bold:bool = true):
 	bold = is_bold
 	if init_text.length() > 0:
 		text = init_text
+
 	
 func make_text(tx:String):
+	all_letters.clear()
 	var letters_made:Array[Letter] = []
 	
 	var sheet:SpriteFrames = load('res://assets/images/ui/alphabet/%s.res' % ['bold' if bold else 'normal'])
@@ -63,6 +67,7 @@ func make_text(tx:String):
 			letter.centered = false
 			letter.play(let)
 			letter.offset = offset_letter(i) #Vector2.ZERO #true_offsets
+			letter.modulate = Color.BLACK if !bold else Color.WHITE
 			if !bold: letter.offset.y -= letter._height / 1.2
 			offsets.x += letter._width
 			
@@ -72,6 +77,7 @@ func make_text(tx:String):
 	for i in letters_made:
 		if i.char != '': width += i._width
 		add_child(i)
+		all_letters.append(i)
 	height = letters_made.back()._height
 	letters_made.clear()
 

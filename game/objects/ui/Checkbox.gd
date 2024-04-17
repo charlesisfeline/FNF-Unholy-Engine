@@ -1,7 +1,8 @@
 class_name Checkbox; extends AnimatedSprite2D;
 
-var offsets = [-6, -40]
-var is_checked:bool = false:
+var follow_spr = null
+var offsets = [-6, -39]
+var checked:bool = false:
 	set(checked): 
 		if checked: 
 			play('selected')
@@ -9,10 +10,11 @@ var is_checked:bool = false:
 		else:
 			play('unselected')
 			offset = Vector2.ZERO
-		
-func _ready():
-	pass # Replace with function body.
+			
+func _init():
+	sprite_frames = load('res://assets/images/checkbox.res')
 
-func _process(delta):
-	pass
-
+func _process(_delta):
+	if follow_spr != null:
+		position.x = follow_spr.position.x - 15
+		position.y = -15 #follow_spr.position.y + follow_spr.height / 2
