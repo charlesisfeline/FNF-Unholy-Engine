@@ -14,9 +14,13 @@ var strums:Array = []
 
 var style:String = 'default'
 var countdown_spr:Array[String] = ['ready', 'set', 'go']
+var sounds:Array[String] = ['intro3', 'intro2', 'intro1', 'introGo']
 
 var total_hit:float = 0
+var note_percent:float = 0
+var accuracy:float = -1
 var hit_count:Dictionary = {'sick': 0, 'good': 0, 'bad': 0, 'shit': 0}
+
 var zoom:float = 1:
 	set(new_zoom):
 		zoom = new_zoom
@@ -59,8 +63,17 @@ func _process(delta):
 	offset.y = (scale.y - 1.0) * -(Game.screen[1] * 0.5)
 	
 func update_score_txt():
-	score_txt.text = 'Score: %s - Misses: %s' % [cur_scene.score, cur_scene.misses]
+	accuracy = get_acc()
+	var stuff = [cur_scene.score, str(accuracy) +'%', cur_scene.misses]
+	score_txt.text = 'Score: %s - Accuracy: [%s] - Misses: %s' % stuff
 
+func get_acc():
+	var new_acc = clampf(note_percent / total_hit, 0, 1)
+	return round_d(new_acc * 100, 2)
+	
+func round_d(num, digit): # bowomp
+	return round(num * pow(10.0, digit)) / pow(10.0, digit)
+	
 func spawn_splash(dir:int = 0):
 	var new_splash = SPLASH.instantiate()
 	new_splash.strum = player_strums[dir]
@@ -81,8 +94,7 @@ func add_behind(item):
 
 var count_down:Timer
 var times_looped:int = -1
-var sounds:Array = ['intro3', 'intro2', 'intro1', 'introGo']
-var images:Array = ['ready', 'set', 'go']
+
 func start_countdown(from_beginning:bool = false):
 	if from_beginning:
 		Conductor.song_pos = -Conductor.crochet * 5
@@ -96,7 +108,7 @@ func start_countdown(from_beginning:bool = false):
 	if times_looped < 4:
 		if times_looped > 0:
 			var spr = Sprite2D.new()
-			spr.texture = load('res://assets/images/ui/'+ images[times_looped - 1] +'.png')
+			spr.texture = load('res://assets/images/ui/'+ countdown_spr[times_looped - 1] +'.png')
 			add_child(spr)
 			Game.center_obj(spr)
 			var tween = create_tween().tween_property(spr, 'modulate:a', 0, Conductor.crochet / 1000)

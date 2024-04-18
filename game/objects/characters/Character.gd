@@ -16,8 +16,10 @@ var dance_beat:int = 2 # dance every %dance_beat%
 var hold_timer:float = 0
 var sing_duration:float = 4
 
-var width:float = 0
-var height:float = 0
+var width:float = 0:
+	get: return width * abs(scale.x)
+var height:float = 0:
+	get: return height * abs(scale.y)
 
 var antialiasing:bool = true:
 	get: return texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST
@@ -102,6 +104,10 @@ func play_anim(anim:String, forced:bool = false):
 	if forced: frame = 0
 	if forced_suffix.length() > 0: 
 		anim += forced_suffix
+	if !sprite_frames.has_animation(anim): 
+		printerr(anim +' doesnt exist on '+ cur_char)
+		return
+		
 	play(anim)
 
 	if offsets.has(anim):
@@ -110,7 +116,7 @@ func play_anim(anim:String, forced:bool = false):
 			offset = Vector2(anim_offset[0], anim_offset[1])
 
 func get_cam_pos():
-	var pos:Vector2 = Vector2(position.x + width / 2, position.y + height / 2)
+	var pos:Vector2 = Vector2(position.x + width / 2, (position.y + height / 2) - 100)
 	return pos
 	
 func set_stuff():

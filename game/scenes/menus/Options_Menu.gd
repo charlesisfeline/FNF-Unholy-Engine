@@ -1,5 +1,6 @@
 extends Node2D
 
+var descriptions
 var catagories = ['Gameplay', 'Visuals', 'Controls']
 
 # options that will be in each catagory
@@ -24,16 +25,20 @@ var visuals = [
 #var controls = []
 
 var cur_cata:int = 0
-var cur_sub:int = 0
+var sub_option:int = 0
 var in_sub:bool = false
 
 var main_text:Array[Alphabet]
-var sec_prefs:Array[Alphabet]
+var pref_list:Array[Alphabet]
 func _ready():
+	var file = FileAccess.open('res://assets/data/prefInfo.json', FileAccess.READ).get_as_text()
+	var b = JSON.new()
+	b.parse(file)
+	descriptions = b.data
 	for i in catagories.size():
 		var item = catagories[i]
 		var text = Alphabet.new(item)
-		text.position = Vector2(100, 100 + (100 * i))
+		text.position = Vector2(250 - (text.text.length() * 20), 100 + (100 * i))
 		add_child(text)
 		main_text.append(text)
 	update_scroll()
@@ -47,48 +52,43 @@ func _process(delta):
 			Game.switch_scene('menus/main_menu')
 	if Input.is_action_just_pressed("accept"):
 		if in_sub:
-			if sec_prefs[cur_sub].type == 'bool':
-				sec_prefs[cur_sub].update_option()
+			if pref_list[sub_option].type == 'bool':
+				pref_list[sub_option].update_option()
 		else:
 			GlobalMusic.play_sound('confirmMenu')
 			show_catagory(catagories[cur_cata].to_lower())
-				#var pref = get_pref(sec_prefs[cur_sub].text)
-				#var val = Prefs.get(pref)
-				#Prefs.set(pref, !Prefs.get(pref))
-				#sec_prefs[cur_sub].text = pref.capitalize() + ' ' + str(Prefs.get(pref))
-				#Prefs.save_prefs()
-				#print(Prefs.get(pref))
 	if in_sub:
 		if Input.is_action_just_pressed('menu_left'):
-			if sec_prefs[cur_sub].type == 'array' or sec_prefs[cur_sub].type == 'int':
-				sec_prefs[cur_sub].update_option(-1)
+			if pref_list[sub_option].type == 'array' or pref_list[sub_option].type == 'int':
+				pref_list[sub_option].update_option(-1)
 		if Input.is_action_just_pressed('menu_right'):
-			if sec_prefs[cur_sub].type == 'array' or sec_prefs[cur_sub].type == 'int':
-				sec_prefs[cur_sub].update_option(1)
+			if pref_list[sub_option].type == 'array' or pref_list[sub_option].type == 'int':
+				pref_list[sub_option].update_option(1)
 		
 	if Input.is_action_just_pressed('menu_up'):
-		if in_sub: cur_sub = wrapi(cur_sub - 1, 0, sec_prefs.size())
+		if in_sub: sub_option = wrapi(sub_option - 1, 0, pref_list.size())
 		else: cur_cata = wrapi(cur_cata - 1, 0, catagories.size())
 		update_scroll()
 	if Input.is_action_just_pressed('menu_down'):
-		if in_sub: cur_sub = wrapi(cur_sub + 1, 0, sec_prefs.size())
+		if in_sub: sub_option = wrapi(sub_option + 1, 0, pref_list.size())
 		else: cur_cata = wrapi(cur_cata + 1, 0, catagories.size())
 		update_scroll()
 
 func show_main():
 	in_sub = false
 	#cur_cata = 0
-	while sec_prefs.size() > 0:
-		remove_child(sec_prefs[0])
-		sec_prefs[0].queue_free()
-		sec_prefs.remove_at(0)
+	while pref_list.size() > 0:
+		remove_child(pref_list[0])
+		pref_list[0].queue_free()
+		pref_list.remove_at(0)
 	
+	$TextBG/Info.text = 'Hi!'
 	for i in main_text.size():
 		main_text[i].modulate.a = (1.0 if i == cur_cata else 0.6)
 	
 func show_catagory(catagory:String):
 	in_sub = true
-	cur_sub = 0
+	sub_option = 0
 	for i in main_text.size():
 		main_text[i].modulate.a = 0.8 if i == cur_cata else 0.1
 
@@ -96,43 +96,33 @@ func show_catagory(catagory:String):
 	var loops:int = 0
 	if catagory.to_lower() != 'controls':
 		for pref in get(catagory):
-			var new_pref = Option.new(pref)
+			var new_pref = Option.new(pref, descriptions[pref[0]])
 			new_pref.is_menu = true
 			new_pref.target_y = loops
 			new_pref.lock.x = 550
 			add_child(new_pref)
-			sec_prefs.append(new_pref)
+			pref_list.append(new_pref)
 			loops += 1
 		update_scroll()
 	else:
 		Game.switch_scene('menus/options/change_keybinds')
-	
-
-func get_pref(preference:String):
-	var fixed_pref:String = preference.to_lower().replace(' ', '_')
-	var split = fixed_pref.split('_')
-	
-	if split.size() > 2:
-		fixed_pref = split[0] +'_'+ split[1]
-	else:
-		fixed_pref = split[0]
-	print(fixed_pref)
-	return fixed_pref #Prefs.get(fixed_pref)
 
 func update_scroll():
 	#GlobalMusic.play_sound('scrollMenu')
 	if in_sub:
-		for i in sec_prefs.size():
-			sec_prefs[i].modulate.a = (1.0 if i == cur_sub else 0.6)
-			sec_prefs[i].target_y = i - cur_sub
+		for i in pref_list.size():
+			pref_list[i].modulate.a = (1.0 if i == sub_option else 0.6)
+			pref_list[i].target_y = i - sub_option
+		$TextBG/Info.text = pref_list[sub_option].description
 	else:
 		for i in main_text.size():
 			main_text[i].modulate.a = (1.0 if i == cur_cata else 0.6)
 
 class Option extends Alphabet:
 	var option:String = ''
+	var description:String = 'nothing'
 	var type:String = 'bool' # the option's type: int, bool, array n shit
-	var check
+	var check:Checkbox
 	
 	var cur_op:int = 0
 	var choices:Array = [] # if the option is an array, will hold all possible options
@@ -140,8 +130,9 @@ class Option extends Alphabet:
 	var min_val:float = 0;  var max_val:float = 0
 	var cur_val:float = 0
 	
-	func _init(option_array):#, type:String = 'bool', choices:Array = []):
+	func _init(option_array, info:String = 'nothin'):#, type:String = 'bool', choices:Array = []):
 		option = option_array[0]
+		description = info
 		type = option_array[1]
 		text = option.capitalize() +' '+ (str(Prefs.get(option)) if type != 'bool' else '')
 		

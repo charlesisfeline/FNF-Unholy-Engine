@@ -1,0 +1,15 @@
+{
+    "auto_play"    : "Play the chart automatically\n(DEBUG: can toggle midsong by pressing back [ESC or Backspace])",
+    "downscroll"   : "Make notes fall down instead of rising up",
+    "middlescroll" : "Centers player strums",
+    "hitsounds"    : "Play a sound every note hit",
+    "offset"       : "How early/late the music is\n(for headsets/speakers with audio delay)",
+    "sick_window"  : "How tight the \n\"Sick\"\nwindow is to hit",
+    "good_window"  : "How tight the \n\"Good\"\nwindow is to hit",
+    "bad_window"   : "How tight the \n\"Bad\"\nwindow is to hit",
+    "fps"          : "im sure you can guess",
+    "allow_rpc"    : "Show the discord RPC",
+    "note_splashes": "When should a Note Splash happen?",
+    "behind_strums": "Show sustains behind the strum",
+    "rating_cam"   : "Which camera should the ratings and combo appear on?"
+}

@@ -59,9 +59,11 @@ func _ready():
 		gf_ver = SONG.player3 if SONG.player3 != null else 'gf'
 	else: # base game type shit baybeee
 		match SONG.song.to_lower().replace(' ', '-'):
-			'limo': gf_ver = 'gf-car'
-			'mall', 'mall-evil': gf_ver = 'gf-christmas'
-			'tank': gf_ver = 'gf-tank'
+			'satin-panties', 'high', 'milf': gf_ver = 'gf-car'
+			'cocoa', 'eggnog', 'winter-horrorland': gf_ver = 'gf-christmas'
+			'senpai', 'roses', 'thorns': gf_ver = 'gf-pixel'
+			'ugh', 'guns': gf_ver = 'gf-tankmen'
+			'stress': gf_ver = 'pico-speaker'
 		
 	print(gf_ver)
 	gf = Character.new([450, 70], gf_ver)
@@ -125,7 +127,7 @@ func _process(delta):
 			
 			var note_info = NoteData.new(chart_notes[bleh])
 			var new_note:Note = Note.new(note_info)
-			
+
 			new_note.speed = SONG.speed
 			notes.append(new_note)
 
@@ -264,6 +266,8 @@ func good_note_hit(note:Note):
 			n_tween.finished.connect(num.queue_free)
 	
 	score += Judge.get_score(hit_rating)[0]
+	ui.note_percent += Judge.get_score(hit_rating)[1]
+	ui.total_hit += 1
 	ui.hit_count[hit_rating] += 1
 	ui.hp += 2.3
 	
@@ -279,7 +283,7 @@ func good_note_hit(note:Note):
 	#	ui
 	
 func good_sustain_press(sustain:Note, delt:float = 0.0):
-	if Input.is_action_just_released(key_names[sustain.dir]):
+	if !auto_play and Input.is_action_just_released(key_names[sustain.dir]):
 		#sustain.dropped = true
 		note_miss(sustain)
 		return
@@ -306,6 +310,7 @@ func note_miss(note:Note):
 	boyfriend.sing(note.dir, 'miss')
 	score -= 10 if !note.is_sustain else floor(note.length * 5)
 	misses += 1
+	ui.total_hit += 1
 	ui.hp -= 4.7
 	
 	if combo > 5:
@@ -325,7 +330,7 @@ func note_miss(note:Note):
 	#if !note.sustain: 
 	kill_note(note)
 	
-func kill_note(note:Note):	
+func kill_note(note:Note):
 	note.spawned = false
 	notes.remove_at(notes.find(note))
 	note.queue_free()
