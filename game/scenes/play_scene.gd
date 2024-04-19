@@ -3,16 +3,18 @@ extends Node2D
 @onready var camGAME = CanvasGroup.new()
 @onready var camNotes = CanvasGroup.new()
 @onready var ui:UI = $UI
+@onready var cam = $Camera
 
-# "import" stuff
 var Judge:Rating = Rating.new()
 
-@onready var cam = $Camera
 var default_zoom:float = 0.8
 var SONG
 var cur_stage:String = 'stage'
+var stage:StageBase
+
 var chart_notes
 var notes:Array[Note] = []
+var events:Array[Note] = []
 var spawn_time:int = 2000
 
 var boyfriend:Character
@@ -49,8 +51,13 @@ func _ready():
 			
 	Conductor.bpm = SONG.bpm
 	
-	var stage = load('res://game/scenes/stages/stage.tscn').instantiate() # im sick of grey bg FUCK
+	var to_load = 'stage'
+	if FileAccess.file_exists('res://game/scenes/stages/'+ cur_stage +'.tscn'):
+		to_load = cur_stage
+		
+	stage = load('res://game/scenes/stages/%s.tscn' % [to_load]).instantiate() # im sick of grey bg FUCK
 	add_child(stage)
+	default_zoom = stage.default_zoom
 	
 	var gf_ver = 'gf'
 	if SONG.has('gfVersion'): 
@@ -178,6 +185,8 @@ func beat_hit(beat):
 		
 	ui.icon_p1.bump()
 	ui.icon_p2.bump()
+	if stage.has_method('beat_hit'):
+		stage.call('beat_hit')
 	#var tick = AudioStreamPlayer.new()
 	#add_child(tick)
 	#tick.stream = load('res://assets/sounds/Metronome_Tick.ogg')
@@ -273,7 +282,7 @@ func good_note_hit(note:Note):
 	
 	if Prefs.note_splashes != 'none':
 		if Prefs.note_splashes == 'all' or (Prefs.note_splashes == 'sicks' and hit_rating == 'sick'):
-			ui.spawn_splash(note.dir)
+			ui.spawn_splash(ui.player_strums[note.dir])
 			
 	ui.update_score_txt()
 	

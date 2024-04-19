@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cui6s0lpyu74o"
-path="res://.godot/imported/evilTree.png-98cdca15b9cb0c868db481e8951d7e02.ctex"
+path="res://.godot/imported/evilTree.png-eea31f8c9645e435c3f2f5c33e7fe602.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/images/stages/mallevil/evilTree.png"
-dest_files=["res://.godot/imported/evilTree.png-98cdca15b9cb0c868db481e8951d7e02.ctex"]
+source_file="res://assets/images/stages/mall-evil/evilTree.png"
+dest_files=["res://.godot/imported/evilTree.png-eea31f8c9645e435c3f2f5c33e7fe602.ctex"]
 
 [params]
 

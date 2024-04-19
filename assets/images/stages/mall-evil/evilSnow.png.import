@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cnr6421vo533i"
-path="res://.godot/imported/senpaiCrazy.png-c83f1cd62f7479ba75a6dca6e5f74d53.ctex"
+uid="uid://bi3poq6tpcgkw"
+path="res://.godot/imported/evilSnow.png-c54cbfd4ad57f9a46355825052b78c26.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/images/stages/schoolevil/senpaiCrazy.png"
-dest_files=["res://.godot/imported/senpaiCrazy.png-c83f1cd62f7479ba75a6dca6e5f74d53.ctex"]
+source_file="res://assets/images/stages/mall-evil/evilSnow.png"
+dest_files=["res://.godot/imported/evilSnow.png-c54cbfd4ad57f9a46355825052b78c26.ctex"]
 
 [params]
 

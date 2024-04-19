@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://byfxl2sovvckt"
-path="res://.godot/imported/evilSchoolBG.png-8d71a46952911a3bc1ce3b77c2be7ae6.ctex"
+uid="uid://cnr6421vo533i"
+path="res://.godot/imported/senpaiCrazy.png-69ae1b48083d505652135133f6b2bf5a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/images/stages/schoolevil/evilSchoolBG.png"
-dest_files=["res://.godot/imported/evilSchoolBG.png-8d71a46952911a3bc1ce3b77c2be7ae6.ctex"]
+source_file="res://assets/images/stages/school-evil/senpaiCrazy.png"
+dest_files=["res://.godot/imported/senpaiCrazy.png-69ae1b48083d505652135133f6b2bf5a.ctex"]
 
 [params]
 

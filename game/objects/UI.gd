@@ -69,14 +69,11 @@ func update_score_txt():
 
 func get_acc():
 	var new_acc = clampf(note_percent / total_hit, 0, 1)
-	return round_d(new_acc * 100, 2)
+	return Game.round_d(new_acc * 100, 2)
 	
-func round_d(num, digit): # bowomp
-	return round(num * pow(10.0, digit)) / pow(10.0, digit)
-	
-func spawn_splash(dir:int = 0):
+func spawn_splash(strum:Strum):
 	var new_splash = SPLASH.instantiate()
-	new_splash.strum = player_strums[dir]
+	new_splash.strum = strum
 	add_to_strum_group(new_splash, true)
 	await new_splash.animation_finished
 	$Strum_Group/Player.remove_child(new_splash)

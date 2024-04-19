@@ -49,3 +49,9 @@ func call_func(to_call:String, args:Array = [], _on_scene:bool = true): # call f
 	
 	#else:
 	#	callv(to_call, args)
+
+func round_d(num, digit): # bowomp
+	return round(num * pow(10.0, digit)) / pow(10.0, digit)
+	
+func rand_bool(chance:float = 50):
+	return true if (randi() % 100) < chance else false

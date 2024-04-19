@@ -34,8 +34,6 @@ func _init(pos:Array = [0, 0], char:String = 'bf', player:bool = false):
 	cur_char = char
 	is_player = player
 	position = Vector2(pos[0], pos[1])
-	focus_offsets = Vector2()
-	#focus_point = Vector2(0, 0)
 	print('init ' + cur_char)
 	
 func _ready():
@@ -60,6 +58,8 @@ func _ready():
 	antialiasing = !json.no_antialiasing #probably gonna make my own char json format eventually
 	position.x += json.position[0]
 	position.y += json.position[1]
+	focus_offsets.x = json.camera_position[0]
+	focus_offsets.y = json.camera_position[1]
 	
 	dance_idle = offsets.has('danceLeft')
 	if dance_idle: dance_beat = 1	
@@ -116,8 +116,9 @@ func play_anim(anim:String, forced:bool = false):
 			offset = Vector2(anim_offset[0], anim_offset[1])
 
 func get_cam_pos():
-	var pos:Vector2 = Vector2(position.x + width / 2, (position.y + height / 2) - 100)
-	return pos
+	var midpoint = Vector2(position.x + width / 2, position.y + height / 2)
+	var pos:= Vector2(midpoint.x + (-100 if is_player else 150), midpoint.y - 100)
+	return pos + focus_offsets
 	
 func set_stuff():
 	var anim:String = 'danceLeft' if dance_idle else 'idle'
