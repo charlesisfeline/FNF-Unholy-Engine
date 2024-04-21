@@ -8,10 +8,6 @@ func _ready():
 	flash.modulate.a = 0
 	add_child(flash)
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	pass
-
 var lightning_beat:int = 0
 var lighting_offset:int = 8
 func beat_hit():
@@ -27,5 +23,6 @@ func strike():
 		
 	GlobalMusic.play_sound('thunder_'+ str(randi_range(1, 2)))
 	$BG.play('strike')
+	$BG.frame = 0
 	boyfriend.play_anim('scared', true)
 	gf.play_anim('scared', true)

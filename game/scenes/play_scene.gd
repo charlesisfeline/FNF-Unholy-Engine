@@ -73,13 +73,13 @@ func _ready():
 			'stress': gf_ver = 'pico-speaker'
 		
 	print(gf_ver)
-	gf = Character.new([450, 70], gf_ver)
+	gf = Character.new(stage.gf_pos, gf_ver)
 	add_child(gf)
 	
-	dad = Character.new([100, 100], SONG.player2)
+	dad = Character.new(stage.dad_pos, SONG.player2)
 	add_child(dad)
 	
-	boyfriend = Character.new([770, 100], SONG.player1, true)
+	boyfriend = Character.new(stage.bf_pos, SONG.player1, true)
 	add_child(boyfriend)
 	
 	ui.icon_p1.change_icon(boyfriend.icon, true)
@@ -105,10 +105,10 @@ func _ready():
 	
 	#ui = UI.new()
 	#camHUD.add_child(ui)
+	#await thread.wait_to_finish()
 	ui.start_countdown(true)
 
 	section_hit(0)
-	#await thread.wait_to_finish()
 
 var cur_section:int = -1
 var section_data
@@ -211,8 +211,9 @@ func section_hit(_section):
 
 func move_cam(to_player:bool = true):
 	var char = boyfriend if to_player else dad
-	var new_pos = char.get_cam_pos()
-	cam.position = new_pos
+	var cam_off:Vector2 = stage.bf_cam_offset if to_player else stage.dad_cam_offset
+	var new_pos:Vector2 = char.get_cam_pos()
+	cam.position = new_pos + cam_off
 
 func _unhandled_key_input(_event):
 	if auto_play: return

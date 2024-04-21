@@ -8,6 +8,7 @@ var icon:String = 'bf'
 
 var idle_suffix:String = ''
 var forced_suffix:String = '' # if set, every anim will use it
+var special_anim:bool = false
 var is_player:bool = false
 var dance_idle:bool = false
 var danced:bool = false
@@ -28,12 +29,12 @@ var antialiasing:bool = true:
 		texture_filter = filter
 
 var sing_anims:Array[String] = ['singLEFT', 'singDOWN', 'singUP', 'singRIGHT']
-func _init(pos:Array = [0, 0], char:String = 'bf', player:bool = false):
+func _init(pos:Vector2 = Vector2.ZERO, char:String = 'bf', player:bool = false):
 	centered = false
 	var split = char.split('-')
 	cur_char = char
 	is_player = player
-	position = Vector2(pos[0], pos[1])
+	position = pos
 	print('init ' + cur_char)
 	
 func _ready():
@@ -62,8 +63,8 @@ func _ready():
 	focus_offsets.y = json.camera_position[1]
 	
 	dance_idle = offsets.has('danceLeft')
-	if dance_idle: dance_beat = 1	
-	if cur_char == 'senpai-angry': forced_suffix = '-alt'
+	if dance_idle: dance_beat = 1
+	if cur_char == 'senpai-angry': forced_suffix = '-alt' # boooo
 	
 	dance()
 	set_stuff()
@@ -71,23 +72,29 @@ func _ready():
 	if !is_player and json.flip_x:
 		scale.x *= -1
 		position.x += width
+		focus_offsets.x -= width / 2
 		swap_anim('singLEFT', 'singRIGHT')
 		
 func _process(delta):
 	#if !is_player:
-	if animation.begins_with('sing'):
-		hold_timer += delta
-		if hold_timer >= Conductor.step_crochet * (0.0011 * sing_duration):
+	if !special_anim:
+		if animation.begins_with('sing'):
+			hold_timer += delta
+			if hold_timer >= Conductor.step_crochet * (0.0011 * sing_duration):
+				dance()
+	else:
+		if animation_finished:
+			special_anim = false
 			dance()
 
-
 func dance(forced:bool = false):
+	if special_anim: return
 	if dance_idle:
-		play_anim('dance'+ ('Right' if danced else 'Left'))
+		play_anim('dance'+ ('Right' if danced else 'Left') + idle_suffix)
 		danced = !danced
 	else:
 		if forced: frame = 0
-		play_anim('idle')
+		play_anim('idle'+ idle_suffix)
 	hold_timer = 0
 
 func sing(dir:int = 0, suffix:String = ''):
@@ -101,13 +108,14 @@ func swap_anim(anim1:String, anim2:String):
 	sing_anims[index2] = anim1
 
 func play_anim(anim:String, forced:bool = false):
-	if forced: frame = 0
 	if forced_suffix.length() > 0: 
 		anim += forced_suffix
 	if !sprite_frames.has_animation(anim): 
 		printerr(anim +' doesnt exist on '+ cur_char)
 		return
 		
+	special_anim = false
+	if forced: frame = 0
 	play(anim)
 
 	if offsets.has(anim):

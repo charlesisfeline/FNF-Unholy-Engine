@@ -2,7 +2,7 @@
 	"animations": [
 		{
 			"offsets": [
-				2,
+				-1,
 				0
 			],
 			"loop": false,
@@ -13,8 +13,8 @@
 		},
 		{
 			"offsets": [
-				5,
-				37
+				0,
+				6
 			],
 			"loop": false,
 			"anim": "singUP",
@@ -24,7 +24,7 @@
 		},
 		{
 			"offsets": [
-				40,
+				4,
 				0
 			],
 			"loop": false,
@@ -46,7 +46,7 @@
 		},
 		{
 			"offsets": [
-				14,
+				1,
 				0
 			],
 			"loop": false,
@@ -59,8 +59,8 @@
 	"no_antialiasing": true,
 	"image": "characters/senpai",
 	"position": [
-		150,
-		360
+		0,
+		0
 	],
 	"healthicon": "senpai-pixel",
 	"flip_x": false,
@@ -70,8 +70,8 @@
 		111
 	],
 	"camera_position": [
-		-240,
-		-330
+		0,
+		80
 	],
 	"sing_duration": 4,
 	"scale": 6

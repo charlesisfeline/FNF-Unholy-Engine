@@ -18,9 +18,16 @@ var dad:Character:
 var gf:Character:
 	get: return Game.scene.gf
 
-var dad_pos:Vector2 = Vector2(0, 0)
-var gf_pos:Vector2 = Vector2(0, 0)
-var bf_pos:Vector2 = Vector2(0, 0)
+# initial positions the characters will take
+# set these on _ready()
+var bf_pos:Vector2 = Vector2(770, 100)
+var dad_pos:Vector2 = Vector2(100, 100)
+var gf_pos:Vector2 = Vector2(450, 70)
+
+# added onto the character's camera position
+var bf_cam_offset:Vector2 = Vector2(0, 0)
+var dad_cam_offset:Vector2 = Vector2(0, 0)
+var gf_cam_offset:Vector2 = Vector2(0, 0)
 
 func _ready():
 	pass # Replace with function body.
