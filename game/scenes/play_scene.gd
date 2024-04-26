@@ -5,21 +5,27 @@ extends Node2D
 @onready var ui:UI = $UI
 @onready var cam = $Camera
 
-var Judge:Rating = Rating.new()
+@onready var Judge:Rating = Rating.new()
 
 var default_zoom:float = 0.8
 var SONG
+var cur_speed:float = 1:
+	set(new_speed):
+		cur_speed = new_speed
+		for note in notes: note.speed = cur_speed
 var cur_stage:String = 'stage'
 var stage:StageBase
 
 var chart_notes
 var notes:Array[Note] = []
-var events:Array[Note] = []
+var events:Array[EventNote] = []
+var start_time:float = 0 # when the first note is actually loaded
 var spawn_time:int = 2000
 
 var boyfriend:Character
 var dad:Character
 var gf:Character
+var characters:Array = []
 
 var player_strums:Array[Strum] = []
 var opponent_strums:Array[Strum] = []
@@ -35,6 +41,7 @@ var misses:int = 0
 func _ready():
 	SONG = JsonHandler._SONG
 	Conductor.load_song(SONG.song)
+	cur_speed = SONG.speed
 	if SONG.has('stage'):
 		cur_stage = SONG.stage.to_lower().replace(' ', '-')
 	else:
@@ -58,6 +65,7 @@ func _ready():
 	stage = load('res://game/scenes/stages/%s.tscn' % [to_load]).instantiate() # im sick of grey bg FUCK
 	add_child(stage)
 	default_zoom = stage.default_zoom
+	#ui.cur_style = 'pixel'
 	
 	var gf_ver = 'gf'
 	if SONG.has('gfVersion'): 
@@ -85,6 +93,11 @@ func _ready():
 	ui.icon_p1.change_icon(boyfriend.icon, true)
 	ui.icon_p2.change_icon(dad.icon)
 	
+	characters = [boyfriend, dad, gf]
+	
+	if cur_stage.contains('school'):
+		ui.cur_style = 'pixel'
+		
 	if Prefs.rating_cam == 'game':
 		Judge.rating_pos = boyfriend.position + Vector2(-15, -15)
 		Judge.combo_pos = boyfriend.position + Vector2(-150, 60)
@@ -100,7 +113,15 @@ func _ready():
 	#var thread = Thread.new()
 	#thread.start(JsonHandler.generate_chart.bind(SONG)) 
 	# since im doing something different, this thread will need to be changed
-	chart_notes = JsonHandler.generate_chart(SONG)
+	if JsonHandler.chart_notes.size() > 0:
+		chart_notes = JsonHandler.chart_notes
+		print('already loaded')
+	else:
+		chart_notes = JsonHandler.generate_chart(SONG)
+		print('made chart')
+		
+	start_time = chart_notes[0][0]
+	events = JsonHandler.song_events
 	ui.add_child(camNotes)
 	
 	#ui = UI.new()
@@ -134,16 +155,14 @@ func _process(delta):
 			
 			var note_info = NoteData.new(chart_notes[bleh])
 			var new_note:Note = Note.new(note_info)
+			new_note.speed = cur_speed
 
-			new_note.speed = SONG.speed
 			notes.append(new_note)
 
 			if chart_notes[bleh][2]: # if it has a sustain
 				var new_sustain:Note = Note.new(new_note, true)
 				new_sustain.speed = new_note.speed
 		
-				#if Prefs.get_pref('downscroll'): new_sustain.da *= -1
-				#new_sustain.z_index = -1
 				notes.append(new_sustain)
 				ui.add_to_strum_group(new_sustain, new_sustain.must_press)
 
@@ -176,10 +195,14 @@ func _process(delta):
 					else:
 						if note.was_good_hit:
 							opponent_note_hit(note)
-					
+	if events.size() != 0:
+		for event in events:
+			if event.strum_time <= Conductor.song_pos:
+				event_hit(event)
+				events.remove_at(0)
 
 func beat_hit(beat):
-	for i in [boyfriend, dad, gf]:
+	for i in characters:
 		if beat % i.dance_beat == 0 and !i.animation.contains('sing'):
 			i.dance()
 		
@@ -220,7 +243,7 @@ func _unhandled_key_input(_event):
 	for i in 4:
 		if Input.is_action_just_pressed(key_names[i]): key_press(i)
 		if Input.is_action_just_released(key_names[i]): key_release(i)
-			
+
 func key_press(key:int = 0):
 	var hittable_notes:Array[Note] = notes.filter(func(i:Note):
 		return i.spawned and !i.is_sustain and i.must_press and i.can_hit and i.dir == key and !i.was_good_hit
@@ -252,9 +275,28 @@ func song_end():
 	Game.switch_scene("menus/freeplay")
 	#get_tree().reload_current_scene()
 
+func event_hit(event:EventNote):
+	print(event.event, event.values)
+	match event.event:
+		'Hey!':
+			boyfriend.play_anim('hey', true)
+			boyfriend.special_anim = true
+			gf.play_anim('cheer', true)
+			gf.special_anim = true
+		'Change Scroll Speed': 
+			var new_speed = SONG.speed * float(event.values[0])
+			create_tween().tween_property(Game.scene, 'cur_speed', new_speed, float(event.values[1]))
+		'Add Camera Zoom': print('yuh')
+		_: false
+
 func good_note_hit(note:Note):
+	if note.type.length() > 0:
+		print(note.type, ' bf')
+	var char = boyfriend
+	if note.type == 'GF Sing':
+		char = gf
 	strum_anim(note.dir, true)
-	boyfriend.sing(note.dir)
+	char.sing(note.dir)
 	
 	combo += 1
 	
@@ -304,17 +346,30 @@ func good_sustain_press(sustain:Note, delt:float = 0.0):
 		ui.update_score_txt()
 		if ui.player_strums[sustain.dir].anim_timer <= 0:
 			strum_anim(sustain.dir, true)
-			boyfriend.sing(sustain.dir)
+			var char = boyfriend
+			if sustain.type == 'GF Sing':
+				char = gf
+			char.sing(sustain.dir)
 	
 func opponent_note_hit(note:Note):
+	if note.type.length() > 0:
+		print(note.type, ' dad')
+	var char = dad
+	if note.type == 'GF Sing':
+		char = gf
+	var alt = '-alt' if section_data.has('altAnim') and section_data.altAnim else ''
 	strum_anim(note.dir, false)
-	dad.sing(note.dir)
+	char.sing(note.dir, alt)
 	kill_note(note)
 
 func opponent_sustain_press(sustain:Note):
 	if ui.opponent_strums[sustain.dir].anim_timer <= 0:
 		strum_anim(sustain.dir, false)
-		dad.sing(sustain.dir)
+		var char = dad
+		if sustain.type == 'GF Sing':
+			char = gf
+		var alt = '-alt' if section_data.has('altAnim') and section_data.altAnim else ''
+		char.sing(sustain.dir, alt)
 		
 func note_miss(note:Note):
 	boyfriend.sing(note.dir, 'miss')

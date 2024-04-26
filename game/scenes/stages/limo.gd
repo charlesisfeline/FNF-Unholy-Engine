@@ -7,8 +7,8 @@ func _ready():
 	gf_pos.y = 120
 	
 	default_zoom = 0.9
-	$BGLimo/Sprite.play()
-	$FGLimo.play()
+	#$BGLimo/Sprite.play()
+	#$FGLimo.play()
 	for i in 5: # fuck positioning things by hand
 		var limo = $BGLimo/Sprite.position
 		var new_dancer = LimoDancer.new(Vector2((370 * i) + 440 + limo.x, limo.y - 875))

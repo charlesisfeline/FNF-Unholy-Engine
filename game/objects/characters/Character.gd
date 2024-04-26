@@ -16,6 +16,7 @@ var dance_beat:int = 2 # dance every %dance_beat%
 
 var hold_timer:float = 0
 var sing_duration:float = 4
+var anim_timer:float = 0
 
 var width:float = 0:
 	get: return width * abs(scale.x)
@@ -29,9 +30,9 @@ var antialiasing:bool = true:
 		texture_filter = filter
 
 var sing_anims:Array[String] = ['singLEFT', 'singDOWN', 'singUP', 'singRIGHT']
+
 func _init(pos:Vector2 = Vector2.ZERO, char:String = 'bf', player:bool = false):
 	centered = false
-	var split = char.split('-')
 	cur_char = char
 	is_player = player
 	position = pos
@@ -77,15 +78,18 @@ func _ready():
 		
 func _process(delta):
 	#if !is_player:
-	if !special_anim:
+	if special_anim:
+		if anim_timer > 0:
+			anim_timer -= delta
+			if anim_timer <= 0:
+				pass
+		if animation_finished:
+			special_anim = false
+	else:
 		if animation.begins_with('sing'):
 			hold_timer += delta
 			if hold_timer >= Conductor.step_crochet * (0.0011 * sing_duration):
 				dance()
-	else:
-		if animation_finished:
-			special_anim = false
-			dance()
 
 func dance(forced:bool = false):
 	if special_anim: return
@@ -132,8 +136,8 @@ func set_stuff():
 	var anim:String = 'danceLeft' if dance_idle else 'idle'
 	if sprite_frames.has_animation(anim):
 		var total:int = sprite_frames.get_frame_count(anim) - 1 # last anim is probably the most upright
-		width = sprite_frames.get_frame_texture(anim, total).get_width()
-		height = sprite_frames.get_frame_texture(anim, total).get_height()
+		width = sprite_frames.get_frame_texture(anim, 0).get_width()
+		height = sprite_frames.get_frame_texture(anim, 0).get_height()
 	
 #func get_anim(anim:String): # get the animation from the json file
 #	if json == null: return anim

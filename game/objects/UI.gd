@@ -8,11 +8,19 @@ var SPLASH = preload('res://game/objects/note/note_splash.tscn')
 @onready var icon_p1:Sprite2D = $HealthBar/IconP1
 @onready var icon_p2:Sprite2D = $HealthBar/IconP2
 
-@onready var player_strums:Array = $Strum_Group/Player.get_strums()
-@onready var opponent_strums:Array = $Strum_Group/Opponent.get_strums()
-var strums:Array = []
+@onready var player_group:Strum_Line = $Strum_Group/Player
+@onready var opponent_group:Strum_Line = $Strum_Group/Opponent
+@onready var player_strums:Array = player_group.get_strums()
+@onready var opponent_strums:Array = opponent_group.get_strums()
+var strums:Array[Strum] = []
 
-var style:String = 'default'
+var STYLE = StyleInfo.new()
+var cur_style:String = 'default':
+	set(new_style): 
+		if new_style != cur_style:
+			cur_style = new_style
+			change_style(new_style)
+			
 var countdown_spr:Array[String] = ['ready', 'set', 'go']
 var sounds:Array[String] = ['intro3', 'intro2', 'intro1', 'introGo']
 
@@ -31,20 +39,26 @@ func _ready():
 	strums.append_array(player_strums)
 	
 	var downscroll = Prefs.downscroll
-	#var middscroll = Prefs.middlescroll
+	var middscroll = Prefs.middlescroll
 	#var spltscroll = Prefs.splitscroll
 	
-	for i in strums: # i can NOT be bothered to position these mfs manually
-		#var play = i < 4
-		#var cur_strum:Strum = strums[i]
-		#cur_strum.dir = (i % 4)
-		#cur_strum.position.x = 150 / (1.5 if play else 0.45)
-		#cur_strum.position.x += (110 * i)
-		i.position.y = 560 if downscroll else 55
-		i.downscroll = downscroll
-		#cur_strum.is_player = (i > 3)
-	#icon_p1.change_icon('bf', true)
-	#icon_p2.change_icon('dad')
+	# i am stupid they are a group i dont have to set the strums position manually just the group y pos
+	player_group.position.y = 560 if downscroll else 55
+	opponent_group.position.y = 560 if downscroll else 55
+	
+	for i in strums: i.downscroll = downscroll
+	
+	if middscroll:
+		player_group.position.x = (Game.screen[0] / 2) - 220
+		#opponent_group.modulate.a = 0.25
+		opponent_group.z_index = -1
+		opponent_group.position = Vector2((Game.screen[0] / 2) - 220, player_group.position.y)
+	
+		#player_group.position.x = (Game.screen[0] / 2) - 220
+		#opponent_group.modulate.a = 0.4
+		#opponent_group.scale = Vector2(0.7, 0.7)
+		#opponent_group.z_index = -1
+		#opponent_group.position = Vector2(60, 400 if downscroll else 300)
 	
 	health_bar.position.x = (Game.screen[0] / 2.0) - (health_bar.texture_under.get_width() / 2.0) # 340
 	health_bar.position.y = 85 if downscroll else 630
@@ -89,6 +103,11 @@ func add_to_strum_group(item = null, to_player:bool = true):
 func add_behind(item):
 	$Back.add_child(item)
 
+func change_style(new_style:String): # change style of whole hud, instead of one by one
+	STYLE.load_style(new_style)
+	for strum in strums: strum.load_skin(STYLE)
+	for note in Game.scene.notes: note.load_skin(STYLE)
+
 var count_down:Timer
 var times_looped:int = -1
 
@@ -102,13 +121,20 @@ func start_countdown(from_beginning:bool = false):
 	await count_down.timeout
 	times_looped += 1
 	
+	for i in Game.scene.characters:
+		if times_looped % i.dance_beat == 0 and !i.animation.begins_with('sing'):
+			i.dance()
+			
 	if times_looped < 4:
 		if times_looped > 0:
 			var spr = Sprite2D.new()
-			spr.texture = load('res://assets/images/ui/'+ countdown_spr[times_looped - 1] +'.png')
+			spr.texture = load('res://assets/images/ui/styles/'+ cur_style +'/'+ countdown_spr[times_looped - 1] +'.png')
 			add_child(spr)
+			spr.scale = STYLE.countdown_scale
+			spr.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR if STYLE.antialiased else CanvasItem.TEXTURE_FILTER_NEAREST
 			Game.center_obj(spr)
+			
 			var tween = create_tween().tween_property(spr, 'modulate:a', 0, Conductor.crochet / 1000)
 			tween.finished.connect(spr.queue_free)
-		GlobalMusic.play_sound('ui/'+ style +'/'+ sounds[times_looped])
+		GlobalMusic.play_sound('ui/'+ cur_style +'/'+ sounds[times_looped])
 		start_countdown()

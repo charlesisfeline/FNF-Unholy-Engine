@@ -1,8 +1,8 @@
 extends StageBase
 
 func _ready():
-	$FGTrees/Sprite.play()
-	$Petals/Sprite.play()
+	#$FGTrees/Sprite.play()
+	#$Petals/Sprite.play()
 	default_zoom = 1.05
 	bf_pos = Vector2(770, 90)
 	dad_pos = Vector2(100, 30)

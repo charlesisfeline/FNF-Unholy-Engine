@@ -26,6 +26,7 @@ scroll_factor = Vector2(0.4, 0.4)
 position = Vector2(-150, 480)
 sprite_frames = ExtResource("4_vq5r0")
 animation = &"background limo pink"
+autoplay = "background limo pink"
 frame_progress = 0.97461
 centered = false
 
@@ -36,5 +37,6 @@ position = Vector2(-150, 480)
 position = Vector2(-120, 550)
 sprite_frames = ExtResource("5_mus74")
 animation = &"Limo stage"
+autoplay = "Limo stage"
 frame_progress = 0.39828
 centered = false

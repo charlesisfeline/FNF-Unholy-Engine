@@ -75,7 +75,7 @@ func _process(delta):
 	
 	if Input.is_action_just_pressed('accept'):
 		GlobalMusic.stop()
-		JsonHandler.parse_song(songs[cur_song].text, diff_str)
+		JsonHandler.parse_song(songs[cur_song].text, diff_str, true)
 		#Conductor.embedded_song = songs[cur_song].text
 		Game.switch_scene('play_scene')
 
@@ -117,3 +117,6 @@ func change_diff(amount:int = 0):
 	diff_int = wrapi(diff_int + amount, 0, diff_list.size())
 	diff_str = diff_list[diff_int]
 	$SongInfo/Difficulty.text = '< '+ diff_str.to_upper() +' >'
+
+func add_week():
+	pass

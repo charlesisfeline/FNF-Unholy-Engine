@@ -3,6 +3,7 @@ extends Node2D
 
 signal changed_music
 
+var exclude:Array = ['Play_Scene'] # scenes to not auto start music on
 var Player = AudioStreamPlayer.new()
 var pos:float = 0 # in case you need the position for something or whatever
 #var volume:float = 1
@@ -12,7 +13,7 @@ var music:String = "freakyMenu" # setter for if you KNOW the file exists, set_mu
 func _ready():
 	add_child(Player)
 	Player.finished.connect(finished)
-	if (music != null or music.length() > 0) and Game.scene.name != 'Play_Scene':
+	if (music != null or music.length() > 0) and !exclude.has(Game.scene.name):
 		set_music(music)
 
 func _process(delta):

@@ -15,3 +15,4 @@ func _init(data):
 		dir = data[1] % 4
 		length = data[3]
 		must_press = data[4]
+		type = data[5]

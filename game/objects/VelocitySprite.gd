@@ -4,6 +4,12 @@ class_name VelocitySprite; extends Sprite2D;
 var velocity:Vector2 = Vector2.ZERO
 var acceleration:Vector2 = Vector2.ZERO
 var moving:bool = false
+var antialiasing:bool:
+	get: return texture_filter == CanvasItem.TEXTURE_FILTER_LINEAR
+	set(alias):
+		antialiasing = alias
+		texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR if alias else CanvasItem.TEXTURE_FILTER_NEAREST 
+		
 func _process(delta):
 	if moving:
 		var velocity_delta:Vector2 = _get_velocity_delta(velocity, acceleration, delta)

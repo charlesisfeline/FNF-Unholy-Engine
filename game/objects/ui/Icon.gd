@@ -1,16 +1,16 @@
 class_name Icon; extends Sprite2D;
 
-var is_menu:bool = false # for freeplay icons, when i get around to it
+var is_menu:bool = false
 var follow_spr = null
 var image:String = 'face'
 var is_player:bool = false
 var antialiasing:bool = true:
-	#get: texture_filter == TEXTURE_FILTER_NEAREST
+	get: return texture_filter == CanvasItem.TEXTURE_FILTER_LINEAR
 	set(anti):
 		var filter = CanvasItem.TEXTURE_FILTER_LINEAR if anti else CanvasItem.TEXTURE_FILTER_NEAREST
 		texture_filter = filter
 
-const min_width:int = 150 # if icon image is less or equal, theres only no lose anim
+const min_width:int = 150 # if icon width is less or equal, theres no lose anim
 var has_lose:bool = false
 
 func change_icon(new_image:String = 'face', player:bool = false):

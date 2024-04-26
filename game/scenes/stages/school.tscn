@@ -65,6 +65,7 @@ position = Vector2(-820, -925)
 scale = Vector2(6, 6)
 sprite_frames = ExtResource("7_bh1kv")
 animation = &"trees"
+autoplay = "trees"
 centered = false
 
 [node name="Petals" type="Node2D" parent="."]
@@ -77,4 +78,5 @@ position = Vector2(-200, -40)
 scale = Vector2(6, 6)
 sprite_frames = ExtResource("8_w8kqe")
 animation = &"PETALS ALL"
+autoplay = "PETALS ALL"
 centered = false

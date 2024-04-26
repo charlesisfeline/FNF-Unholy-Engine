@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://boepqt17m73oo"]
 
-[ext_resource type="Script" path="res://gameFolder/tools/TXT Converter.gd" id="1_cddkf"]
-[ext_resource type="Script" path="res://gameFolder/tools/Choose Sprites.gd" id="2_8o1m8"]
+[ext_resource type="Script" path="res://game/tools/TXT Converter.gd" id="1_cddkf"]
+[ext_resource type="Script" path="res://game/tools/Choose Sprites.gd" id="2_8o1m8"]
 
 [node name="TXT Converter" type="Node2D"]
 

@@ -1,11 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://c1wn576p2y4xj"]
+[gd_scene load_steps=4 format=3 uid="uid://c1wn576p2y4xj"]
 
 [ext_resource type="Script" path="res://game/objects/ui/Strum_Line.gd" id="1_6qhpl"]
-[ext_resource type="SpriteFrames" uid="uid://byiauonachpgy" path="res://assets/images/ui/strums/LEFT.res" id="2_yskhi"]
-[ext_resource type="SpriteFrames" uid="uid://dmrpsxwym25lb" path="res://assets/images/ui/strums/DOWN.res" id="3_g7nxb"]
+[ext_resource type="SpriteFrames" uid="uid://hyapqfm5xi0y" path="res://assets/images/ui/styles/default/strums.res" id="2_surtv"]
 [ext_resource type="Script" path="res://game/objects/note/Strum.gd" id="3_h255v"]
-[ext_resource type="SpriteFrames" uid="uid://brrk5gyefogjf" path="res://assets/images/ui/strums/UP.res" id="4_jqch2"]
-[ext_resource type="SpriteFrames" uid="uid://cskn4unamdfug" path="res://assets/images/ui/strums/RIGHT.res" id="5_sflpb"]
 
 [node name="Strum_Line" type="Node2D"]
 script = ExtResource("1_6qhpl")
@@ -15,30 +12,27 @@ script = ExtResource("1_6qhpl")
 [node name="Left" type="AnimatedSprite2D" parent="Strums"]
 position = Vector2(54.25, 55.3)
 scale = Vector2(0.7, 0.7)
-sprite_frames = ExtResource("2_yskhi")
-animation = &"static"
+sprite_frames = ExtResource("2_surtv")
+animation = &"left_static"
 script = ExtResource("3_h255v")
 
 [node name="Down" type="AnimatedSprite2D" parent="Strums"]
 position = Vector2(166.25, 55.3)
 scale = Vector2(0.7, 0.7)
-sprite_frames = ExtResource("3_g7nxb")
-animation = &"static"
+sprite_frames = ExtResource("2_surtv")
+animation = &"down_static"
 script = ExtResource("3_h255v")
 
 [node name="Up" type="AnimatedSprite2D" parent="Strums"]
 position = Vector2(278.25, 55.3)
 scale = Vector2(0.7, 0.7)
-sprite_frames = ExtResource("4_jqch2")
-animation = &"static"
+sprite_frames = ExtResource("2_surtv")
+animation = &"up_static"
 script = ExtResource("3_h255v")
 
 [node name="Right" type="AnimatedSprite2D" parent="Strums"]
 position = Vector2(390.25, 55.3)
 scale = Vector2(0.7, 0.7)
-sprite_frames = ExtResource("5_sflpb")
-animation = &"static"
+sprite_frames = ExtResource("2_surtv")
+animation = &"right_static"
 script = ExtResource("3_h255v")
-
-[node name="Hitsounds" type="AudioStreamPlayer2D" parent="."]
-position = Vector2(-57, -1)

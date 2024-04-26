@@ -2,10 +2,14 @@ extends Node2D;
 
 var base_diffs:Array[String] = ['easy', 'normal', 'hard']
 var get_diff:String
+var last_parsed:Dictionary = {'song': '', 'diff': ''}
 var _SONG
-func parse_song(song:String, diff:String, type:String = 'psych'):
-	var parsed_song
+var chart_notes:Array = [] # keep loaded chart for restarting songs
+var song_events:Array[EventNote] = []
+func parse_song(song:String, diff:String, auto_create:bool = false, type:String = 'psych'):
 	song = song.to_lower().strip_edges(true, true).replace(' ', '-')
+	
+	var parsed_song
 	get_diff = diff
 	match type:
 		#'base'    : parsed_song = base(song)
@@ -15,6 +19,8 @@ func parse_song(song:String, diff:String, type:String = 'psych'):
 		#'osu'     : parsed_song = osu(song)
 		#'': parsed_song = psych(song)
 	_SONG = parsed_song
+	if auto_create:
+		chart_notes = generate_chart(_SONG)
 
 #func base(song:String): pass
 func psych(song:String):
@@ -41,7 +47,10 @@ func you_WILL_get_a_json(song:String):
 	return FileAccess.open(path + get_diff +'.json', FileAccess.READ)
 
 func generate_chart(data):
-	var chart_notes = []
+	# load events whenever chart is made
+	song_events = get_events(data.song.to_lower().strip_edges(true, true).replace(' ', '-'))
+	
+	var _notes = []
 	for sec in data.notes:
 		for note in sec.sectionNotes:
 			var time:float = maxf(0, note[0])
@@ -50,11 +59,44 @@ func generate_chart(data):
 			var is_sustain:bool = sustain_length > 0
 			var n_data:int = int(note[1])
 			var must_hit:bool = sec.mustHitSection if note[1] <= 3 else not sec.mustHitSection
+			var type:String = ''
+			if note.size() > 3: type = str(note[3])
 			
-			chart_notes.append([time, n_data, is_sustain, sustain_length, must_hit])
-			chart_notes.sort()
-	return chart_notes
+			_notes.append([time, n_data, is_sustain, sustain_length, must_hit, type])
+			_notes.sort()
+	return _notes
 
+func get_events(song:String = ''):
+	var path_to_check = 'res://assets/songs/%s/events.json' % [song]
+	var events_found:Array = []
+	var events:Array[EventNote] = []
+	if _SONG.has('events'): # check current song json for any events
+		for event in _SONG.events:
+			print(event)
+			events_found.append(event)
+				
+	if FileAccess.file_exists(path_to_check): # then check if there is a event json
+		print(path_to_check)
+		var json = JSON.parse_string(FileAccess.open(path_to_check, FileAccess.READ).get_as_text()).song
+		if json.has('notes') and json.notes.size() > 0: # if events are a -1 note
+			print('is kinda old')
+			for sec in json.notes:
+				for note in sec.sectionNotes:
+					if note[1] != -1: continue
+					events_found.append([note[0], [[note[2], note[3], note[4]]]])
+		else:
+			print('is a normal version')
+			for event in json.events:
+				events_found.append(event)
+	
+	for event in events_found:
+		var new_event = EventNote.new(event)
+		events.append(new_event)
+	
+	events.sort_custom(func(a, b): return a.strum_time < b.strum_time)
+	for i in events: print(i.strum_time)
+	return events
+			
 func get_character(character:String = 'bf'):
 	var json_path = 'res://assets/data/characters/%s.json' % [character]
 	if !FileAccess.file_exists(json_path):
@@ -62,3 +104,6 @@ func get_character(character:String = 'bf'):
 		return 'Nothin'
 	var file = FileAccess.open(json_path, FileAccess.READ)
 	return JSON.parse_string(file.get_as_text())
+
+func parse_week(week:String = ''):
+	var json = JSON.parse_string('')
