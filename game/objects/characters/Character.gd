@@ -33,12 +33,18 @@ var sing_anims:Array[String] = ['singLEFT', 'singDOWN', 'singUP', 'singRIGHT']
 
 func _init(pos:Vector2 = Vector2.ZERO, char:String = 'bf', player:bool = false):
 	centered = false
-	cur_char = char
+	#cur_char = char
 	is_player = player
 	position = pos
-	print('init ' + cur_char)
+	print('init ' + char)
+	load_char(char)
 	
-func _ready():
+func load_char(new_char:String = 'bf'):
+	if new_char == cur_char:
+		print(new_char +' already loaded') 
+		return
+		
+	cur_char = new_char
 	if !FileAccess.file_exists('res://assets/data/characters/%s.json' % [cur_char]):
 		printerr('CHARACTER '+ cur_char +' does NOT have a json')
 		cur_char = 'bf'
@@ -76,6 +82,10 @@ func _ready():
 		focus_offsets.x -= width / 2
 		swap_anim('singLEFT', 'singRIGHT')
 		
+	print('loaded '+ cur_char)
+	
+#func _ready(): load_char(cur_char)
+
 func _process(delta):
 	#if !is_player:
 	if special_anim:
@@ -94,8 +104,8 @@ func _process(delta):
 func dance(forced:bool = false):
 	if special_anim: return
 	if dance_idle:
-		play_anim('dance'+ ('Right' if danced else 'Left') + idle_suffix)
 		danced = !danced
+		play_anim('dance'+ ('Right' if danced else 'Left') + idle_suffix)
 	else:
 		if forced: frame = 0
 		play_anim('idle'+ idle_suffix)

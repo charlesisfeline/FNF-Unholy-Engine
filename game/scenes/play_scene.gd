@@ -27,6 +27,8 @@ var dad:Character
 var gf:Character
 var characters:Array = []
 
+var cached_chars:Dictionary = {'bf' = [], 'gf' = [], 'dad' = []}
+
 var player_strums:Array[Strum] = []
 var opponent_strums:Array[Strum] = []
 
@@ -86,6 +88,10 @@ func _ready():
 	
 	dad = Character.new(stage.dad_pos, SONG.player2)
 	add_child(dad)
+	if dad.cur_char == gf.cur_char and SONG.song == 'Tutorial':
+		dad.position = gf.position
+		dad.focus_offsets.x -= dad.width / 4
+		gf.visible = false
 	
 	boyfriend = Character.new(stage.bf_pos, SONG.player1, true)
 	add_child(boyfriend)
@@ -114,18 +120,17 @@ func _ready():
 	#thread.start(JsonHandler.generate_chart.bind(SONG)) 
 	# since im doing something different, this thread will need to be changed
 	if JsonHandler.chart_notes.size() > 0:
-		chart_notes = JsonHandler.chart_notes
+		chart_notes = JsonHandler.chart_notes.duplicate()
 		print('already loaded')
 	else:
 		chart_notes = JsonHandler.generate_chart(SONG)
 		print('made chart')
 		
 	start_time = chart_notes[0][0]
-	events = JsonHandler.song_events
+	events = JsonHandler.song_events.duplicate()
+	print(events.size())
 	ui.add_child(camNotes)
 	
-	#ui = UI.new()
-	#camHUD.add_child(ui)
 	#await thread.wait_to_finish()
 	ui.start_countdown(true)
 
@@ -137,6 +142,8 @@ var section_data
 var bleh:int = 0
 var last_note:Note
 func _process(delta):
+	if Input.is_action_just_pressed("debug_1"):
+		Game.switch_scene('debug/Charting_Scene')
 	if Input.is_action_just_pressed("back"):
 		auto_play = !auto_play
 	if Input.is_action_just_pressed("accept"): # lol
@@ -149,14 +156,13 @@ func _process(delta):
 	cam.zoom.y = cam.zoom.x
 	
 	if chart_notes != null:
-		while chart_notes.size() > 0 and bleh != chart_notes.size() and chart_notes[bleh][0] - Conductor.song_pos < spawn_time / SONG.speed:
-			if chart_notes[bleh][0] - Conductor.song_pos > spawn_time / SONG.speed:
+		while chart_notes.size() > 0 and bleh != chart_notes.size() and chart_notes[bleh][0] - Conductor.song_pos < spawn_time / cur_speed:
+			if chart_notes[bleh][0] - Conductor.song_pos > spawn_time / cur_speed:
 				break
 			
 			var note_info = NoteData.new(chart_notes[bleh])
 			var new_note:Note = Note.new(note_info)
 			new_note.speed = cur_speed
-
 			notes.append(new_note)
 
 			if chart_notes[bleh][2]: # if it has a sustain
@@ -285,8 +291,13 @@ func event_hit(event:EventNote):
 			gf.special_anim = true
 		'Change Scroll Speed': 
 			var new_speed = SONG.speed * float(event.values[0])
-			create_tween().tween_property(Game.scene, 'cur_speed', new_speed, float(event.values[1]))
+			var len := float(event.values[1])
+			if len > 0:
+				create_tween().tween_property(Game.scene, 'cur_speed', new_speed, len)
+			else:
+				cur_speed = new_speed
 		'Add Camera Zoom': print('yuh')
+		'Change Character': true
 		_: false
 
 func good_note_hit(note:Note):
@@ -390,7 +401,7 @@ func note_miss(note:Note):
 	combo = 0
 	
 	if Conductor.vocals != null:
-		Conductor.vocals.volume_db = -100
+		Conductor.vocals.volume_db = linear_to_db(0)
 	ui.update_score_txt()
 	#if !note.sustain: 
 	kill_note(note)
@@ -404,7 +415,7 @@ func strum_anim(dir:int = 0, player:bool = false):
 	var strum:Strum = ui.player_strums[dir] if player else ui.opponent_strums[dir]
 
 	if Conductor.vocals != null:
-		Conductor.vocals.volume_db = 1
+		Conductor.vocals.volume_db = linear_to_db(1)
 	strum.play_anim('confirm', true)
 	strum.anim_timer = Conductor.step_crochet / 1000
 	if !player or auto_play:

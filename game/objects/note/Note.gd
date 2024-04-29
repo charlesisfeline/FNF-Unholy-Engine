@@ -1,6 +1,7 @@
 class_name Note; extends Node2D;
 
-var style:StyleInfo = Game.scene.ui.STYLE
+var style:StyleInfo:
+	get: return Game.scene.ui.STYLE if Game.scene.has_node('UI') else StyleInfo.new()
 var tex_path:String = 'assets/images/ui/styles/%s/notes/'
 var antialiasing:bool = true:
 	get: return texture_filter == CanvasItem.TEXTURE_FILTER_LINEAR
@@ -19,8 +20,12 @@ var speed:float = 1:
 	set(new_speed): 
 		speed = new_speed
 		if is_sustain: resize_hold()
-		
-var type:String = ""
+
+var anim_suffix:String = ''
+var type:String = "":
+	set(new_type):
+		match new_type:
+			'Alt Animation', 'alt': true
 
 var can_hit:bool = false#:
 #	get: return (must_press and strum_time >= Conductor.song_pos - (Conductor.safe_zone * 0.8)\
@@ -114,7 +119,7 @@ func _process(delta):
 		if strum_time <= Conductor.song_pos:
 			can_hit = true #!dropped
 			#if dropped: return
-
+			
 			temp_len -= 1000 * delta
 			#offset_y -= 1000 * delta
 			if !must_press: holding = true
@@ -126,7 +131,8 @@ func _process(delta):
 				
 				if length <= min_len:
 					was_good_hit = true
-
+		sustain.set_anchor_and_offset(SIDE_BOTTOM, 1.0, -end.texture.get_height())
+	
 				#end.scale.y -= 10 * delta * speed
 				#if end.scale.y <= 0:
 			#		end.scale.y = 0

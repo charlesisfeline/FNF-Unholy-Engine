@@ -7,6 +7,9 @@ var windows:Array = [ # window colors so fancy wow woah woaoh
 var train:Train = Train.new(Vector2(2000, 360))
 func _ready():
 	default_zoom = 1.05
+	
+	bf_pos += Vector2(70, -50)
+	dad_pos += Vector2(100, -50)
 	add_child(train)
 	move_child(train, 3)
 

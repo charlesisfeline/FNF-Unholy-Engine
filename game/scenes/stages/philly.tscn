@@ -16,7 +16,7 @@ script = ExtResource("1_fgt6k")
 scroll_factor = Vector2(0.1, 0.1)
 
 [node name="Sprite" type="Sprite2D" parent="Sky"]
-position = Vector2(-10, 0)
+position = Vector2(-100, 0)
 texture = ExtResource("3_4wq54")
 centered = false
 

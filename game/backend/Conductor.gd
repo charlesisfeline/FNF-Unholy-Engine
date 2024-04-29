@@ -29,9 +29,7 @@ var last_beat:int = -1
 var last_step:int = -1
 var last_section:int = -1
 
-var embedded_song:String = 'tutorial': # if load_song has no param, we'll check this var instead
-	set(song): embedded_song = song.replace(' ', '-')
-var song_prepped:bool = false
+var song_loaded:bool = false
 var inst = AudioStreamPlayer.new()
 var vocals = AudioStreamPlayer.new()
 func _ready():
@@ -40,11 +38,8 @@ func _ready():
 
 func load_song(song:String = ''):
 	if song.length() < 1:
-		if embedded_song.length() > 0:
-			song = embedded_song
-		else: 
-			printerr('Conductor.load_song: NO SONG ENTERED')
-			song = 'tutorial' #DirAccess.get_directories_at('res://assets/songs')[0]
+		printerr('Conductor.load_song: NO SONG ENTERED')
+		song = 'tutorial' #DirAccess.get_directories_at('res://assets/songs')[0]
 		
 	var path:String = 'res://assets/songs/'+ song.replace(' ', '-') +'/audio/%s.ogg'
 	if FileAccess.file_exists(path % ['Inst']):
@@ -52,12 +47,12 @@ func load_song(song:String = ''):
 	if FileAccess.file_exists(path % ['Voices']):
 		vocals.stream = load(path % ['Voices'])
 	
-	song_prepped = true
+	song_loaded = true
 
-var played_audio:bool = false
+var song_started:bool = false
 var paused:bool = false
 func start_song():
-	played_audio = true
+	song_started = true
 	#if get_tree().current_scene.name == 'play_scene':
 		#song_end.connect(get_tree().current_scene.song_end)
 		
@@ -67,11 +62,11 @@ func start_song():
 var test:float = 0
 func _process(delta):
 	if paused: return
-	if song_prepped:
+	if song_loaded:
 		song_pos += (1000 * delta)
 
 	if song_pos > 0:
-		if !played_audio: 
+		if !song_started: 
 			start_song()
 			return
 		if inst != null: 
@@ -89,7 +84,7 @@ func _process(delta):
 				Game.call_func('step_hit', [cur_step])
 			
 			if inst.playing: check_resync(inst)
-			if song_pos >= inst.stream.get_length() * 1000 and song_prepped:
+			if song_pos >= inst.stream.get_length() * 1000 and song_loaded:
 				print('grah!!!')
 				song_pos = 0
 				
@@ -106,9 +101,6 @@ func check_resync(sound:AudioStreamPlayer):
 		sound.seek(song_pos / 1000)
 		print('resynced')
 
-#func get_bpm_changes(song):	
-#	pass
-
 func pause(force_to:bool):
 	paused = (force_to if force_to != null else !paused)
 	if paused:
@@ -121,9 +113,9 @@ func pause(force_to:bool):
 func reset():
 	soft_reset()
 	bpm = 100
-	#embedded_song = ''
-	played_audio = false
-	song_prepped = false
+	
+	song_started = false
+	song_loaded = false
 	inst.stream = null
 	vocals.stream = null
 

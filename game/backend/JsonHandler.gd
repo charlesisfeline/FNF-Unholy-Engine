@@ -2,9 +2,9 @@ extends Node2D;
 
 var base_diffs:Array[String] = ['easy', 'normal', 'hard']
 var get_diff:String
-var last_parsed:Dictionary = {'song': '', 'diff': ''}
+
 var _SONG
-var chart_notes:Array = [] # keep loaded chart for restarting songs
+var chart_notes:Array = [] # keep loaded chart and events for restarting songs
 var song_events:Array[EventNote] = []
 func parse_song(song:String, diff:String, auto_create:bool = false, type:String = 'psych'):
 	song = song.to_lower().strip_edges(true, true).replace(' ', '-')
@@ -59,8 +59,7 @@ func generate_chart(data):
 			var is_sustain:bool = sustain_length > 0
 			var n_data:int = int(note[1])
 			var must_hit:bool = sec.mustHitSection if note[1] <= 3 else not sec.mustHitSection
-			var type:String = ''
-			if note.size() > 3: type = str(note[3])
+			var type:String = str(note[3]) if note.size() > 3 else ''
 			
 			_notes.append([time, n_data, is_sustain, sustain_length, must_hit, type])
 			_notes.sort()
@@ -71,32 +70,29 @@ func get_events(song:String = ''):
 	var events_found:Array = []
 	var events:Array[EventNote] = []
 	if _SONG.has('events'): # check current song json for any events
-		for event in _SONG.events:
-			print(event)
-			events_found.append(event)
-				
+		events_found.append_array(_SONG.events)
+	
 	if FileAccess.file_exists(path_to_check): # then check if there is a event json
 		print(path_to_check)
 		var json = JSON.parse_string(FileAccess.open(path_to_check, FileAccess.READ).get_as_text()).song
 		if json.has('notes') and json.notes.size() > 0: # if events are a -1 note
-			print('is kinda old')
 			for sec in json.notes:
 				for note in sec.sectionNotes:
-					if note[1] != -1: continue
-					events_found.append([note[0], [[note[2], note[3], note[4]]]])
+					if note[1] == -1: 
+						events_found.append([note[0], [[note[2], note[3], note[4]]]])
 		else:
-			print('is a normal version')
-			for event in json.events:
-				events_found.append(event)
+			events_found.append_array(json.events)
 	
 	for event in events_found:
-		var new_event = EventNote.new(event)
-		events.append(new_event)
+		var time = event[0]
+		for i in event[1]:
+			var new_event = EventNote.new([time, i])
+			events.append(new_event)
+			#print([time, i])
 	
 	events.sort_custom(func(a, b): return a.strum_time < b.strum_time)
-	for i in events: print(i.strum_time)
 	return events
-			
+
 func get_character(character:String = 'bf'):
 	var json_path = 'res://assets/data/characters/%s.json' % [character]
 	if !FileAccess.file_exists(json_path):
