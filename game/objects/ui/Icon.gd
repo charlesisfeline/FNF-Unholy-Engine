@@ -53,4 +53,4 @@ func _process(delta):
 		else:
 			position = follow_spr.position
 			position.x += follow_spr.width + 80
-			position.y += 40
+			position.y += texture.get_height() / 5

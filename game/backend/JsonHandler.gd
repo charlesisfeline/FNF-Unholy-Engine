@@ -7,7 +7,7 @@ var _SONG
 var chart_notes:Array = [] # keep loaded chart and events for restarting songs
 var song_events:Array[EventNote] = []
 func parse_song(song:String, diff:String, auto_create:bool = false, type:String = 'psych'):
-	song = song.to_lower().strip_edges(true, true).replace(' ', '-')
+	song = song.to_lower().strip_edges().replace(' ', '-')
 	
 	var parsed_song
 	get_diff = diff
@@ -48,7 +48,7 @@ func you_WILL_get_a_json(song:String):
 
 func generate_chart(data):
 	# load events whenever chart is made
-	song_events = get_events(data.song.to_lower().strip_edges(true, true).replace(' ', '-'))
+	song_events = get_events(data.song.to_lower().strip_edges().replace(' ', '-'))
 	
 	var _notes = []
 	for sec in data.notes:
@@ -101,5 +101,8 @@ func get_character(character:String = 'bf'):
 	var file = FileAccess.open(json_path, FileAccess.READ)
 	return JSON.parse_string(file.get_as_text())
 
-func parse_week(week:String = ''):
-	var json = JSON.parse_string('')
+func parse_week(week:String = 'week1'): # in week folder
+	week = week.replace('.json', '')
+	var week_json = FileAccess.open('res://assets/data/weeks/'+ week.strip_edges() +'.json', FileAccess.READ)
+	var json = JSON.parse_string(week_json.get_as_text())
+	return json

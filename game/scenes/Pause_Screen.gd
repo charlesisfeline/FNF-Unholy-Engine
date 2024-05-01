@@ -4,7 +4,7 @@ extends Node2D
 var options = []
 var cur_option:int = 0
 func _ready():
-	Conductor.pause(true)
+	Conductor.paused = true
 	GlobalMusic.set_music('breakfast')
 	$BG.modulate.a = 0
 	var twen = create_tween()
@@ -26,16 +26,16 @@ func _process(_delta):
 		change_selection(1)
 		
 	if Input.is_action_just_pressed('accept'):
-		match options[cur_option].text.to_lower():
-			'resume':
+		match option_list[cur_option]:
+			'Resume':
 				close()
-				Conductor.pause(false)
+				Conductor.paused = false
 				get_tree().paused = false
-			'restart song':
+			'Restart Song':
 				close()
 				Conductor.reset()
 				Game.reset_scene()
-			'exit to menu':
+			'Exit To Menu':
 				close()
 				Conductor.reset()
 				Game.switch_scene('menus/freeplay')

@@ -3,10 +3,10 @@ extends Node2D
 
 signal changed_music
 
-var exclude:Array = ['Play_Scene'] # scenes to not auto start music on
+var exclude:Array = ['Play_Scene', 'Charting_Scene'] # scenes to not auto start music on
 var Player = AudioStreamPlayer.new()
 var pos:float = 0 # in case you need the position for something or whatever
-#var volume:float = 1
+
 var loop:bool = true
 var music:String = "freakyMenu" # setter for if you KNOW the file exists, set_music for null checks
 
@@ -19,7 +19,7 @@ func _ready():
 func _process(delta):
 	if Player.stream != null:
 		pos += delta * 1000
-
+		
 func set_music(new_music:String, volume:float = 1, looped:bool = true):
 	var path:String = 'assets/music/' + new_music + '.ogg'
 	if FileAccess.file_exists('res://' + path):

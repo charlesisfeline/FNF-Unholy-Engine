@@ -28,7 +28,6 @@ func _init(init_text:String = '', is_bold:bool = true):
 	bold = is_bold
 	if init_text.length() > 0:
 		text = init_text
-
 	
 func make_text(tx:String):
 	all_letters.clear()
@@ -46,17 +45,16 @@ func make_text(tx:String):
 		if is_space: spaces += 1
 		if i == '\n': rows += 1
 		
-		if spaces != 0: offsets.x += x_diff * spaces
+		if spaces != 0: offsets.x += (x_diff * spaces)
 		spaces = 0
 		
 		if rows != 0:
 			offsets.x = 0
 			offsets.y += y_diff * rows
 		rows = 0
-		if is_space: continue
 		
 		var anim = get_anim(i)
-		if anim.length() < 1: continue
+		#if anim.length() < 1: continue
 		var letter = Letter.new(offsets, i, cur_loop, rows)
 		if anim != '' and is_instance_valid(sheet):
 			var e:= sheet.get_frame_texture(anim, 0)
@@ -127,10 +125,15 @@ class Letter extends AnimatedSprite2D:
 	var row:int = 0
 	
 	var _width = 0: 
-		get: return sprite_frames.get_frame_texture(char, 0).get_width() if sprite_frames.get_frame_texture(char, 0) != null else 0
+		get: return get_thing('width')
 	var _height = 0: 
-		get: return sprite_frames.get_frame_texture(char, 0).get_height() if sprite_frames.get_frame_texture(char, 0) != null else 0
+		get: return get_thing('height')
 	
 	func _init(pos:Vector2, char:String, id:int, row:int):
 		self.position = pos; self.char = char;
 		self.id = id; self.row = row;
+		
+	func get_thing(the:String):
+		if sprite_frames == null or !sprite_frames.has_animation(char): return 47 if the == 'width' else 65
+		if the == 'width': return sprite_frames.get_frame_texture(char, 0).get_width()
+		if the == 'height': return sprite_frames.get_frame_texture(char, 0).get_height()

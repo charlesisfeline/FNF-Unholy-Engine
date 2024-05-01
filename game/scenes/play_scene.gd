@@ -103,6 +103,10 @@ func _ready():
 	
 	if cur_stage.contains('school'):
 		ui.cur_style = 'pixel'
+	if cur_stage == 'limo': # lil dumb...
+		remove_child(gf)
+		stage.add_child(gf)
+		stage.move_child(gf, 2)
 		
 	if Prefs.rating_cam == 'game':
 		Judge.rating_pos = boyfriend.position + Vector2(-15, -15)

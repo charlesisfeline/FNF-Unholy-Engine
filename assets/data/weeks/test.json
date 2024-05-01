@@ -1,14 +1,11 @@
 {
 	"songs": [
-		["Tutorial", "gf", [165, 0, 77]]
+		["Test", "bf-pixel", [255, 255, 255]]
 	],
 
 	"weekCharacters": [
-		"",
-		"bf",
-		"gf"
+		"", "bf", "gf"
 	],
-	"weekBackground": "stage",
 
 	"storyName": "",
 	"weekBefore": "tutorial",
