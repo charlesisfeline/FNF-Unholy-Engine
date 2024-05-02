@@ -29,9 +29,9 @@ func _process(delta):
 			play_anim('static')
 			
 func load_skin(new_skin = 'default'):
-	var _last = []
-	if !animation.contains('static'):
-		_last = [animation, frame]
+	#var _last = []
+	#if !animation.contains('static'):
+	#	_last = [animation, frame]
 	
 	if new_skin is String:
 		var style
@@ -45,10 +45,11 @@ func load_skin(new_skin = 'default'):
 	sprite_frames = new_skin.strum_skin
 	scale = new_skin.strum_scale
 	antialiasing = new_skin.antialiased
-	if _last.size() > 0:
-		play_anim(_last[0])
-		frame = _last[1]
-	else: play_anim('static')
+	#if _last.size() > 0:
+	#	play_anim(_last[0])
+	#	frame = _last[1]
+	#else:
+	play_anim('static')
 
 func play_anim(anim:String, forced:bool = false):
 	if anim == 'static':

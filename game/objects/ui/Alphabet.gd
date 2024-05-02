@@ -54,7 +54,6 @@ func make_text(tx:String):
 		rows = 0
 		
 		var anim = get_anim(i)
-		#if anim.length() < 1: continue
 		var letter = Letter.new(offsets, i, cur_loop, rows)
 		if anim != '' and is_instance_valid(sheet):
 			var e:= sheet.get_frame_texture(anim, 0)

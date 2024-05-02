@@ -26,9 +26,9 @@ func _ready():
 	
 	for i in 4:
 		var temp_strum = Strum.new()
+		temp_strum.load_skin('default')
 		temp_strum.position = Vector2(470 + (200 * i), 550)
 		temp_strum.dir = i
-		temp_strum.sprite_frames = load('res://assets/images/ui/strums/'+ key_names[i].to_upper() +'.res')
 		add_child(temp_strum)
 		strums.append(temp_strum)
 

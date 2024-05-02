@@ -15,27 +15,25 @@ func _ready():
 	if GlobalMusic.Player.stream == null:
 		GlobalMusic.set_music('freakyMenu')
 	
-	for i in order:
-		added_weeks.append(i.strip_edges())
+	for i in order: added_weeks.append(i.strip_edges())
+	
 	for file in order: # base songs first~
-		for song in JsonHandler.parse_week(file).songs:
-			add_song(FreeplaySong.new(song))
+		var week_file = JsonHandler.parse_week(file)
+		var d_list = week_file.difficulties if week_file.has('difficulties') else []
+		for song in week_file.songs:
+			add_song(FreeplaySong.new(song, d_list))
 	
 	# you dont need a json to add songs, without one itll only have base 3 diffs, no color, and a bf icon
 	var weeks_to_add = []
 	for week in DirAccess.get_files_at('res://assets/data/weeks'):
 		week = week.replace('.json', '')
 		if !added_weeks.has(week) and !week.ends_with('.txt'):
-			#print(week)
 			weeks_to_add.append(week)
 	
 	if weeks_to_add.size() > 0:
 		for week in weeks_to_add:
 			var week_file = JsonHandler.parse_week(week)
-			var d_list = []
-			if week_file.has('difficulties'): 
-				d_list = week_file.difficulties
-				print(d_list)
+			var d_list = week_file.difficulties if week_file.has('difficulties') else []
 			for song in week_file.songs:
 				add_song(FreeplaySong.new(song, d_list))
 	

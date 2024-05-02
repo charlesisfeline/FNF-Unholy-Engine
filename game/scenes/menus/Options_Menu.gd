@@ -20,7 +20,8 @@ var visuals = [
 	['allow_rpc', 'bool'], 
 	['note_splashes', 'array', ['sicks', 'all', 'none']], 
 	['behind_strums', 'bool'],
-	['rating_cam', 'array', ['game', 'hud', 'none']]
+	['rating_cam', 'array', ['game', 'hud', 'none']],
+	['daniel', 'bool']
 ]
 #var controls = []
 
@@ -31,14 +32,13 @@ var in_sub:bool = false
 var main_text:Array[Alphabet]
 var pref_list:Array[Alphabet]
 func _ready():
-	var file = FileAccess.open('res://assets/data/prefInfo.json', FileAccess.READ).get_as_text()
 	var b = JSON.new()
-	b.parse(file)
+	b.parse(FileAccess.open('res://assets/data/prefInfo.json', FileAccess.READ).get_as_text())
 	descriptions = b.data
 	for i in catagories.size():
 		var item = catagories[i]
 		var text = Alphabet.new(item)
-		text.position = Vector2(250 - (text.text.length() * 20), 100 + (100 * i))
+		text.position = Vector2(275 - (text.width / 2), 100 + (100 * i))
 		add_child(text)
 		main_text.append(text)
 	update_scroll()
@@ -82,7 +82,7 @@ func show_main():
 		pref_list[0].queue_free()
 		pref_list.remove_at(0)
 	
-	$TextBG/Info.text = 'Hi!'
+	$TextBG/Info.text = 'Choose a Catagory'
 	for i in main_text.size():
 		main_text[i].modulate.a = (1.0 if i == cur_cata else 0.6)
 	
@@ -99,7 +99,11 @@ func show_catagory(catagory:String):
 			var new_pref = Option.new(pref, descriptions[pref[0]])
 			new_pref.is_menu = true
 			new_pref.target_y = loops
-			new_pref.lock.x = 550
+			new_pref.lock.x = 1300
+			var twen = create_tween()\
+			.tween_property(new_pref, 'lock:x', 550, 0.3).set_delay(0.1 * loops)\
+			.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+			
 			add_child(new_pref)
 			pref_list.append(new_pref)
 			loops += 1
@@ -154,6 +158,8 @@ class Option extends Alphabet:
 		
 	# update the preference and the option text
 	func update_option(diff:float = 0): # diff for arrays/nums
+		if type == 'int' or type == 'float':
+			if Input.is_key_pressed(KEY_SHIFT): diff *= 10
 		match type:
 			'array':
 				cur_op = wrapi(cur_op + round(diff), 0, choices.size())

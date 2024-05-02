@@ -42,6 +42,8 @@ var misses:int = 0
 
 func _ready():
 	SONG = JsonHandler._SONG
+	if Prefs.daniel: SONG.player1 = 'bf-girl'
+	
 	Conductor.load_song(SONG.song)
 	cur_speed = SONG.speed
 	if SONG.has('stage'):

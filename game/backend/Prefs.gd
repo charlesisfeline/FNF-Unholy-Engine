@@ -1,6 +1,6 @@
 extends Node2D
 
-var cfg_file:ConfigFile
+var cfg_file:ConfigFile = ConfigFile.new()
 ## GAMEPLAY ##
 var auto_play:bool = false
 var downscroll:bool = false
@@ -14,14 +14,15 @@ var good_window:int = 90
 var bad_window:int = 135
 
 ## VISUALS ##
-var fps:int = 0:
+var fps:int = 60:
 	set(new): fps = new; Engine.max_fps = fps
 var allow_rpc:bool = true
 var note_splashes:String = 'sicks'
 var behind_strums:bool = false
 var rating_cam:String = 'game'
 
-const DANIEL_IS_CUTE:bool = true
+var daniel:bool = false
+
 ## KEYBINDS ##
 var note_keys:Array = [
 	['A', 'S', 'W', 'D'], ['Left', 'Down', 'Up', 'Right']
@@ -42,7 +43,7 @@ var ui_keys:Array = [
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	cfg_file = load_prefs()
+	check_prefs()
 	
 	#save_prefs()
 	#load_prefs()
@@ -69,31 +70,45 @@ func set_keybinds():
 func get_list():
 	var list = get_script().get_script_property_list()
 	list.remove_at(0); list.remove_at(0)
+
 	#for i in list: print(i.name)
 	return list
 
 func save_prefs():
 	if cfg_file == null: 
 		printerr('CONFIG FILE is NOT loaded, couldn\'t save')
-		load_prefs()
 		return
 		
 	for i in get_list():
 		cfg_file.set_value('Preferences', i.name, get(i.name))
 		
 	cfg_file.save('user://data.cfg')
-	print('saveded prefs....')
+	print('Saved Preferences')
 	
 func load_prefs():
-	if FileAccess.file_exists('user://data.cfg'):
-		var saved_cfg = ConfigFile.new()
-		saved_cfg.load('user://data.cfg')
-		if saved_cfg.has_section('Preferences'):
-			var list = get_list()
-			for pref in list:
-				Prefs.set(pref.name, saved_cfg.get_value('Preferences', pref.name))
-		return saved_cfg
+	var saved_cfg = ConfigFile.new()
+	saved_cfg.load('user://data.cfg')
+	if saved_cfg.has_section('Preferences'):
+		for pref in get_list():
+			Prefs.set(pref.name, saved_cfg.get_value('Preferences', pref.name, null))
+	return saved_cfg
+
+func check_prefs():
+	print('checking')
+	var list = get_list()
+	var config_exists = FileAccess.file_exists('user://data.cfg')
+
+	if config_exists: 
+		var prefs_changed:bool = false
+		cfg_file.load('user://data.cfg')
+		for pref in list:
+			if !cfg_file.has_section_key('Preferences', pref.name):
+				prefs_changed = true
+				cfg_file.set_value('Preferences', pref.name, get(pref.name))
+		if prefs_changed: # if a pref was added, resave the cfg file
+			print('prefs changed, updating')
+			cfg_file.save('user://data.cfg')
+			
+		cfg_file = load_prefs()
 	else:
-		cfg_file = ConfigFile.new()
 		save_prefs()
-		load_prefs()
