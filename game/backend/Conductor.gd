@@ -38,6 +38,7 @@ var paused:bool = false:
 
 var inst = AudioStreamPlayer.new()
 var vocals = AudioStreamPlayer.new()
+var vocals2 = AudioStreamPlayer.new()
 
 func _ready():
 	add_child(inst)
@@ -79,17 +80,15 @@ func _process(delta):
 				cur_step += 1
 				Game.call_func('step_hit', [cur_step])
 			
-			if inst.playing: check_resync(inst)
 			if song_pos >= inst.stream.get_length() * 1000 and song_loaded:
 				print('grah!!!')
-				song_pos = 0
 				
 				Game.call_func('song_end')
-				inst.stop()
-				if vocals != null: vocals.stop()
-				
-		if vocals != null and vocals.playing: 
-			check_resync(vocals)
+				stop()
+		
+		for audio in [inst, vocals, vocals2]:
+			if audio.stream != null and audio.playing: 
+				check_resync(audio)
 				
 func check_resync(sound:AudioStreamPlayer):
 	if absf(sound.get_playback_position() * 1000 - song_pos) > 20:

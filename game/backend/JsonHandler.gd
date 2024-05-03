@@ -62,7 +62,7 @@ func generate_chart(data):
 			var type:String = str(note[3]) if note.size() > 3 else ''
 			
 			_notes.append([time, n_data, is_sustain, sustain_length, must_hit, type])
-			_notes.sort()
+			_notes.sort_custom(func(a, b): return a[0] < b[0])
 	return _notes
 
 func get_events(song:String = ''):

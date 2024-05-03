@@ -41,6 +41,7 @@ var combo:int = 0
 var misses:int = 0
 
 func _ready():
+	print(InputMap.action_get_events('note_left'))
 	SONG = JsonHandler._SONG
 	if Prefs.daniel: SONG.player1 = 'bf-girl'
 	
@@ -83,7 +84,8 @@ func _ready():
 			'senpai', 'roses', 'thorns': gf_ver = 'gf-pixel'
 			'ugh', 'guns': gf_ver = 'gf-tankmen'
 			'stress': gf_ver = 'pico-speaker'
-		
+			
+	if gf_ver == null: gf_ver = 'gf' # if somehow
 	print(gf_ver)
 	gf = Character.new(stage.gf_pos, gf_ver)
 	add_child(gf)
@@ -270,8 +272,7 @@ func key_press(key:int = 0):
 				if note == funny: continue 
 				if absf(funny.strum_time - note.strum_time) < 1.0:
 					kill_note(funny)
-				elif funny.strum_time < note.strum_time:
-					note = funny; break
+					
 		good_note_hit(note)
 
 	var strum = ui.player_strums[key]
@@ -352,8 +353,9 @@ func good_note_hit(note:Note):
 	#	ui
 	
 func good_sustain_press(sustain:Note, delt:float = 0.0):
-	if !auto_play and Input.is_action_just_released(key_names[sustain.dir]):
+	if !auto_play and Input.is_action_just_released(key_names[sustain.dir]) and !sustain.was_good_hit:
 		#sustain.dropped = true
+		print('let go too soon ', sustain.length)
 		note_miss(sustain)
 		return
 		

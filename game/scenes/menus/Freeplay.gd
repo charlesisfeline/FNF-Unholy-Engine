@@ -45,7 +45,7 @@ func _ready():
 func add_song(song:FreeplaySong):
 	var song_name = song.song.to_lower().strip_edges().replace(' ', '-')
 	if added_songs.has(song_name):
-		print_rich("[color=yellow]"+ song.song +"[/color] already added, skipping")
+		#print_rich("[color=yellow]"+ song.song +"[/color] already added, skipping")
 		return
 		
 	added_songs.append(song_name)

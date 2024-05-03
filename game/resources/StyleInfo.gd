@@ -27,7 +27,3 @@ func load_style(style:String = 'default'):
 	else:
 		print_debug('STYLE: '+ style +' does not exist')
 		return
-
-func style_scales(this:String):
-	var style_scales
-	

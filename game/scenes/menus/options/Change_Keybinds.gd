@@ -41,13 +41,14 @@ func _process(delta):
 	
 		if Input.is_action_just_pressed("accept"):
 			if key_binds[cur_bind] != null:
-				alt = 0 if cur_bind < (key_binds.size() / 2) else 1
+				alt = 0 if cur_bind < floor(key_binds.size() / 2) else 1
 				start_change(cur_menu +'_'+ key_names[cur_bind % 4])
 		if Input.is_action_just_pressed("back"):
 			if is_changing: 
 				is_changing = false
 				selected_bind = ''
 			else:
+				Prefs.set_keybinds()
 				Game.switch_scene('menus/options_menu')
 
 func _unhandled_key_input(event):

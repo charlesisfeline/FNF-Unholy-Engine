@@ -24,6 +24,7 @@ var speed:float = 1:
 var anim_suffix:String = ''
 var type:String = "":
 	set(new_type):
+		type = new_type
 		match new_type:
 			'Alt Animation', 'alt': true
 
@@ -42,7 +43,7 @@ var offset_y:float = 0
 var parent:Note
 
 var holding:bool = false
-var min_len:float = 10
+var min_len:float = 25 # before a sustain is counted as "hit"
 var dropped:bool = false:
 	set(drop): 
 		dropped = drop
@@ -62,8 +63,8 @@ var alpha:float = 1:
 func _init(data = null, sustain:bool = false):
 	if data != null:
 		copy_from(data)
-		is_sustain = (sustain) #and data.length >= 100) #if its too short then its no sustain
-		if is_sustain and data is Note:
+		if sustain and data is Note:
+			is_sustain = true
 			temp_len = length
 			parent = data
 
@@ -75,7 +76,6 @@ func _ready():
 	scale = style.note_scale
 	
 	if is_sustain:
-		scale.y = 0.7
 		alpha = 0.6
 		# stole from fnf raven because i didnt know how "Control"s worked
 		hold_group = Control.new()
@@ -99,10 +99,8 @@ func _ready():
 		sustain.grow_horizontal = Control.GROW_DIRECTION_BOTH
 		sustain.grow_vertical = Control.GROW_DIRECTION_BOTH
 		
-		hold_group.size.x = maxf(end.texture.get_width(), sustain.texture.get_width())
-		hold_group.position.x -= hold_group.size.x * 0.5
-		hold_group.size.y = ((length * 0.63) * speed)
-
+		resize_hold(true)
+		
 		hold_group.add_child(sustain)
 		hold_group.add_child(end)
 		
@@ -126,21 +124,10 @@ func _process(delta):
 			
 			if holding and length != temp_len: #end piece kinda fucks off a bit every now and then
 				length = temp_len
-				#position.y = 560 if Prefs.downscroll else 55
 				resize_hold()
 				
-				if length <= min_len:
+				if roundf(length) <= min_len:
 					was_good_hit = true
-		sustain.set_anchor_and_offset(SIDE_BOTTOM, 1.0, -end.texture.get_height())
-	
-				#end.scale.y -= 10 * delta * speed
-				#if end.scale.y <= 0:
-			#		end.scale.y = 0
-			#	queue_free()
-
-		#end.position = sustain.position
-		#end.position.y += sustain.scale.y * 44
-
 	else:
 		if must_press:
 			can_hit = (Conductor.song_pos - (safe_zone * 0.8) and strum_time <= Conductor.song_pos + (safe_zone * 1))
@@ -177,6 +164,10 @@ func load_skin(skin):
 func resize_hold(update_control:bool = false):
 	if !spawned: return
 	hold_group.size.y = ((length * 0.63) * speed)
+	var rounded_scale = Game.round_d(style.note_scale.y, 1)
+	if rounded_scale > 0.7: 
+		hold_group.size.y /= (rounded_scale + (rounded_scale / 2))
+	
 	if update_control:
 		sustain.set_anchor_and_offset(SIDE_BOTTOM, 1.0, -end.texture.get_height())
 		hold_group.size.x = maxf(end.texture.get_width(), sustain.texture.get_width())

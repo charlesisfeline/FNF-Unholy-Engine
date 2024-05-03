@@ -16,12 +16,13 @@ var bad_window:int = 135
 ## VISUALS ##
 var fps:int = 60:
 	set(new): fps = new; Engine.max_fps = fps
+var auto_pause:bool = true
 var allow_rpc:bool = true
 var note_splashes:String = 'sicks'
 var behind_strums:bool = false
 var rating_cam:String = 'game'
 
-var daniel:bool = false
+var daniel:bool = true
 
 ## KEYBINDS ##
 var note_keys:Array = [
@@ -33,39 +34,27 @@ var ui_keys:Array = [
 	[['A', 'S', 'W', 'D'], ['Left', 'Down', 'Up', 'Right']] # menu navigation
 ]
 
-#var preferences:Dictionary = {
-#	'downscroll': false, 'middlescroll': false, 'splitscroll': false, # scroll types
-#	'auto_play': true,
-#	'hitsounds': false,
-#	'offset': 0,
-#	'sick_window': 45, 'good_window': 90, 'bad_window': 135
-#}
-
-# Called when the node enters the scene tree for the first time.
 func _ready():
 	check_prefs()
-	
-	#save_prefs()
-	#load_prefs()
-	#set_keybinds()
+	set_keybinds()
 
 func set_keybinds():
 	var key_names:Array[String] = ['note_left', 'note_down', 'note_up', 'note_right']
-	var loops:int = 0
-	for key in note_keys[0]:
-		var new_key = InputEventKey.new()
-		new_key.set_keycode(OS.find_keycode_from_string(key))
-		InputMap.action_erase_event(key_names[loops], InputMap.action_get_events(key_names[loops])[0])
-		InputMap.action_add_event(key_names[loops], new_key)
-		loops += 1
-	loops = 0
 	
-	for key in note_keys[1]:
-		var new_key = InputEventKey.new()
-		new_key.set_keycode(OS.find_keycode_from_string(key))
-		InputMap.action_erase_event(key_names[loops], InputMap.action_get_events(key_names[loops])[1])
-		InputMap.action_add_event(key_names[loops], new_key)
-		loops += 1
+	for i in key_names.size():
+		var key = key_names[i]
+		if !InputMap.has_action(key):
+			InputMap.add_action(key)
+		else:
+			InputMap.action_erase_events(key)
+			
+		var new_bind:Array[InputEventKey] = [InputEventKey.new(), InputEventKey.new()]
+		for k in 2: 
+			new_bind[k].set_keycode(OS.find_keycode_from_string(note_keys[k][i]))
+		InputMap.action_add_event(key, new_bind[0])
+		InputMap.action_add_event(key, new_bind[1])
+
+	print('updated keybinds')
 	
 func get_list():
 	var list = get_script().get_script_property_list()
@@ -83,6 +72,7 @@ func save_prefs():
 		cfg_file.set_value('Preferences', i.name, get(i.name))
 		
 	cfg_file.save('user://data.cfg')
+	#set_keybinds()
 	print('Saved Preferences')
 	
 func load_prefs():
@@ -90,11 +80,10 @@ func load_prefs():
 	saved_cfg.load('user://data.cfg')
 	if saved_cfg.has_section('Preferences'):
 		for pref in get_list():
-			Prefs.set(pref.name, saved_cfg.get_value('Preferences', pref.name, null))
+			set(pref.name, saved_cfg.get_value('Preferences', pref.name, null))
 	return saved_cfg
 
 func check_prefs():
-	print('checking')
 	var list = get_list()
 	var config_exists = FileAccess.file_exists('user://data.cfg')
 

@@ -22,21 +22,17 @@ func _notification(what):
 	elif what == MainLoop.NOTIFICATION_APPLICATION_FOCUS_OUT:
 		focus_change.emit(false)
 
-var was_paused:bool = false
+var is_paused:bool = false:
+	set(paus): 
+		is_paused = paus
+		get_tree().paused = is_paused
 func focus_changed(is_focused:bool):
-	print('as')
-	if is_focused:
-		GlobalMusic.process_mode = Node.PROCESS_MODE_INHERIT
-		if was_paused:
-			get_tree().paused = false
-			was_paused = false
-	else:
-		GlobalMusic.process_mode = Node.PROCESS_MODE_DISABLED
-		if !get_tree().paused:
-			get_tree().paused = true
-			was_paused = true
-	# focus in: if was_paused then get_tree().paused = false, was_paused = false
-	# focus out: if !get_tree().paused then get_tree().paused = true, was_paused = true
+	if Prefs.auto_pause:
+		GlobalMusic.volume = 1 if is_focused else 0 # pausing this is too much work ill just mute it
+		if is_focused:
+			if is_paused: is_paused = false
+		else:
+			if !get_tree().paused: is_paused = true
 
 func center_obj(obj = null, axis:String = 'xy'):
 	if obj == null: return

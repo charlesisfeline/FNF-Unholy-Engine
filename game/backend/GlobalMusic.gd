@@ -5,6 +5,11 @@ signal changed_music
 
 var exclude:Array = ['Play_Scene', 'Charting_Scene'] # scenes to not auto start music on
 var Player = AudioStreamPlayer.new()
+var volume:float = 1:
+	set(vol): 
+		volume = linear_to_db(vol)
+		Player.volume_db = volume
+		
 var pos:float = 0 # in case you need the position for something or whatever
 
 var loop:bool = true
@@ -20,6 +25,7 @@ func _process(delta):
 	if Player.stream != null:
 		pos += delta * 1000
 		
+
 func set_music(new_music:String, volume:float = 1, looped:bool = true):
 	var path:String = 'assets/music/' + new_music + '.ogg'
 	if FileAccess.file_exists('res://' + path):
