@@ -50,14 +50,15 @@ func reset_scene(_skip_trans:bool = false):
 
 func switch_scene(new_scene, _skip_trans:bool = false):
 	if new_scene is String:
+		new_scene = new_scene.to_lower()
+		if new_scene == 'play_scene' and Prefs.chart_player: new_scene += '_empty'
 		var path = 'res://game/scenes/%s.tscn'
 		get_tree().change_scene_to_file(path % new_scene)
 	if new_scene is PackedScene:
 		get_tree().change_scene_to_packed(new_scene)
 
 func call_func(to_call:String, args:Array[Variant] = [], call_tree:bool = false): # call function on nodes or something
-	if to_call.length() < 1: return
-	
+	if to_call.length() < 1 or scene == null: return
 	if call_tree:
 		for node in get_tree().get_nodes_in_group(scene.name):
 			print(node)

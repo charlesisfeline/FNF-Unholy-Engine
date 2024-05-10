@@ -17,6 +17,7 @@ var bad_window:int = 135
 var fps:int = 60:
 	set(new): fps = new; Engine.max_fps = fps
 var auto_pause:bool = true
+var chart_player:bool = false
 var allow_rpc:bool = true
 var note_splashes:String = 'sicks'
 var behind_strums:bool = false

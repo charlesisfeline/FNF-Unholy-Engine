@@ -12,7 +12,7 @@ func parse_song(song:String, diff:String, auto_create:bool = false, type:String 
 	var parsed_song
 	get_diff = diff
 	match type:
-		#'base'    : parsed_song = base(song)
+		'base'    : parsed_song = base(song)
 		'psych'   : parsed_song = psych(song)
 		#'fps_plus': parsed_song = fps_plus(song)
 		#'maru'    : parsed_song = maru(song)
@@ -22,7 +22,8 @@ func parse_song(song:String, diff:String, auto_create:bool = false, type:String 
 	if auto_create:
 		chart_notes = generate_chart(_SONG)
 
-#func base(song:String): pass
+func base(song:String): 
+	var json = FileAccess.open('res://assets/songs/'+ song +'/charts/chart.json', FileAccess.READ).get_as_text()
 func psych(song:String):
 	var json = you_WILL_get_a_json(song)
 	var parsed = JSON.parse_string(json.get_as_text())
@@ -37,6 +38,7 @@ func you_WILL_get_a_json(song:String):
 	
 	if !FileAccess.file_exists(path + get_diff +'.json'):
 		printerr(song +' has no '+ get_diff +'.json')
+		get_diff = 'hard'
 		return you_WILL_get_a_json('tutorial')
 	#var dir_files = DirAccess.get_files_at(path)
 
@@ -46,7 +48,12 @@ func you_WILL_get_a_json(song:String):
 		
 	return FileAccess.open(path + get_diff +'.json', FileAccess.READ)
 
+var dupe:int = 0
 func generate_chart(data):
+	if data == null: 
+		parse_song('tutorial', get_diff)
+		return
+	dupe = 0
 	# load events whenever chart is made
 	song_events = get_events(data.song.to_lower().strip_edges().replace(' ', '-'))
 	
@@ -61,8 +68,13 @@ func generate_chart(data):
 			var must_hit:bool = sec.mustHitSection if note[1] <= 3 else not sec.mustHitSection
 			var type:String = str(note[3]) if note.size() > 3 else ''
 			
-			_notes.append([time, n_data, is_sustain, sustain_length, must_hit, type])
+			var to_add = [round(time), n_data, is_sustain, sustain_length, must_hit, type]
+			if !_notes.has(to_add): # dupe notes no add
+				_notes.append(to_add)
+			else:
+				dupe += 1
 			_notes.sort_custom(func(a, b): return a[0] < b[0])
+	print(str(dupe) +' notes were skipped')
 	return _notes
 
 func get_events(song:String = ''):

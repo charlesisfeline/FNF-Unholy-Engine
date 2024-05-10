@@ -17,8 +17,9 @@ var gameplay = [
 ]
 var visuals = [
 	['fps', 'int', [0, 240]], 
-	['allow_rpc', 'bool'], 
-	['note_splashes', 'array', ['sicks', 'all', 'none']], 
+	['allow_rpc', 'bool'],
+	['chart_player', 'bool'],
+	['note_splashes', 'array', ['sicks', 'all', 'none']],
 	['behind_strums', 'bool'],
 	['rating_cam', 'array', ['game', 'hud', 'none']],
 	['auto_pause', 'bool'],

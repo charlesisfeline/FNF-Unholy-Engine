@@ -40,6 +40,9 @@ func _ready():
 	for song in DirAccess.get_directories_at('res://assets/songs'):
 		add_song(FreeplaySong.new([song, 'bf', [100, 100, 100]]))
 	
+	if JsonHandler._SONG != null: 
+		cur_song = added_songs.find(JsonHandler._SONG.song.to_lower().replace(' ', '-'))
+	
 	update_list()
 	
 func add_song(song:FreeplaySong):

@@ -1,6 +1,7 @@
 class_name UI; extends CanvasLayer;
 
 var SPLASH = preload('res://game/objects/note/note_splash.tscn')
+
 # probably gonna move some note shit in here
 @onready var cur_scene = get_tree().current_scene
 @onready var score_txt:Label = $Score_Txt
@@ -13,6 +14,9 @@ var SPLASH = preload('res://game/objects/note/note_splash.tscn')
 @onready var player_strums:Array = player_group.get_strums()
 @onready var opponent_strums:Array = opponent_group.get_strums()
 var strums:Array[Strum] = []
+var chart_notes = []
+
+var characters:Array[Character] = []
 
 var STYLE = StyleInfo.new()
 var cur_style:String = 'default':
@@ -49,16 +53,16 @@ func _ready():
 	for i in strums: i.downscroll = downscroll
 	
 	if middscroll:
-		player_group.position.x = (Game.screen[0] / 2) - 220
-		#opponent_group.modulate.a = 0.25
-		opponent_group.z_index = -1
-		opponent_group.position = Vector2((Game.screen[0] / 2) - 220, player_group.position.y)
-	
 		#player_group.position.x = (Game.screen[0] / 2) - 220
-		#opponent_group.modulate.a = 0.4
-		#opponent_group.scale = Vector2(0.7, 0.7)
+		#opponent_group.modulate.a = 0.25
 		#opponent_group.z_index = -1
-		#opponent_group.position = Vector2(60, 400 if downscroll else 300)
+		#opponent_group.position = Vector2((Game.screen[0] / 2) - 220, player_group.position.y)
+	
+		player_group.position.x = (Game.screen[0] / 2) - 220
+		opponent_group.modulate.a = 0.4
+		opponent_group.scale = Vector2(0.7, 0.7)
+		opponent_group.z_index = -1
+		opponent_group.position = Vector2(60, 400 if downscroll else 300)
 	
 	health_bar.position.x = (Game.screen[0] / 2.0) - (health_bar.texture_under.get_width() / 2.0) # 340
 	health_bar.position.y = 85 if downscroll else 630
@@ -77,13 +81,13 @@ func _process(delta):
 	offset.y = (scale.y - 1.0) * -(Game.screen[1] * 0.5)
 	
 func update_score_txt():
-	accuracy = get_acc()
-	var stuff = [cur_scene.score, str(accuracy) +'%', cur_scene.misses]
+	var stuff = [cur_scene.score, get_acc(), cur_scene.misses]
 	score_txt.text = 'Score: %s - Accuracy: [%s] - Misses: %s' % stuff
 
 func get_acc():
 	var new_acc = clampf(note_percent / total_hit, 0, 1)
-	return Game.round_d(new_acc * 100, 2)
+	if new_acc == NAN: return '?'
+	return str(Game.round_d(new_acc * 100, 2)) +'%'
 	
 func spawn_splash(strum:Strum):
 	var new_splash = SPLASH.instantiate()
@@ -95,13 +99,12 @@ func spawn_splash(strum:Strum):
 	
 func add_to_strum_group(item = null, to_player:bool = true):
 	if item == null: return
-	if to_player:
-		$Strum_Group/Player.add_child(item)
-	else:
-		$Strum_Group/Opponent.add_child(item)
+	var group = $'Strum_Group/Player' if to_player else $'Strum_Group/Opponent'
+	group.add_child(item)
 
 func add_behind(item):
-	$Back.add_child(item)
+	add_child(item)
+	move_child(item, 0)
 
 func change_style(new_style:String): # change style of whole hud, instead of one by one
 	STYLE.load_style(new_style)
@@ -121,7 +124,7 @@ func start_countdown(from_beginning:bool = false):
 	await count_down.timeout
 	times_looped += 1
 	
-	for i in Game.scene.characters:
+	for i in characters:
 		if times_looped % i.dance_beat == 0 and !i.animation.begins_with('sing'):
 			i.dance()
 			
@@ -136,5 +139,5 @@ func start_countdown(from_beginning:bool = false):
 			
 			var tween = create_tween().tween_property(spr, 'modulate:a', 0, Conductor.crochet / 1000)
 			tween.finished.connect(spr.queue_free)
-		GlobalMusic.play_sound('ui/'+ cur_style +'/'+ sounds[times_looped])
+		GlobalMusic.play_sound('skins/'+ cur_style +'/'+ sounds[times_looped])
 		start_countdown()

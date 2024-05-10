@@ -20,11 +20,11 @@ func _ready():
 	#col_tween.tween_property(self, "modulate:a", 1, 0.2)
 	
 	Conductor.bpm = 102
-	Conductor.played_audio = true
+	Conductor.song_started = true
 	Conductor.inst = GlobalMusic.Player
-	GlobalMusic.Player.volume_db = 0
+	#GlobalMusic.volume = 0
 	GlobalMusic.set_music('freakyMenu')
-	create_tween().tween_property(GlobalMusic.Player, 'volume_db', 0.7, 4)
+	#create_tween().tween_property(GlobalMusic, 'volume', 0.7, 4)
 	
 var danced:bool = false
 func beat_hit(beat):
@@ -32,10 +32,12 @@ func beat_hit(beat):
 		match beat:
 			1: pass
 			2: make_funny(['hi', 'im you'], 60)
-			3: make_funny(['you', 'you'], 60)
-			14: add_funny('friday')
-			15: add_funny('night')
-			16: add_funny('funkin')
+			3:
+				remove_funny()
+				make_funny(['you', 'you'], 60)
+			4: add_funny('friday')
+			5: add_funny('night')
+			6: add_funny('funkin')
 	$Funkin.scale = Vector2(1.1, 1.1)
 
 	danced = !danced
@@ -75,7 +77,9 @@ func add_funny(text:String, offset:int = 0):
 	var new_text = Alphabet.new(text)
 	new_text.position.x = (Game.screen[0] / 2) - (new_text.width / 2)
 	new_text.position.y += (added_text.size() * 60) + 200 + offset
-		
+	add_child(new_text)
+	added_text.append(new_text)
+	
 func remove_funny():
 	while added_text.size() != 0:
 		remove_child(added_text[0])

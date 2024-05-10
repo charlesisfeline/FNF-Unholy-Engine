@@ -20,13 +20,15 @@ var speed:float = 1:
 	set(new_speed): 
 		speed = new_speed
 		if is_sustain: resize_hold()
-
-var anim_suffix:String = ''
+		
+var alt:String = ""
+var no_anim:bool = false
 var type:String = "":
 	set(new_type):
 		type = new_type
-		match new_type:
-			'Alt Animation', 'alt': true
+		match type.to_lower():
+			'alt animation', 'alt': alt = '-alt'
+			'no animation': no_anim = true
 
 var can_hit:bool = false#:
 #	get: return (must_press and strum_time >= Conductor.song_pos - (Conductor.safe_zone * 0.8)\
@@ -48,8 +50,7 @@ var dropped:bool = false:
 	set(drop): 
 		dropped = drop
 		if dropped: 
-			modulate = Color.GRAY
-			alpha = 0.4
+			modulate = Color(0.75, 0.75, 0.75, 0.4)
 
 var note
 var sustain:TextureRect

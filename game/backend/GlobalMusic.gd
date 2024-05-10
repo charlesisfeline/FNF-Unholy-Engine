@@ -16,6 +16,7 @@ var loop:bool = true
 var music:String = "freakyMenu" # setter for if you KNOW the file exists, set_music for null checks
 
 func _ready():
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	add_child(Player)
 	Player.finished.connect(finished)
 	if (music != null or music.length() > 0) and !exclude.has(Game.scene.name):
@@ -27,14 +28,14 @@ func _process(delta):
 		
 
 func set_music(new_music:String, volume:float = 1, looped:bool = true):
-	var path:String = 'assets/music/' + new_music + '.ogg'
-	if FileAccess.file_exists('res://' + path):
-		Player.stream = load('res://' + path)
+	var path:String = 'assets/music/'+ new_music +'.ogg'
+	if FileAccess.file_exists('res://'+ path):
+		Player.stream = load('res://'+ path)
 		Player.volume_db = volume
 		play_music()
 		loop = looped
 	else: 
-		printerr('MUSIC PLAYER | SET MUSIC: CAN\'T FIND FILE "' + path + '"')
+		printerr('MUSIC PLAYER | SET MUSIC: CAN\'T FIND FILE "'+ path +'"')
 	
 func play_music(at_pos:float = -1):
 	if Player.stream == null: # why not, fuck errors

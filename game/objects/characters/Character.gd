@@ -5,6 +5,7 @@ var offsets:Dictionary = {}
 var focus_offsets:Vector2 = Vector2.ZERO # cam offset type shit
 var cur_char:String = ''
 var icon:String = 'bf'
+var death_char:String = 'bf-dead'
 
 var idle_suffix:String = ''
 var forced_suffix:String = '' # if set, every anim will use it
@@ -16,7 +17,7 @@ var dance_beat:int = 2 # dance every %dance_beat%
 
 var hold_timer:float = 0
 var sing_duration:float = 4
-var anim_timer:float = 0
+var sing_timer:float = 0
 
 var width:float = 0:
 	get: return width * abs(scale.x)
@@ -89,10 +90,6 @@ func load_char(new_char:String = 'bf'):
 func _process(delta):
 	#if !is_player:
 	if special_anim:
-		if anim_timer > 0:
-			anim_timer -= delta
-			if anim_timer <= 0:
-				pass
 		if animation_finished:
 			special_anim = false
 	else:
@@ -144,11 +141,19 @@ func get_cam_pos():
 	
 func set_stuff():
 	var anim:String = 'danceLeft' if dance_idle else 'idle'
-	if sprite_frames.has_animation(anim):
+	if has_anim('deathStart') and !has_anim(anim): anim = 'deathStart' # if its a death char
+	if has_anim(anim):
 		var total:int = sprite_frames.get_frame_count(anim) - 1 # last anim is probably the most upright
 		width = sprite_frames.get_frame_texture(anim, 0).get_width()
 		height = sprite_frames.get_frame_texture(anim, 0).get_height()
-	
+
+func has_anim(anim:String):
+	return sprite_frames.has_animation(anim) if sprite_frames != null else false
+
+func copy_from_char(char:Character):
+	self.position = char.position
+	return Character.new(self.position, self.cur_char, self.is_player)
+
 #func get_anim(anim:String): # get the animation from the json file
 #	if json == null: return anim
 #	for name in json.animations:

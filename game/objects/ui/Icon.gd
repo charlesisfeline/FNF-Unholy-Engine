@@ -12,6 +12,7 @@ var antialiasing:bool = true:
 
 const min_width:int = 150 # if icon width is less or equal, theres no lose anim
 var has_lose:bool = false
+var default_scale:float = 1.0
 
 func change_icon(new_image:String = 'face', player:bool = false):
 	is_player = player
@@ -31,8 +32,8 @@ func bump(to_scale:float = 1.2):
 	scale = Vector2(to_scale, to_scale)
 	
 func _process(delta):
-	scale.x = lerpf(1, scale.x, exp(-delta * 15))
-	scale.y = lerpf(1, scale.y, exp(-delta * 15))
+	scale.x = lerpf(default_scale, scale.x, exp(-delta * 15))
+	scale.y = lerpf(default_scale, scale.y, exp(-delta * 15))
 	
 	if follow_spr != null:
 		if follow_spr is TextureProgressBar: # is healthbar or something
