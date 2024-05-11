@@ -8,6 +8,7 @@ var diff_list = JsonHandler.base_diffs
 var diff_int:int = 1
 var diff_str:String = 'normal'
 
+var last_loaded:Dictionary = {song = '', diff = ''}
 var cur_song:int = 0
 var songs:Array[FreeplaySong] = []
 var icons:Array[Icon] = []
@@ -41,7 +42,9 @@ func _ready():
 		add_song(FreeplaySong.new([song, 'bf', [100, 100, 100]]))
 	
 	if JsonHandler._SONG != null: 
-		cur_song = added_songs.find(JsonHandler._SONG.song.to_lower().replace(' ', '-'))
+		last_loaded.song = JsonHandler._SONG.song.to_lower().replace(' ', '-')
+		last_loaded.diff = JsonHandler.get_diff
+		cur_song = added_songs.find(last_loaded.song)
 	
 	update_list()
 	
@@ -79,12 +82,16 @@ func _process(delta):
 	#	wait_time = 1
 	#	switch_list()
 
+var col_tween
 func update_list(amount:int = 0):
-	cur_song = wrapi(cur_song + amount, 0, songs.size())
 	if amount != 0: GlobalMusic.play_sound('scrollMenu')
+	cur_song = wrapi(cur_song + amount, 0, songs.size())
 	
 	var col = songs[cur_song].bg_color
-	$MenuBG.self_modulate = Color(col[0], col[1], col[2])
+	if col_tween: col_tween.kill()
+	col_tween = create_tween()
+	col_tween.tween_property($MenuBG, 'modulate', songs[cur_song].bg_color, 0.3)
+	
 	if songs[cur_song].diff_list.size() > 0:
 		diff_list = songs[cur_song].diff_list
 	else:
@@ -117,13 +124,14 @@ func _unhandled_key_input(event):
 	if Input.is_action_just_pressed('accept'):
 		GlobalMusic.stop()
 		Conductor.reset()
-		JsonHandler.parse_song(songs[cur_song].text, diff_str, true)
+		if last_loaded.song != songs[cur_song].text or last_loaded.diff != diff_str:
+			JsonHandler.parse_song(songs[cur_song].text, diff_str, true)
 		Game.switch_scene('play_scene')
 	
 class FreeplaySong extends Alphabet:
 	var song:String = 'Tutorial'
 	var diff_list:Array = []
-	var bg_color:Array = [255, 255, 255]
+	var bg_color:Color = Color.WHITE
 	var icon:String = 'face'
 
 	func _init(info, diffs:Array = []):
@@ -131,7 +139,7 @@ class FreeplaySong extends Alphabet:
 			diff_list = diffs
 		self.song = info[0]
 		self.icon = info[1]
-		self.bg_color = [info[2][0] / 255.0, info[2][1] / 255.0, info[2][2] / 255.0]
+		self.bg_color = Color(info[2][0] / 255.0, info[2][1] / 255.0, info[2][2] / 255.0)
 		
 		is_menu = true
 		super(song, true)

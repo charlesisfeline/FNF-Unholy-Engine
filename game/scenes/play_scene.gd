@@ -334,7 +334,9 @@ func good_note_hit(note:Note):
 	if note.type.length() > 0: print(note.type, ' bf')
 
 	if Conductor.vocals.stream != null: 
-		Conductor.vocals.volume_db = linear_to_db(1) 
+		Conductor.vocals.volume_db = linear_to_db(1)
+		
+	ui.player_group.singer = gf if note.type.to_lower().contains('gf') else boyfriend 
 	ui.player_group.note_hit(note)
 	combo += 1
 	
@@ -383,6 +385,7 @@ func good_sustain_press(sustain:Note, delt:float = 0.0):
 	if sustain.holding:
 		if Conductor.vocals.stream != null: 
 			Conductor.vocals.volume_db = linear_to_db(1) 
+		ui.player_group.singer = gf if sustain.type.to_lower().contains('gf') else boyfriend
 		ui.player_group.note_hit(sustain)
 
 		score += floor(500 * delt)
@@ -397,6 +400,7 @@ func opponent_note_hit(note:Note):
 	if Conductor.vocals.stream != null:
 		var v = Conductor.vocals_opp if Conductor.mult_vocals else Conductor.vocals
 		v.volume_db = linear_to_db(1)
+	ui.opponent_group.singer = gf if note.type.to_lower().contains('gf') else dad
 	ui.opponent_group.note_hit(note)
 	kill_note(note)
 
@@ -404,6 +408,10 @@ func opponent_sustain_press(sustain:Note):
 	if Conductor.vocals.stream != null:
 		var v = Conductor.vocals_opp if Conductor.mult_vocals else Conductor.vocals
 		v.volume_db = linear_to_db(1)
+		
+	if section_data.has('altAnim') and section_data.altAnim:
+		sustain.alt = '-alt'
+	ui.opponent_group.singer = gf if sustain.type.to_lower().contains('gf') else dad
 	ui.opponent_group.note_hit(sustain)
 
 func note_miss(note:Note):

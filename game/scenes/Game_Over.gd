@@ -7,6 +7,7 @@ var last_zoom:Vector2
 func _ready():
 	this.ui.process_mode = Node.PROCESS_MODE_ALWAYS
 	this.cam.process_mode = Node.PROCESS_MODE_ALWAYS
+	this.stage.process_mode = Node.PROCESS_MODE_ALWAYS
 	this.ui.visible = false
 	this.boyfriend.visible = false # hide his ass!!!
 	Conductor.paused = true
@@ -31,7 +32,7 @@ func _ready():
 	fade_in()
 	await get_tree().create_timer(2.5).timeout
 
-	GlobalMusic.set_music('skins/default/gameOver')
+	GlobalMusic.set_music('skins/default/gameOver-pico')
 	dead.play_anim('deathLoop')
 
 func fade_in():
@@ -56,7 +57,7 @@ func _process(delta):
 
 	if Input.is_action_just_pressed('accept'):
 		retried = true
-		GlobalMusic.set_music('skins/default/gameOverEnd')
+		GlobalMusic.set_music('skins/default/gameOverEnd-pico')
 		GlobalMusic.loop = false
 		dead.play_anim('deathConfirm', true)
 		await get_tree().create_timer(2).timeout
@@ -68,6 +69,7 @@ func _process(delta):
 		this.cam.process_mode = Node.PROCESS_MODE_INHERIT
 		this.cam.position_smoothing_speed = 4
 		this.boyfriend.process_mode = Node.PROCESS_MODE_INHERIT
+		this.stage.process_mode = Node.PROCESS_MODE_INHERIT
 		this.boyfriend.visible = true
 		this.ui.visible = true
 		get_tree().paused = false

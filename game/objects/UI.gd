@@ -86,7 +86,7 @@ func update_score_txt():
 
 func get_acc():
 	var new_acc = clampf(note_percent / total_hit, 0, 1)
-	if new_acc == NAN: return '?'
+	if is_nan(new_acc): return '?'
 	return str(Game.round_d(new_acc * 100, 2)) +'%'
 	
 func spawn_splash(strum:Strum):
