@@ -107,6 +107,7 @@ func add_behind(item):
 	move_child(item, 0)
 
 func change_style(new_style:String): # change style of whole hud, instead of one by one
+	cur_style = new_style
 	STYLE.load_style(new_style)
 	for strum in strums: strum.load_skin(STYLE)
 	for note in Game.scene.notes: note.load_skin(STYLE)
@@ -139,5 +140,5 @@ func start_countdown(from_beginning:bool = false):
 			
 			var tween = create_tween().tween_property(spr, 'modulate:a', 0, Conductor.crochet / 1000)
 			tween.finished.connect(spr.queue_free)
-		GlobalMusic.play_sound('skins/'+ cur_style +'/'+ sounds[times_looped])
+		Audio.play_sound('skins/'+ cur_style +'/'+ sounds[times_looped])
 		start_countdown()

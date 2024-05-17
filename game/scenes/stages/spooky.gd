@@ -21,7 +21,7 @@ func strike():
 	create_tween().tween_property(flash, 'modulate:a', 0.5, 0.075)
 	create_tween().tween_property(flash, 'modulate:a', 0, 0.25).set_delay(0.15)
 		
-	GlobalMusic.play_sound('thunder_'+ str(randi_range(1, 2)))
+	Audio.play_sound('thunder_'+ str(randi_range(1, 2)))
 	$BG.play('strike')
 	$BG.frame = 0
 	boyfriend.play_anim('scared', true)

@@ -29,7 +29,12 @@ var type:String = "":
 		match type.to_lower():
 			'alt animation', 'alt': alt = '-alt'
 			'no animation': no_anim = true
+			'markov note': 
+				no_anim = true
+				should_hit = false
+				modulate = Color.DIM_GRAY
 
+var should_hit:bool = true
 var can_hit:bool = false#:
 #	get: return (must_press and strum_time >= Conductor.song_pos - (Conductor.safe_zone * 0.8)\
 #	and strum_time <= Conductor.song_pos + (Conductor.safe_zone * 1))
@@ -175,9 +180,10 @@ func resize_hold(update_control:bool = false):
 		hold_group.position.x = 0 - hold_group.size.x * 0.5
 
 func copy_from(item):
-	if item != null and (item is Note or item is NoteData):
+	if item != null and (item is Note or NoteData):
 		strum_time = item.strum_time
 		dir = item.dir
 		length = item.length
 		must_press = item.must_press
+		
 		type = item.type

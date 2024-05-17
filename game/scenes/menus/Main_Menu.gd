@@ -16,18 +16,18 @@ func _process(delta):
 		change_selection(-1)
 	if Input.is_action_just_pressed('accept'):
 		if scene_to_load[cur_option] != null:
-			GlobalMusic.play_sound('confirmMenu')
+			Audio.play_sound('confirmMenu')
 			if scene_to_load[cur_option] != 'donate':
 				Game.switch_scene('menus/'+ scene_to_load[cur_option])
 			else: OS.shell_open('https://ninja-muffin24.itch.io/funkin')
 		else:
-			GlobalMusic.play_sound('cancelMenu')
+			Audio.play_sound('cancelMenu')
 	if Input.is_action_just_pressed('back'):
-		GlobalMusic.play_sound('cancelMenu')
+		Audio.play_sound('cancelMenu')
 		Game.switch_scene('menus/title_scene')
 
 func change_selection(by:int = 0):
-	if by != 0: GlobalMusic.play_sound('scrollMenu')
+	if by != 0: Audio.play_sound('scrollMenu')
 	cur_option = wrapi(cur_option + by, 0, menu_sprites.size())
 	menu_sprites[cur_option].play('selected')
 	for i in menu_sprites.size():

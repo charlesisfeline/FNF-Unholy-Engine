@@ -220,7 +220,7 @@ func good_note_hit(note:Note):
 	
 	kill_note(note)
 	if Prefs.hitsounds:
-		GlobalMusic.play_sound('hitsound', 0.7)
+		Audio.play_sound('hitsound', 0.7)
 	#	ui
 	
 func good_sustain_press(sustain:Note, delt:float = 0.0):

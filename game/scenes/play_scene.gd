@@ -7,6 +7,10 @@ extends Node2D
 
 var default_zoom:float = 0.8
 var SONG
+var cur_style:String = 'default': # yes
+	set(new_style): 
+		ui.cur_style = new_style
+		cur_style = ui.cur_style
 var cur_speed:float = 1:
 	set(new_speed):
 		cur_speed = new_speed
@@ -192,7 +196,7 @@ func _process(delta):
 				note.follow_song_pos(ui.player_strums[note.dir] if note.must_press else ui.opponent_strums[note.dir])
 				if note.is_sustain:
 					if note.must_press:
-						if note.can_hit:
+						if note.can_hit and note.should_hit:
 							#var check = (auto_play or Input.is_action_pressed(key_names[note.dir]))
 							note.holding = (auto_play or Input.is_action_pressed(key_names[note.dir]))
 							good_sustain_press(note, delta)
@@ -203,7 +207,7 @@ func _process(delta):
 					if note.temp_len <= 0: kill_note(note)
 				else:
 					if note.must_press:
-						if auto_play and note.strum_time <= Conductor.song_pos:
+						if auto_play and note.strum_time <= Conductor.song_pos and note.should_hit:
 							good_note_hit(note)
 						if !auto_play and note.strum_time < Conductor.song_pos - (300 / note.speed) and !note.was_good_hit:
 							note_miss(note)
@@ -316,9 +320,9 @@ func event_hit(event:EventNote):
 	match event.event:
 		'Hey!':
 			boyfriend.play_anim('hey', true)
-			boyfriend.special_anim = true
+			boyfriend.anim_timer = 0.6
 			gf.play_anim('cheer', true)
-			gf.special_anim = true
+			gf.anim_timer = 0.6
 		'Change Scroll Speed': 
 			var new_speed = SONG.speed * float(event.values[0])
 			var len := float(event.values[1])
@@ -326,7 +330,7 @@ func event_hit(event:EventNote):
 				create_tween().tween_property(Game.scene, 'cur_speed', new_speed, len)
 			else:
 				cur_speed = new_speed
-		'Add Camera Zoom': print('yuh')
+		'Add Camera Zoom': true
 		'Change Character': true
 		_: false
 
@@ -368,10 +372,9 @@ func good_note_hit(note:Note):
 			ui.spawn_splash(ui.player_strums[note.dir])
 			
 	ui.update_score_txt()
-	
 	kill_note(note)
 	if Prefs.hitsounds:
-		GlobalMusic.play_sound('hitsound', 0.7)
+		Audio.play_sound('hitsound', 0.7)
 	#	ui
 	
 func good_sustain_press(sustain:Note, delt:float = 0.0):
@@ -415,26 +418,27 @@ func opponent_sustain_press(sustain:Note):
 	ui.opponent_group.note_hit(sustain)
 
 func note_miss(note:Note):
-	ui.player_group.note_miss(note)
-	score -= 10 if !note.is_sustain else floor(note.length * 5)
-	misses += 1
-	ui.total_hit += 1
-	ui.hp -= 4.7
+	if note.should_hit:
+		ui.player_group.note_miss(note)
+		score -= 10 if !note.is_sustain else floor(note.length * 5)
+		misses += 1
+		ui.total_hit += 1
+		ui.hp -= 4.7
 	
-	if combo > 5:
-		var miss = Judge.make_combo('000')
-		for num in miss:
-			add_child(num)
-			num.modulate = Color.DARK_RED
-			var n_tween = create_tween()
-			n_tween.tween_property(num, "modulate:a", 0, 0.2).set_delay(Conductor.crochet * 0.002)
-			n_tween.finished.connect(num.queue_free)
+		if combo > 5:
+			var miss = Judge.make_combo('000')
+			for num in miss:
+				add_child(num)
+				num.modulate = Color.DARK_RED
+				var n_tween = create_tween()
+				n_tween.tween_property(num, "modulate:a", 0, 0.2).set_delay(Conductor.crochet * 0.002)
+				n_tween.finished.connect(num.queue_free)
 		
-	combo = 0
+		combo = 0
 	
-	if Conductor.vocals != null:
-		Conductor.vocals.volume_db = linear_to_db(0)
-	ui.update_score_txt()
+		if Conductor.vocals != null:
+			Conductor.vocals.volume_db = linear_to_db(0)
+		ui.update_score_txt()
 	#if !note.sustain: 
 	kill_note(note)
 	

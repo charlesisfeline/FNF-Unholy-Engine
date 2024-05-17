@@ -5,6 +5,7 @@ var this = Game.scene
 var last_cam_pos:Vector2
 var last_zoom:Vector2
 func _ready():
+	#await RenderingServer.frame_post_draw
 	this.ui.process_mode = Node.PROCESS_MODE_ALWAYS
 	this.cam.process_mode = Node.PROCESS_MODE_ALWAYS
 	this.stage.process_mode = Node.PROCESS_MODE_ALWAYS
@@ -22,7 +23,7 @@ func _ready():
 	move_child(dead, 1)
 
 	dead.play_anim('deathStart', true)
-	GlobalMusic.play_sound('skins/default/fnf_loss_sfx')
+	Audio.play_sound('skins/default/fnf_loss_sfx')
 	
 	last_cam_pos = this.cam.position
 	last_zoom = this.cam.zoom
@@ -31,9 +32,10 @@ func _ready():
 	
 	fade_in()
 	await get_tree().create_timer(2.5).timeout
-
-	GlobalMusic.set_music('skins/default/gameOver-pico')
-	dead.play_anim('deathLoop')
+	
+	if !retried:
+		Audio.play_music('skins/default/gameOver-pico')
+		dead.play_anim('deathLoop')
 
 func fade_in():
 	create_tween().tween_property($BG, 'modulate:a', 0.7, 0.7).set_trans(Tween.TRANS_SINE)
@@ -57,8 +59,8 @@ func _process(delta):
 
 	if Input.is_action_just_pressed('accept'):
 		retried = true
-		GlobalMusic.set_music('skins/default/gameOverEnd-pico')
-		GlobalMusic.loop = false
+		Audio.play_music('skins/default/gameOverEnd-pico')
+		Audio.loop = false
 		dead.play_anim('deathConfirm', true)
 		await get_tree().create_timer(2).timeout
 		var cam_twen = create_tween().tween_property(this.cam, 'position', last_cam_pos, 1).set_trans(Tween.TRANS_SINE)
@@ -78,6 +80,7 @@ func _process(delta):
 		
 		#get_tree().reload_current_scene()
 	elif Input.is_action_just_pressed('back') and !retried:
+		Audio.stop_music()
 		Conductor.reset()
 		get_tree().paused = false
 		Game.switch_scene('menus/freeplay')

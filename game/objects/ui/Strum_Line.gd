@@ -1,5 +1,6 @@
 class_name Strum_Line; extends Node2D;
 
+# DO NOT ADD AS AN OBJECT TO SCENE, NEEDS TO BE INSTANTIATED
 @export var is_cpu:bool = true:
 	set(cpu): 
 		is_cpu = cpu
@@ -26,8 +27,9 @@ func note_hit(note:Note):
 	if !note.no_anim:
 		if note.type == 'Hey!':
 			singer.play_anim('hey', true)
+			singer.anim_timer = 0.6
 		else:
-			singer.sing(note.dir, note.alt)
+			singer.sing(note.dir, note.alt, !note.is_sustain)
 
 func note_miss(note:Note):
 	if singer == null: return

@@ -2,6 +2,14 @@ extends Node2D
 
 var total_notes = []
 func _ready():
+	var alt:bool = false
+	for i in 144: 
+		var the = ColorRect.new()
+		the.custom_minimum_size = Vector2(40, 40)
+		the.modulate = Color.DIM_GRAY if alt else Color.DARK_GRAY
+		alt = !alt
+		$NoteGrid.add_child(the)
+		
 	for note in JsonHandler.chart_notes:
 		var new_note = Note.new(NoteData.new(note))
 		add_child(new_note)

@@ -5,7 +5,7 @@ var options = []
 var cur_option:int = 0
 func _ready():
 	Conductor.paused = true
-	GlobalMusic.set_music('breakfast')
+	Audio.play_music('skins/%s/breakfast' % Game.scene.cur_style)
 	$BG.modulate.a = 0
 	var twen = create_tween()
 	twen.tween_property($BG, 'modulate:a', 0.6, 0.4).set_trans(Tween.TRANS_CIRC).set_ease(Tween.EASE_OUT)
@@ -41,13 +41,13 @@ func _process(_delta):
 				Game.switch_scene('menus/freeplay')
 
 func change_selection(amount:int = 0):
-	GlobalMusic.play_sound('scrollMenu')
+	Audio.play_sound('scrollMenu')
 	cur_option = wrapi(cur_option + amount, 0, options.size())
 	for i in options.size():
 		options[i].target_y = i - cur_option
 		options[i].modulate.a = (1.0 if i == cur_option else 0.6)
 
 func close():
-	GlobalMusic.stop()
+	Audio.stop_music()
 	queue_free()
 	get_tree().paused = false

@@ -59,14 +59,14 @@ func _process(delta):
 		if Input.is_action_just_pressed('back'): show_main()
 	else:
 		if Input.is_action_just_pressed('back'):
-			GlobalMusic.play_sound('cancelMenu')
+			Audio.play_sound('cancelMenu')
 			Game.switch_scene('menus/main_menu')
 		
 		if Input.is_action_just_pressed("accept"):
 			show_catagory(catagories[cur_option].to_lower())
 
 func show_main():
-	GlobalMusic.play_sound('cancelMenu')
+	Audio.play_sound('cancelMenu')
 	in_sub = false
 	#cur_option = 0
 	while pref_list.size() > 0:
@@ -79,7 +79,7 @@ func show_main():
 		main_text[i].modulate.a = (1.0 if i == cur_option else 0.6)
 	
 func show_catagory(catagory:String):
-	GlobalMusic.play_sound('confirmMenu')
+	Audio.play_sound('confirmMenu')
 	in_sub = true
 	sub_option = 0
 	for i in main_text.size():
@@ -108,7 +108,7 @@ func update_scroll(diff:int = 0):
 	var array:Array = pref_list if in_sub else main_text
 	var op:String = 'cur_option' if array == main_text else 'sub_option'
 
-	if diff != 0: GlobalMusic.play_sound('scrollMenu')
+	if diff != 0: Audio.play_sound('scrollMenu')
 	set(op, wrapi(get(op) + diff, 0, array.size()))
 
 	for i in array.size():

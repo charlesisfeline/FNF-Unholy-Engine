@@ -53,12 +53,13 @@ func load_song(song:String = ''):
 	
 	song = song.to_lower().replace(' ', '-')
 	var split = song.split('-')
-	var path:String = 'res://assets/songs/'+ song +'/audio/%s.ogg'
+	var path:String = 'res://assets/songs/'+ song +'/audio/%s.ogg' # myehh
 
 	var suffix:String = ''
 	if split[split.size()-1] == JsonHandler.get_diff:
 		suffix = '-'+ JsonHandler.get_diff
 
+	#print(path % ['Inst'+ suffix])
 	if FileAccess.file_exists(path % ['Inst'+ suffix]):
 		inst.stream = load(path % ['Inst'+ suffix])
 	if FileAccess.file_exists(path % ['Voices'+ suffix]):

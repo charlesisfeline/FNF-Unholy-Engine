@@ -13,8 +13,8 @@ var cur_song:int = 0
 var songs:Array[FreeplaySong] = []
 var icons:Array[Icon] = []
 func _ready():
-	if GlobalMusic.Player.stream == null:
-		GlobalMusic.set_music('freakyMenu')
+	if Audio.Player.stream == null:
+		Audio.play_music('freakyMenu')
 	
 	for i in order: added_weeks.append(i.strip_edges())
 	
@@ -84,7 +84,7 @@ func _process(delta):
 
 var col_tween
 func update_list(amount:int = 0):
-	if amount != 0: GlobalMusic.play_sound('scrollMenu')
+	if amount != 0: Audio.play_sound('scrollMenu')
 	cur_song = wrapi(cur_song + amount, 0, songs.size())
 	
 	var col = songs[cur_song].bg_color
@@ -118,11 +118,11 @@ func _unhandled_key_input(event):
 	if Input.is_action_just_pressed('menu_right'): change_diff(1)
 	
 	if Input.is_action_just_pressed('back'):
-		GlobalMusic.play_sound('cancelMenu')
+		Audio.play_sound('cancelMenu')
 		Game.switch_scene('menus/main_menu')
 		
 	if Input.is_action_just_pressed('accept'):
-		GlobalMusic.stop()
+		Audio.stop_music()
 		Conductor.reset()
 		if last_loaded.song != songs[cur_song].text or last_loaded.diff != diff_str:
 			JsonHandler.parse_song(songs[cur_song].text, diff_str, true)

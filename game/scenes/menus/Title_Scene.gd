@@ -1,6 +1,5 @@
 extends Node2D
 
-var flash = ColorRect.new()
 
 var col_tween
 var colors:Array[Color] = [Color(51, 255, 255), Color(54, 54, 204)]
@@ -10,21 +9,23 @@ var to:bool = false
 var finished_intro:bool = false
 var added_text:Array = []
 var intro_text = FileAccess.open('res://assets/data/introText.txt', FileAccess.READ).get_as_text().split('\n')
+
+var flash = ColorRect.new()
 func _ready():
 	flash.color = Color.BLACK
 	flash.position = Vector2(-25, -15)
 	flash.size = Vector2(1300, 755)
-	#add_child(flash)
+	add_child(flash)
 	#col_tween.create_tween()
 	#col_tween.tween_property(self, "modulate", colors[0], 0.2)
 	#col_tween.tween_property(self, "modulate:a", 1, 0.2)
 	
 	Conductor.bpm = 102
 	Conductor.song_started = true
-	Conductor.inst = GlobalMusic.Player
-	#GlobalMusic.volume = 0
-	GlobalMusic.set_music('freakyMenu')
-	#create_tween().tween_property(GlobalMusic, 'volume', 0.7, 4)
+	Conductor.inst = Audio.Player
+	#Audio.volume = 0
+	Audio.play_music('freakyMenu')
+	#create_tween().tween_property(Audio, 'volume', 0.7, 4)
 	
 var danced:bool = false
 func beat_hit(beat):
@@ -51,14 +52,14 @@ func _process(delta):
 	$Funkin.scale.x = lerpf($Funkin.scale.x, 1, delta * 7)
 	$Funkin.scale.y = $Funkin.scale.x
 	
-	Conductor.song_pos = GlobalMusic.pos #im lazy dont judge me
+	Conductor.song_pos = Audio.pos #im lazy dont judge me
 	if Input.is_action_just_pressed("accept") and !accepted:
 		accepted = true
 		add_child(flash)
 		
 		var out = create_tween()
 		out.tween_property(flash, 'modulate:a', 0, 1)
-		GlobalMusic.play_sound('confirmMenu')
+		Audio.play_sound('confirmMenu')
 		
 		await get_tree().create_timer(1).timeout
 		Game.switch_scene('menus/main_menu')

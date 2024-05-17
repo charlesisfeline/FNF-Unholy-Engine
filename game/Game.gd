@@ -28,7 +28,7 @@ var is_paused:bool = false:
 		get_tree().paused = is_paused
 func focus_changed(is_focused:bool):
 	if Prefs.auto_pause:
-		GlobalMusic.volume = 1 if is_focused else 0 # pausing this is too much work ill just mute it
+		Audio.volume = 1 if is_focused else 0 # pausing this is too much work ill just mute it
 		if is_focused:
 			if is_paused: is_paused = false
 		else:

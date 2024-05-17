@@ -9,7 +9,6 @@ var death_char:String = 'bf-dead'
 
 var idle_suffix:String = ''
 var forced_suffix:String = '' # if set, every anim will use it
-var special_anim:bool = false
 var is_player:bool = false
 var dance_idle:bool = false
 var danced:bool = false
@@ -18,6 +17,13 @@ var dance_beat:int = 2 # dance every %dance_beat%
 var hold_timer:float = 0
 var sing_duration:float = 4
 var sing_timer:float = 0
+
+var special_anim:bool = false
+var last_anim:String = ''
+var anim_timer:float = 0: # play a special anim for a certain amount of time
+	set(time):
+		anim_timer = time
+		last_anim = animation
 
 var width:float = 0:
 	get: return width * abs(scale.x)
@@ -77,11 +83,12 @@ func load_char(new_char:String = 'bf'):
 	dance()
 	set_stuff()
 	
+	if cur_char.contains('monster'): swap_sing('singUP', 'singDOWN')
 	if !is_player and json.flip_x:
 		scale.x *= -1
 		position.x += width
 		focus_offsets.x -= width / 2
-		swap_anim('singLEFT', 'singRIGHT')
+		swap_sing('singLEFT', 'singRIGHT')
 		
 	print('loaded '+ cur_char)
 	
@@ -89,30 +96,44 @@ func load_char(new_char:String = 'bf'):
 
 func _process(delta):
 	#if !is_player:
+	if anim_timer > 0: special_anim = true
 	if special_anim:
-		if animation_finished:
+		if anim_timer == 0:
+			await animation_finished
 			special_anim = false
+			dance()
+		else:
+			anim_timer = max(anim_timer - delta, 0)
+			if anim_timer <= 0:
+				special_anim = false
+				if animation == last_anim:
+					dance()
 	else:
 		if animation.begins_with('sing'):
+			sing_timer -= delta
 			hold_timer += delta
 			if hold_timer >= Conductor.step_crochet * (0.0011 * sing_duration):
 				dance()
 
 func dance(forced:bool = false):
 	if special_anim: return
+	var idle:String = 'idle'
 	if dance_idle:
 		danced = !danced
-		play_anim('dance'+ ('Right' if danced else 'Left') + idle_suffix)
-	else:
-		if forced: frame = 0
-		play_anim('idle'+ idle_suffix)
-	hold_timer = 0
-
-func sing(dir:int = 0, suffix:String = ''):
-	hold_timer = 0
-	play_anim(sing_anims[dir] + suffix, true)
+		idle = 'dance'+ ('Right' if danced else 'Left')
 	
-func swap_anim(anim1:String, anim2:String):
+	play_anim(idle + idle_suffix, forced)
+	hold_timer = 0
+	sing_timer = 0
+
+func sing(dir:int = 0, suffix:String = '', reset:bool = true):
+	hold_timer = 0
+	if reset: sing_timer = 0
+	if sing_timer <= 0:
+		sing_timer = Conductor.step_crochet * 0.001
+		play_anim(sing_anims[dir] + suffix, true)
+	
+func swap_sing(anim1:String, anim2:String):
 	var index1 = sing_anims.find(anim1)
 	var index2 = sing_anims.find(anim2)
 	sing_anims[index1] = anim2
