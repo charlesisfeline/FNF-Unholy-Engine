@@ -32,13 +32,17 @@ var type:String = "":
 			'markov note': 
 				no_anim = true
 				should_hit = false
+				early_mod = 0.5
+				late_mod = 0.5
 				modulate = Color.DIM_GRAY
 
 var should_hit:bool = true
 var can_hit:bool = false#:
 #	get: return (must_press and strum_time >= Conductor.song_pos - (Conductor.safe_zone * 0.8)\
 #	and strum_time <= Conductor.song_pos + (Conductor.safe_zone * 1))
-	
+
+var early_mod:float = 0.8
+var late_mod:float = 1
 var was_good_hit:bool = false#:
 #	get: return not must_press and strum_time <= Conductor.song_pos
 var too_late:bool = false
@@ -136,7 +140,8 @@ func _process(delta):
 					was_good_hit = true
 	else:
 		if must_press:
-			can_hit = (Conductor.song_pos - (safe_zone * 0.8) and strum_time <= Conductor.song_pos + (safe_zone * 1))
+			can_hit = (strum_time > Conductor.song_pos - (safe_zone * late_mod) && \
+				strum_time < Conductor.song_pos + (safe_zone * early_mod));
 		
 			if strum_time < Conductor.song_pos - safe_zone and !was_good_hit:
 				too_late = true
@@ -153,6 +158,8 @@ func follow_song_pos(strum:Strum):
 	
 	position.x = strum.position.x
 	position.y = strum.position.y + pos
+	if !is_sustain:
+		rotation = strum.rotation
 
 func load_skin(skin):
 	tex_path = 'res://assets/images/ui/styles/'+ skin.style +'/notes/'+ col_array[dir]

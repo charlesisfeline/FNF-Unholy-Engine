@@ -128,7 +128,7 @@ func start_countdown(from_beginning:bool = false):
 	for i in characters:
 		if times_looped % i.dance_beat == 0 and !i.animation.begins_with('sing'):
 			i.dance()
-			
+
 	if times_looped < 4:
 		if times_looped > 0:
 			var spr = Sprite2D.new()
@@ -142,3 +142,7 @@ func start_countdown(from_beginning:bool = false):
 			tween.finished.connect(spr.queue_free)
 		Audio.play_sound('skins/'+ cur_style +'/'+ sounds[times_looped])
 		start_countdown()
+	else:
+		remove_child(count_down)
+		count_down.queue_free()
+		times_looped = -1

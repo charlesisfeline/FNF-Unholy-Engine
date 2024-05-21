@@ -1,6 +1,6 @@
 extends Node2D
 
-@export var option_list:Array[String] = ['Resume', 'Restart Song', 'Exit To Menu']
+@export var option_list:Array[String] = ['Resume', 'Restart Song', 'Options', 'Exit To Menu']
 var options = []
 var cur_option:int = 0
 func _ready():
@@ -39,6 +39,8 @@ func _process(_delta):
 				close()
 				Conductor.reset()
 				Game.switch_scene('menus/freeplay')
+			_: 
+				Audio.play_sound('cancelMenu')
 
 func change_selection(amount:int = 0):
 	Audio.play_sound('scrollMenu')

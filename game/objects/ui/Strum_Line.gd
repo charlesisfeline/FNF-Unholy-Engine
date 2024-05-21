@@ -15,6 +15,7 @@ func _ready():
 		cur_strum.dir = (i % 4)
 		cur_strum.downscroll = Prefs.downscroll
 		cur_strum.is_player = !is_cpu
+		#if !is_cpu: cur_strum.rotation = 11 # 8.2?
 
 func get_strums():
 	return [$Strums/Left, $Strums/Down, $Strums/Up, $Strums/Right]
@@ -39,7 +40,7 @@ func strum_anim(dir:int = 0, player:bool = false):
 	var strum:Strum = get_strums()[dir]
 
 	strum.play_anim('confirm', true)
-	strum.anim_timer = Conductor.step_crochet / 1000
+	strum.anim_timer = Conductor.step_crochet / 1000.0
 	
 	if !player:
-		strum.reset_timer = Conductor.step_crochet * 1.25 / 1000 #0.15
+		strum.reset_timer = Conductor.step_crochet * 1.25 / 1000.0 #0.15

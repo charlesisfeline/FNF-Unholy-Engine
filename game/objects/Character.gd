@@ -110,7 +110,7 @@ func _process(delta):
 					dance()
 	else:
 		if animation.begins_with('sing'):
-			sing_timer -= delta
+			sing_timer = max(sing_timer - delta, 0)
 			hold_timer += delta
 			if hold_timer >= Conductor.step_crochet * (0.0011 * sing_duration):
 				dance()
@@ -130,7 +130,7 @@ func sing(dir:int = 0, suffix:String = '', reset:bool = true):
 	hold_timer = 0
 	if reset: sing_timer = 0
 	if sing_timer <= 0:
-		sing_timer = Conductor.step_crochet * 0.001
+		sing_timer = Conductor.step_crochet * 0.001 # ((2 / 24) - 0.01)
 		play_anim(sing_anims[dir] + suffix, true)
 	
 func swap_sing(anim1:String, anim2:String):

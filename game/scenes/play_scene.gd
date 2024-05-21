@@ -132,7 +132,7 @@ func _ready():
 	#var thread = Thread.new()
 	#thread.start(JsonHandler.generate_chart.bind(SONG)) 
 	# since im doing something different, this thread will need to be changed
-	if JsonHandler.chart_notes.size() > 0:
+	if !JsonHandler.chart_notes.is_empty():
 		chart_notes = JsonHandler.chart_notes.duplicate()
 		print('already loaded')
 	else:
@@ -266,11 +266,11 @@ func key_press(key:int = 0):
 	if hittable_notes.size() != 0:
 		var note:Note = hittable_notes[0]
 			
-		#if hittable_notes.size() > 1: # mmm idk anymore
-		#	for funny in hittable_notes: # temp dupe note thing killer bwargh i hate it
-		#		if note == funny: continue 
-		#		if absf(funny.strum_time - note.strum_time) < 1.0:
-		#			kill_note(funny)
+		if hittable_notes.size() > 1: # mmm idk anymore
+			for funny in hittable_notes: # temp dupe note thing killer bwargh i hate it
+				if note == funny: continue 
+				if absf(funny.strum_time - note.strum_time) < 1.0:
+					kill_note(funny)
 					
 		good_note_hit(note)
 
@@ -283,9 +283,7 @@ func key_release(key:int = 0):
 	ui.player_strums[key].play_anim('static')
 
 func try_death():
-	combo = 0
-	score = 0
-	misses = 0
+	for item in ['combo', 'score', 'misses']: set(item, 0)
 	ui.total_hit = 0
 	ui.note_percent = 0
 	ui.accuracy = -1
@@ -298,21 +296,27 @@ func try_death():
 	add_child(death_screen)
 
 func song_end():
-	#refresh()
-	Conductor.reset()
-	Game.switch_scene("menus/freeplay")
+	refresh(false)
+	#Conductor.reset()
+	#Game.switch_scene("menus/freeplay")
 	
 func refresh(restart:bool = true): # start song from beginning with no restarts
 	Conductor.reset_beats()
-	Conductor.start(-Conductor.crochet * 4)
+	#Conductor.song_pos = (-Conductor.crochet * 4)
+	Conductor.bpm = SONG.bpm # reset bpm to init whoops
+
 	while notes.size() != 0:
 		kill_note(notes[0])
 	notes.clear()
 	events.clear()
 	chart_notes = JsonHandler.chart_notes.duplicate()
 	events = JsonHandler.song_events.duplicate()
-	ui.hp = 50
 	chunk = 0
+	if restart:
+		ui.start_countdown(true)
+		ui.hp = 50
+	else:
+		Conductor.start(0)
 	section_hit(0)
 
 func event_hit(event:EventNote):
@@ -344,7 +348,8 @@ func good_note_hit(note:Note):
 	ui.player_group.note_hit(note)
 	combo += 1
 	
-	var hit_rating = Judge.get_rating(Conductor.song_pos - note.strum_time)
+	var time = Conductor.song_pos - note.strum_time if !auto_play else 0
+	var hit_rating = Judge.get_rating(time)
 	if Prefs.rating_cam != 'none':
 		var cam:Callable = ui.add_behind if Prefs.rating_cam == 'hud' else add_child
 		var new_rating = Judge.make_rating(hit_rating)

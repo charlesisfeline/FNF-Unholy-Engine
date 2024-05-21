@@ -20,10 +20,20 @@ func parse_song(song:String, diff:String, auto_create:bool = false, type:String 
 		#'': parsed_song = psych(song)
 	_SONG = parsed_song
 	if auto_create:
-		chart_notes = generate_chart(_SONG)
+		var total_chunks = roundi(_SONG.notes.size() / 4)
+		var split_notes:Array = []
+		var bleh:int = 0
+		for i in _SONG.notes:
+			for j in i.sectionNotes:
+				pass
+		generate_chart(_SONG)
+		#var thread = Thread.new()
+		#thread.start(generate_chart.bind(_SONG))
+		#await thread.wait_to_finish()
 
 func base(song:String): 
 	var json = FileAccess.open('res://assets/songs/'+ song +'/charts/chart.json', FileAccess.READ).get_as_text()
+	
 func psych(song:String):
 	var json = you_WILL_get_a_json(song)
 	var parsed = JSON.parse_string(json.get_as_text())
@@ -49,7 +59,7 @@ func you_WILL_get_a_json(song:String):
 	return FileAccess.open(path + get_diff +'.json', FileAccess.READ)
 
 var dupe:int = 0
-func generate_chart(data):
+func generate_chart(data): # idea, split chart into parts, then load each seperately
 	if data == null: 
 		parse_song('tutorial', get_diff)
 		return
@@ -67,14 +77,15 @@ func generate_chart(data):
 			var n_data:int = int(note[1])
 			var must_hit:bool = sec.mustHitSection if note[1] <= 3 else not sec.mustHitSection
 			var type:String = str(note[3]) if note.size() > 3 else ''
+			if type == 'true': type = 'alt'
 			
 			var to_add = [round(time), n_data, is_sustain, sustain_length, must_hit, type]
 			if !_notes.has(to_add): # dupe notes no add
 				_notes.append(to_add)
-			else:
-				dupe += 1
 			_notes.sort_custom(func(a, b): return a[0] < b[0])
 	print(str(dupe) +' notes were skipped')
+	
+	chart_notes = _notes
 	return _notes
 
 func get_events(song:String = ''):

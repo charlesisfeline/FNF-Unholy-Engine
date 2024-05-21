@@ -13,9 +13,16 @@ var bpm:float = 100:
 
 var crochet:float = ((60 / bpm) * 1000)
 var step_crochet:float = crochet / 4
-var song_pos:float = 0.0
+var song_pos:float = 0.0:
+	set(new_pos): 
+		song_pos = new_pos
+		if song_pos < 0: 
+			song_started = false
+			for bleh in [inst, vocals, vocals_opp]:
+				bleh.stop()
+	
 #var offset:float = 0
-var safe_zone:float = 166
+var safe_zone:float = 166.0
 
 var beat_time:float = 0
 var step_time:float = 0
@@ -76,7 +83,7 @@ func _process(delta):
 	if paused: return
 	if song_loaded:
 		song_pos += (1000 * delta)
-
+	
 	if song_pos > 0:
 		if !song_started: 
 			start()
@@ -132,7 +139,7 @@ func start(at_point:float = -1):
 	for audio in [inst, vocals, vocals_opp]:
 		if audio.stream != null:
 			audio.play(song_pos)
-
+			
 func reset():
 	reset_beats()
 	stop()

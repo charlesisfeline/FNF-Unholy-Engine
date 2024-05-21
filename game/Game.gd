@@ -16,6 +16,10 @@ func _ready():
 	focus_change.connect(focus_changed)
 	print(scene.name)
 
+var global_delta:float
+func _process(delta):
+	global_delta = delta
+
 func _notification(what):
 	if what == MainLoop.NOTIFICATION_APPLICATION_FOCUS_IN:
 		focus_change.emit(true)
@@ -28,6 +32,7 @@ var is_paused:bool = false:
 		get_tree().paused = is_paused
 func focus_changed(is_focused:bool):
 	if Prefs.auto_pause:
+		Engine.max_fps = Prefs.fps if is_focused else 12 # no need to process shit if its paused
 		Audio.volume = 1 if is_focused else 0 # pausing this is too much work ill just mute it
 		if is_focused:
 			if is_paused: is_paused = false

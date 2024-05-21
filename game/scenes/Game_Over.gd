@@ -59,8 +59,7 @@ func _process(delta):
 
 	if Input.is_action_just_pressed('accept'):
 		retried = true
-		Audio.play_music('skins/default/gameOverEnd-pico')
-		Audio.loop = false
+		Audio.play_music('skins/default/gameOverEnd-pico', false)
 		dead.play_anim('deathConfirm', true)
 		await get_tree().create_timer(2).timeout
 		var cam_twen = create_tween().tween_property(this.cam, 'position', last_cam_pos, 1).set_trans(Tween.TRANS_SINE)

@@ -1,13 +1,15 @@
 extends Node2D
 
 var total_notes = []
+
+var loaded_notes:Dictionary = {
+	last = [], curr = [], next = []
+}
 func _ready():
-	var alt:bool = false
 	for i in 144: 
 		var the = ColorRect.new()
 		the.custom_minimum_size = Vector2(40, 40)
-		the.modulate = Color.DIM_GRAY if alt else Color.DARK_GRAY
-		alt = !alt
+		the.modulate = Color.DIM_GRAY if i % 2 == 0 else Color.DARK_GRAY
 		$NoteGrid.add_child(the)
 		
 	for note in JsonHandler.chart_notes:

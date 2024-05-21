@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://dxy77bbkqx0q7"]
 
 [ext_resource type="Script" path="res://game/scenes/Pause_Screen.gd" id="1_uqd13"]
-[ext_resource type="FontFile" uid="uid://b6kd6rbkd08ld" path="res://assets/fonts/vcr.ttf" id="2_cv0fx"]
+[ext_resource type="FontFile" uid="uid://csunsdevou3rf" path="res://assets/fonts/vcr.ttf" id="2_cv0fx"]
 
 [node name="Pause_Screen" type="Node2D"]
 process_mode = 3

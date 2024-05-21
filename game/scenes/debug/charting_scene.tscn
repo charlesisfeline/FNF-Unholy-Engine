@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://deksi37bicvb3"]
 
 [ext_resource type="Script" path="res://game/scenes/debug/Charting_Scene.gd" id="1_li1ut"]
-[ext_resource type="Texture2D" uid="uid://bsn6vudon3cm8" path="res://assets/images/menuDark.png" id="2_g7jes"]
+[ext_resource type="Texture2D" uid="uid://dgbcc7lfrqbk1" path="res://assets/images/menuDark.png" id="2_g7jes"]
 [ext_resource type="PackedScene" uid="uid://c1wn576p2y4xj" path="res://game/objects/ui/strum_line.tscn" id="3_0lda8"]
 
 [node name="Charting_Scene" type="Node2D"]
