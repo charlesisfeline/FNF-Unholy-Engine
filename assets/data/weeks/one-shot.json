@@ -1,0 +1,19 @@
+{
+	"songs": [
+		["My Rumble", "pico", [34, 51, 68]],
+		["Sacrifice", "bf",   [34, 51, 68]]
+	],
+
+	"weekCharacters": [
+		"", "bf", "gf"
+	],
+
+	"difficulties": ["normal"],
+	"storyName": "awoga woasas",
+	"weekBefore": "week1",
+	"weekName": "One Shot",
+	"startUnlocked": true,
+
+	"hideStoryMode": false,
+	"hideFreeplay": false
+}
