@@ -187,7 +187,7 @@ func resize_hold(update_control:bool = false):
 		hold_group.position.x = 0 - hold_group.size.x * 0.5
 
 func copy_from(item):
-	if item != null and (item is Note or NoteData):
+	if item != null and (item is Note or item is NoteData):
 		strum_time = item.strum_time
 		dir = item.dir
 		length = item.length

@@ -1,7 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://c1p2xt18crpgv"]
+[gd_scene load_steps=6 format=3 uid="uid://c0w7bffyud3s7"]
 
 [ext_resource type="Script" path="res://game/objects/UI.gd" id="1_sa7x1"]
-[ext_resource type="PackedScene" uid="uid://c1wn576p2y4xj" path="res://game/objects/ui/strum_line.tscn" id="2_fxgad"]
+[ext_resource type="PackedScene" uid="uid://cj2ryjlbhxh8b" path="res://game/objects/ui/strum_line.tscn" id="2_fxgad"]
 [ext_resource type="PackedScene" uid="uid://btb8naqubifyk" path="res://game/objects/ui/health_bar.tscn" id="7_e1wxe"]
 [ext_resource type="FontFile" uid="uid://csunsdevou3rf" path="res://assets/fonts/vcr.ttf" id="8_1567e"]
 [ext_resource type="Script" path="res://game/objects/ui/Icon.gd" id="8_ojola"]

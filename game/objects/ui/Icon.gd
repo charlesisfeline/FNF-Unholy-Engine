@@ -17,8 +17,9 @@ var default_scale:float = 1.0
 func change_icon(new_image:String = 'face', player:bool = false):
 	is_player = player
 	image = new_image
-	texture = load('res://assets/images/icons/icon-'+ image +'.png')
-	if texture == null: texture = load('res://assets/images/icons/icon-face.png')
+	var icon_path = 'res://assets/images/icons/icon-%s.png'
+	if !FileAccess.file_exists(icon_path % image): image = 'face'
+	texture = load(icon_path % image)
 	
 	if image.ends_with('-pixel'): antialiasing = false
 	has_lose = texture.get_width() > min_width

@@ -1,9 +1,13 @@
 extends Node2D;
 
+signal notes_loaded
+signal loaded
+
 var base_diffs:Array[String] = ['easy', 'normal', 'hard']
 var get_diff:String
 
 var _SONG
+var total_notes:int = 0
 var chart_notes:Array = [] # keep loaded chart and events for restarting songs
 var song_events:Array[EventNote] = []
 func parse_song(song:String, diff:String, auto_create:bool = false, type:String = 'psych'):
@@ -20,17 +24,26 @@ func parse_song(song:String, diff:String, auto_create:bool = false, type:String 
 		#'': parsed_song = psych(song)
 	_SONG = parsed_song
 	if auto_create:
-		var total_chunks = roundi(_SONG.notes.size() / 4)
-		var split_notes:Array = []
-		var bleh:int = 0
-		for i in _SONG.notes:
-			for j in i.sectionNotes:
-				pass
+		#var total_chunks = roundi(_SONG.notes.size() / 4)
+
+		#var split_notes:Array = [[], [], [], []]
+
+		#var last_got:int = 0
+		#for i in range(1, 5):
+		#	for num in range(total_chunks, total_chunks * i):
+		#		pass
+		#	last_got
+				
+		#for i in 3:
+		#	var the = Thread.new()
+			
 		generate_chart(_SONG)
 		#var thread = Thread.new()
 		#thread.start(generate_chart.bind(_SONG))
 		#await thread.wait_to_finish()
 
+func _exit_tree():
+	pass 
 func base(song:String): 
 	var json = FileAccess.open('res://assets/songs/'+ song +'/charts/chart.json', FileAccess.READ).get_as_text()
 	
@@ -58,12 +71,12 @@ func you_WILL_get_a_json(song:String):
 		
 	return FileAccess.open(path + get_diff +'.json', FileAccess.READ)
 
-var dupe:int = 0
 func generate_chart(data): # idea, split chart into parts, then load each seperately
 	if data == null: 
 		parse_song('tutorial', get_diff)
 		return
-	dupe = 0
+	#var chart = Chart.new()
+	#chart.load_chart(_SONG)
 	# load events whenever chart is made
 	song_events = get_events(data.song.to_lower().strip_edges().replace(' ', '-'))
 	
@@ -80,13 +93,15 @@ func generate_chart(data): # idea, split chart into parts, then load each sepera
 			if type == 'true': type = 'alt'
 			
 			var to_add = [round(time), n_data, is_sustain, sustain_length, must_hit, type]
-			if !_notes.has(to_add): # dupe notes no add
+			if !_notes.has(to_add): # skip adding a note that exists
 				_notes.append(to_add)
 			_notes.sort_custom(func(a, b): return a[0] < b[0])
-	print(str(dupe) +' notes were skipped')
-	
+			
 	chart_notes = _notes
 	return _notes
+
+func generate_chunks(amount):
+	pass
 
 func get_events(song:String = ''):
 	var path_to_check = 'res://assets/songs/%s/events.json' % [song]

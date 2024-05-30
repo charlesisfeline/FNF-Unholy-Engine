@@ -62,7 +62,7 @@ func switch_scene(new_scene, _skip_trans:bool = false):
 	if new_scene is PackedScene:
 		get_tree().change_scene_to_packed(new_scene)
 
-func call_func(to_call:String, args:Array[Variant] = [], call_tree:bool = false): # call function on nodes or something
+func call_func(to_call:String, args:Array[Variant] = [], call_tree:bool = false): # call function on nodes or somethin
 	if to_call.length() < 1 or scene == null: return
 	if call_tree:
 		for node in get_tree().get_nodes_in_group(scene.name):
@@ -82,3 +82,6 @@ func round_d(num, digit): # bowomp
 	
 func rand_bool(chance:float = 50):
 	return true if (randi() % 100) < chance else false
+
+func haxe_remap(v:float, st1:float, st2:float, end1:float, end2:float):
+	return st2 + (v - st1) * ((end2 - st2) / (end1 - st1))

@@ -222,7 +222,7 @@ func _process(delta):
 
 func beat_hit(beat):
 	for i in ui.characters:
-		if beat % i.dance_beat == 0 and !i.animation.contains('sing'):
+		if !i.animation.contains('sing') and beat % i.dance_beat == 0:
 			i.dance()
 		
 	ui.icon_p1.bump()
@@ -335,7 +335,18 @@ func event_hit(event:EventNote):
 			else:
 				cur_speed = new_speed
 		'Add Camera Zoom': true
-		'Change Character': true
+		'Change Character': 
+			var char = "boyfriend"
+			var new_char:Character
+			match event.values[0].to_lower():
+				'2', 'gf', 'girlfriend': char = "gf"
+				'1', 'dad', 'opponent': char = "dad"
+				
+			#new_char = Character.new(char.position, event.values[1], char == boyfriend)
+			#remove_child(char)
+			#char.queue_free()
+			
+			#char = new_char
 		_: false
 
 func good_note_hit(note:Note):
@@ -358,7 +369,7 @@ func good_note_hit(note:Note):
 		var r_tween = create_tween()
 		r_tween.tween_property(new_rating, "modulate:a", 0, 0.2).set_delay(Conductor.crochet * 0.001)
 		r_tween.finished.connect(new_rating.queue_free)
-	
+		
 		var new_nums = Judge.make_combo(combo)
 		for num in new_nums:
 			cam.call(num)

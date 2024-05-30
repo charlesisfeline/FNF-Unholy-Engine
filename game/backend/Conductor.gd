@@ -23,6 +23,7 @@ var song_pos:float = 0.0:
 	
 #var offset:float = 0
 var safe_zone:float = 166.0
+var song_length:float = 0.0
 
 var beat_time:float = 0
 var step_time:float = 0
@@ -69,6 +70,7 @@ func load_song(song:String = ''):
 	#print(path % ['Inst'+ suffix])
 	if FileAccess.file_exists(path % ['Inst'+ suffix]):
 		inst.stream = load(path % ['Inst'+ suffix])
+		song_length = inst.stream.get_length() * 1000.0
 	if FileAccess.file_exists(path % ['Voices'+ suffix]):
 		mult_vocals = false
 		vocals.stream = load(path % ['Voices'+ suffix])
@@ -105,19 +107,25 @@ func _process(delta):
 				step_hit.emit(cur_step)
 				Game.call_func('step_hit', [cur_step])
 			
-			if song_pos >= inst.stream.get_length() * 1000 and song_loaded:
+			if song_pos >= song_length * 1000 and song_loaded:
 				print('grah!!!')
 				
 				Game.call_func('song_end')
 		
 		for audio in [inst, vocals, vocals_opp]:
-			if audio.stream != null and audio.playing: 
-				check_resync(audio)
+			if audio.stream != null and audio.playing:
+				if absf(audio.get_playback_position() * 1000 - song_pos) > 20: 
+					resync_audio()
 				
-func check_resync(sound:AudioStreamPlayer):
+func check_resync(sound:AudioStreamPlayer): # ill keep this here for now
 	if absf(sound.get_playback_position() * 1000 - song_pos) > 20:
 		sound.seek(song_pos / 1000)
 		print('resynced')
+
+func resync_audio():
+	for audio in [inst, vocals, vocals_opp]:
+		audio.seek(song_pos / 1000)
+	print('resynced audios')
 
 func stop():
 	song_pos = 0
@@ -140,6 +148,10 @@ func start(at_point:float = -1):
 		if audio.stream != null:
 			audio.play(song_pos)
 			
+			
+func for_all_audio(do:Callable, args:Array = []):
+	for audio in [inst, vocals, vocals_opp]:
+		audio
 func reset():
 	reset_beats()
 	stop()

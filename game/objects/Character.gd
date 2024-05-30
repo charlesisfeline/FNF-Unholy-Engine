@@ -20,7 +20,7 @@ var sing_timer:float = 0
 
 var special_anim:bool = false
 var last_anim:String = ''
-var anim_timer:float = 0: # play a special anim for a certain amount of time
+var anim_timer:float = 0: # play an anim for a certain amount of time
 	set(time):
 		anim_timer = time
 		last_anim = animation
@@ -54,8 +54,9 @@ func load_char(new_char:String = 'bf'):
 	cur_char = new_char
 	if !FileAccess.file_exists('res://assets/data/characters/%s.json' % [cur_char]):
 		printerr('CHARACTER '+ cur_char +' does NOT have a json')
-		cur_char = 'bf'
-		
+		print(get_closest(cur_char))
+		cur_char = get_closest(cur_char)
+	
 	json = JsonHandler.get_character(cur_char) # get offsets and anim names...
 	var path = 'characters/'+ json.image.replace('characters/', '') +'.res'
 		
@@ -128,9 +129,11 @@ func dance(forced:bool = false):
 
 func sing(dir:int = 0, suffix:String = '', reset:bool = true):
 	hold_timer = 0
-	if reset: sing_timer = 0
-	if sing_timer <= 0:
-		sing_timer = Conductor.step_crochet * 0.001 # ((2 / 24) - 0.01)
+	if reset:
+		sing_timer = 0
+	
+	if sing_timer == 0:
+		if !reset: sing_timer = Conductor.step_crochet * 0.001
 		play_anim(sing_anims[dir] + suffix, true)
 	
 func swap_sing(anim1:String, anim2:String):
@@ -154,6 +157,8 @@ func play_anim(anim:String, forced:bool = false):
 		var anim_offset = offsets[anim]
 		if anim_offset.size() == 2:
 			offset = Vector2(anim_offset[0], anim_offset[1])
+	else:
+		offset = Vector2(0, 0)
 
 func get_cam_pos():
 	var midpoint = Vector2(position.x + width / 2, position.y + height / 2)
@@ -171,9 +176,15 @@ func set_stuff():
 func has_anim(anim:String):
 	return sprite_frames.has_animation(anim) if sprite_frames != null else false
 
-func copy_from_char(char:Character):
+func copy_char(char:Character):
 	self.position = char.position
 	return Character.new(self.position, self.cur_char, self.is_player)
+
+func get_closest(char:String = 'bf'): # if theres no character named like "pico-but-devil" itll just use reg pico
+	for file in DirAccess.get_files_at('res://assets/data/characters'):
+		file = file.replace('.json', '')
+		if char.contains(file): return file
+	return 'bf'
 
 #func get_anim(anim:String): # get the animation from the json file
 #	if json == null: return anim
