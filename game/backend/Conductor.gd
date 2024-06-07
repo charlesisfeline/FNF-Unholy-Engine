@@ -5,22 +5,21 @@ signal step_hit(step:int)
 signal section_hit(section:int)
 signal song_end
 
-var bpm:float = 100:
+var bpm:float = 100.0:
 	set(new_bpm):
 		bpm = new_bpm
-		crochet = ((60 / bpm) * 1000)
-		step_crochet = crochet / 4
+		crochet = ((60.0 / bpm) * 1000.0)
+		step_crochet = crochet / 4.0
 
-var crochet:float = ((60 / bpm) * 1000)
-var step_crochet:float = crochet / 4
+var crochet:float = ((60.0 / bpm) * 1000.0)
+var step_crochet:float = crochet / 4.0
 var song_pos:float = 0.0:
 	set(new_pos): 
 		song_pos = new_pos
 		if song_pos < 0: 
 			song_started = false
-			for bleh in [inst, vocals, vocals_opp]:
-				bleh.stop()
-	
+			for_all_audio('stop')
+
 #var offset:float = 0
 var safe_zone:float = 166.0
 var song_length:float = 0.0
@@ -107,8 +106,8 @@ func _process(delta):
 				step_hit.emit(cur_step)
 				Game.call_func('step_hit', [cur_step])
 			
-			if song_pos >= song_length * 1000 and song_loaded:
-				print('grah!!!')
+			if song_pos >= song_length and song_loaded:
+				print('Song Finished')
 				
 				Game.call_func('song_end')
 		
@@ -123,35 +122,35 @@ func check_resync(sound:AudioStreamPlayer): # ill keep this here for now
 		print('resynced')
 
 func resync_audio():
-	for audio in [inst, vocals, vocals_opp]:
-		audio.seek(song_pos / 1000)
+	for_all_audio('seek', song_pos / 1000.0)
 	print('resynced audios')
 
 func stop():
 	song_pos = 0
-	
-	for audio in [inst, vocals, vocals_opp]:
-		if audio.stream != null:
-			audio.stop()
-			audio.stream = null
-		
+	for_all_audio('stop', true)
+
 func pause():
-	for audio in [inst, vocals, vocals_opp]:
-		if audio.stream != null:
-			audio.stream_paused = paused
+	for_all_audio('stream_paused', paused, true)
 
 func start(at_point:float = -1):
 	song_started = true # lol
 	if at_point != -1:
-		song_pos = absf(at_point) / 1000
+		song_pos = absf(at_point) / 1000.0
+	for_all_audio('play', song_pos)
+
+func for_all_audio(do:String, arg = null, is_var:bool = false):
 	for audio in [inst, vocals, vocals_opp]:
-		if audio.stream != null:
-			audio.play(song_pos)
-			
-			
-func for_all_audio(do:Callable, args:Array = []):
-	for audio in [inst, vocals, vocals_opp]:
-		audio
+		if audio.stream == null: continue
+		if is_var: 
+			audio.set(do, arg)
+		else:
+			if do == 'stop':
+				audio.stop()
+				if arg == true: audio.stream = null
+				continue
+			audio.call(do, arg)
+
+
 func reset():
 	reset_beats()
 	stop()

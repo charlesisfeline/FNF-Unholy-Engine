@@ -12,7 +12,7 @@ var length:float
 func _init(data):
 	if data != null:
 		strum_time = floor(data[0])
-		dir = data[1] % 4
+		dir = int(data[1]) % 4
 		length = data[3]
 		must_press = data[4]
 		type = data[5]

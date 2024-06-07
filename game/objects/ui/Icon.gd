@@ -37,9 +37,9 @@ func _process(delta):
 	scale.y = lerpf(default_scale, scale.y, exp(-delta * 15))
 	
 	if follow_spr != null:
-		if follow_spr is TextureProgressBar: # is healthbar or something
-			var bar_width = follow_spr.texture_progress.get_size()[0]
-			var cen = follow_spr.position.x + (bar_width * ((100 - follow_spr.value) * 0.01)) - 265
+		if follow_spr is HealthBar: # is healthbar or something
+			var bar_width = follow_spr.width
+			var cen = (follow_spr.position.x + (bar_width * (remap(follow_spr.value, 0, 100, 100, 0) * 0.01))) - bar_width * 1.452
 			if is_player:
 				position.x = cen + (150 * scale.x - 150) / 2 - 26
 			else:

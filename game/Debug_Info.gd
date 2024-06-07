@@ -29,8 +29,8 @@ func _process(delta):
 			vol_tween.tween_property($VolumeBar, 'position:y', -50, 0.5)
 	
 	
-	var mem:String = String.humanize_size(OS.get_static_memory_usage()).replace('i', '')
-	var mem_peak:String = String.humanize_size(OS.get_static_memory_peak_usage()).replace('i', '')
+	var mem:String = String.humanize_size(OS.get_static_memory_usage())
+	var mem_peak:String = String.humanize_size(OS.get_static_memory_peak_usage())
 	fps_txt.text = 'FPS: ' + str(Engine.get_frames_per_second())+'\n' + 'Mem: ' + mem + ' / ' + mem_peak
 	
 	

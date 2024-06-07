@@ -1,7 +1,8 @@
 extends Node2D
 
+@onready var cam:Camera2D = $Camera
 @onready var ui:UI = $UI
-@onready var cam = $Camera
+@onready var other:CanvasLayer = $OtherUI # like psych cam other, above ui, and unaffected by ui zoom
 
 @onready var Judge:Rating = Rating.new()
 
@@ -89,13 +90,18 @@ func _ready():
 			'senpai', 'roses', 'thorns': gf_ver = 'gf-pixel'
 			'ugh', 'guns': gf_ver = 'gf-tankmen'
 			'stress': gf_ver = 'pico-speaker'
-			
+	
+	if SONG.has('players'): 
+		SONG.player1 = SONG.players[0]
+		SONG.player2 = SONG.players[1]
+		SONG.gfVersion = SONG.players[2]
+		
 	gf = Character.new(stage.gf_pos, gf_ver if gf_ver != null else 'gf')
 	add_child(gf)
 	
 	dad = Character.new(stage.dad_pos, SONG.player2)
 	add_child(dad)
-	if dad.cur_char == gf.cur_char and SONG.song == 'Tutorial':
+	if dad.cur_char == gf.cur_char and dad.cur_char.contains('gf'): #and SONG.song == 'Tutorial':
 		dad.position = gf.position
 		dad.focus_offsets.x -= dad.width / 4
 		gf.visible = false
@@ -162,8 +168,7 @@ func _process(delta):
 		auto_play = !auto_play
 	if Input.is_action_just_pressed("accept"):
 		get_tree().paused = true
-		var pause = load('res://game/scenes/pause_screen.tscn').instantiate()
-		ui.add_child(pause)
+		other.add_child(load('res://game/scenes/pause_screen.tscn').instantiate())
 	
 	ui.zoom = lerpf(ui.zoom, 1, delta * 4)
 	cam.zoom.x = lerpf(cam.zoom.x, default_zoom, delta * 4)
@@ -259,7 +264,7 @@ func _unhandled_key_input(_event):
 
 func key_press(key:int = 0):
 	var hittable_notes:Array[Note] = notes.filter(func(i:Note):
-		return i.spawned and !i.is_sustain and i.must_press and i.can_hit and i.dir == key and !i.was_good_hit
+		return i.dir == key and i.spawned and !i.is_sustain and i.must_press and i.can_hit and !i.was_good_hit
 	)
 	hittable_notes.sort_custom(func(a, b): return a.strum_time < b.strum_time)
 	
@@ -302,7 +307,6 @@ func song_end():
 	
 func refresh(restart:bool = true): # start song from beginning with no restarts
 	Conductor.reset_beats()
-	#Conductor.song_pos = (-Conductor.crochet * 4)
 	Conductor.bpm = SONG.bpm # reset bpm to init whoops
 
 	while notes.size() != 0:
@@ -313,6 +317,7 @@ func refresh(restart:bool = true): # start song from beginning with no restarts
 	events = JsonHandler.song_events.duplicate()
 	chunk = 0
 	if restart:
+		Conductor.song_pos = (-Conductor.crochet * 4)
 		ui.start_countdown(true)
 		ui.hp = 50
 	else:
@@ -361,21 +366,7 @@ func good_note_hit(note:Note):
 	
 	var time = Conductor.song_pos - note.strum_time if !auto_play else 0
 	var hit_rating = Judge.get_rating(time)
-	if Prefs.rating_cam != 'none':
-		var cam:Callable = ui.add_behind if Prefs.rating_cam == 'hud' else add_child
-		var new_rating = Judge.make_rating(hit_rating)
-		cam.call(new_rating)
-	
-		var r_tween = create_tween()
-		r_tween.tween_property(new_rating, "modulate:a", 0, 0.2).set_delay(Conductor.crochet * 0.001)
-		r_tween.finished.connect(new_rating.queue_free)
-		
-		var new_nums = Judge.make_combo(combo)
-		for num in new_nums:
-			cam.call(num)
-			var n_tween = create_tween()
-			n_tween.tween_property(num, "modulate:a", 0, 0.2).set_delay(Conductor.crochet * 0.002)
-			n_tween.finished.connect(num.queue_free)
+	pop_up_combo(hit_rating, combo)
 	
 	score += Judge.get_score(hit_rating)[0]
 	ui.note_percent += Judge.get_score(hit_rating)[1]
@@ -392,12 +383,14 @@ func good_note_hit(note:Note):
 	if Prefs.hitsounds:
 		Audio.play_sound('hitsound', 0.7)
 	#	ui
-	
+
+var time_dropped:float = 0
 func good_sustain_press(sustain:Note, delt:float = 0.0):
 	if !auto_play and Input.is_action_just_released(key_names[sustain.dir]) and !sustain.was_good_hit:
 		#sustain.dropped = true
 		sustain.holding = false
 		print('let go too soon ', sustain.length)
+		time_dropped += delt
 		note_miss(sustain)
 		return
 	
@@ -441,14 +434,7 @@ func note_miss(note:Note):
 		ui.total_hit += 1
 		ui.hp -= 4.7
 	
-		if combo > 5:
-			var miss = Judge.make_combo('000')
-			for num in miss:
-				add_child(num)
-				num.modulate = Color.DARK_RED
-				var n_tween = create_tween()
-				n_tween.tween_property(num, "modulate:a", 0, 0.2).set_delay(Conductor.crochet * 0.002)
-				n_tween.finished.connect(num.queue_free)
+		if combo >= 5: pop_up_combo('', '000', true)
 		
 		combo = 0
 	
@@ -457,6 +443,27 @@ func note_miss(note:Note):
 		ui.update_score_txt()
 	#if !note.sustain: 
 	kill_note(note)
+	
+	
+func pop_up_combo(rating:String = 'sick', combo = -1, is_miss:bool = false):
+	if Prefs.rating_cam != 'none':
+		var cam:Callable = ui.add_behind if Prefs.rating_cam == 'hud' else add_child
+	
+		if rating.length() != 0:
+			var new_rating = Judge.make_rating(rating)
+			cam.call(new_rating)
+	
+			var r_tween = create_tween()
+			r_tween.tween_property(new_rating, "modulate:a", 0, 0.2).set_delay(Conductor.crochet * 0.001)
+			r_tween.finished.connect(new_rating.queue_free)
+		
+		if (combo is int and combo > -1) or (combo is String and combo.length() > 0):
+			for num in Judge.make_combo(combo):
+				cam.call(num)
+				var n_tween = create_tween()
+				if is_miss: num.modulate = Color.DARK_RED
+				n_tween.tween_property(num, "modulate:a", 0, 0.2).set_delay(Conductor.crochet * 0.002)
+				n_tween.finished.connect(num.queue_free)
 	
 func kill_note(note:Note):
 	note.spawned = false

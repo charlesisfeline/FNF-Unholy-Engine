@@ -45,7 +45,8 @@ func parse_song(song:String, diff:String, auto_create:bool = false, type:String 
 func _exit_tree():
 	pass 
 func base(song:String): 
-	var json = FileAccess.open('res://assets/songs/'+ song +'/charts/chart.json', FileAccess.READ).get_as_text()
+	var json = you_WILL_get_a_json('chart') #FileAccess.open('res://assets/songs/'+ song +'/charts/chart.json', FileAccess.READ).get_as_text()
+	return JSON.parse_string(json.get_as_text())
 	
 func psych(song:String):
 	var json = you_WILL_get_a_json(song)
@@ -58,18 +59,23 @@ func psych(song:String):
 
 func you_WILL_get_a_json(song:String):
 	var path:String = 'res://assets/songs/%s/charts/' % [song]
+	var returned:String
 	
-	if !FileAccess.file_exists(path + get_diff +'.json'):
-		printerr(song +' has no '+ get_diff +'.json')
-		get_diff = 'hard'
-		return you_WILL_get_a_json('tutorial')
+	if song.contains('chart'):
+		returned = 'chart.json'
+	else:
+		if !FileAccess.file_exists(path + get_diff +'.json'):
+			printerr(song +' has no '+ get_diff +'.json')
+			get_diff = 'hard'
+			return you_WILL_get_a_json('tutorial')
+		returned = path + get_diff +'.json'
 	#var dir_files = DirAccess.get_files_at(path)
 
 	#if dir_files.has(get_diff):
 	#else:
 	#	printerr('COULD NOT FIND JSON: "' + song + '/' + get_diff + '.json"')
 		
-	return FileAccess.open(path + get_diff +'.json', FileAccess.READ)
+	return FileAccess.open(returned, FileAccess.READ)
 
 func generate_chart(data): # idea, split chart into parts, then load each seperately
 	if data == null: 

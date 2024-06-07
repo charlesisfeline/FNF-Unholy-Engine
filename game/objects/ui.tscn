@@ -10,10 +10,10 @@
 script = ExtResource("1_sa7x1")
 
 [node name="HealthBar" parent="." instance=ExtResource("7_e1wxe")]
-offset_left = 364.0
-offset_top = 630.0
-offset_right = 965.0
-offset_bottom = 649.0
+offset_left = 940.8
+offset_top = 639.36
+offset_right = 339.2
+offset_bottom = 620.64
 
 [node name="IconP1" type="Sprite2D" parent="HealthBar"]
 script = ExtResource("8_ojola")
@@ -34,9 +34,9 @@ is_cpu = false
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -85.0
+offset_left = -201.0
 offset_top = 667.0
-offset_right = 138.0
+offset_right = 201.0
 offset_bottom = 684.0
 grow_horizontal = 2
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)

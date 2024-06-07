@@ -10,6 +10,7 @@ var death_char:String = 'bf-dead'
 var idle_suffix:String = ''
 var forced_suffix:String = '' # if set, every anim will use it
 var is_player:bool = false
+var can_dance:bool = true
 var dance_idle:bool = false
 var danced:bool = false
 var dance_beat:int = 2 # dance every %dance_beat%
@@ -19,7 +20,7 @@ var sing_duration:float = 4
 var sing_timer:float = 0
 
 var special_anim:bool = false
-var last_anim:String = ''
+var last_anim:StringName = ''
 var anim_timer:float = 0: # play an anim for a certain amount of time
 	set(time):
 		anim_timer = time
@@ -113,7 +114,7 @@ func _process(delta):
 		if animation.begins_with('sing'):
 			sing_timer = max(sing_timer - delta, 0)
 			hold_timer += delta
-			if hold_timer >= Conductor.step_crochet * (0.0011 * sing_duration):
+			if hold_timer >= Conductor.step_crochet * (0.0011 * sing_duration) and can_dance:
 				dance()
 
 func dance(forced:bool = false):

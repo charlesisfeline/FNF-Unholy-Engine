@@ -11,6 +11,7 @@ var antialiasing:bool = true:
 		
 const col_array:Array[String] = ['purple', 'blue', 'green', 'red']
 
+var chart_note:bool = false
 var spawned:bool = false
 var strum_time:float
 var dir:int = 0
@@ -70,9 +71,10 @@ var alpha:float = 1:
 	get: return modulate.a
 	set(alpha): modulate.a = alpha
 
-func _init(data = null, sustain:bool = false):
+func _init(data = null, sustain:bool = false, in_chart:bool = false):
 	if data != null:
 		copy_from(data)
+		chart_note = in_chart
 		if sustain and data is Note:
 			is_sustain = true
 			temp_len = length
@@ -123,6 +125,7 @@ func _ready():
 
 func _process(delta):
 	var safe_zone:float = Conductor.safe_zone
+	if chart_note: return
 	if is_sustain:
 		if strum_time <= Conductor.song_pos:
 			can_hit = true #!dropped
@@ -153,6 +156,7 @@ func follow_song_pos(strum:Strum):
 	if is_sustain and holding: 
 		position.y = strum.position.y
 		return
+		
 	var pos:float = (0.45 * (Conductor.song_pos - strum_time) * speed)# + offset_y
 	if !strum.downscroll: pos *= -1
 	

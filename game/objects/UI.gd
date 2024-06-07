@@ -5,7 +5,7 @@ var SPLASH = preload('res://game/objects/note/note_splash.tscn')
 # probably gonna move some note shit in here
 @onready var cur_scene = get_tree().current_scene
 @onready var score_txt:Label = $Score_Txt
-@onready var health_bar:TextureProgressBar = $HealthBar
+@onready var health_bar:Control = $HealthBar
 @onready var icon_p1:Sprite2D = $HealthBar/IconP1
 @onready var icon_p2:Sprite2D = $HealthBar/IconP2
 
@@ -64,7 +64,7 @@ func _ready():
 		opponent_group.z_index = -1
 		opponent_group.position = Vector2(60, 400 if downscroll else 300)
 	
-	health_bar.position.x = (Game.screen[0] / 2.0) - (health_bar.texture_under.get_width() / 2.0) # 340
+	health_bar.position.x = (Game.screen[0] / 2.0) # 340
 	health_bar.position.y = 85 if downscroll else 630
 	icon_p1.follow_spr = health_bar
 	icon_p2.follow_spr = health_bar
@@ -74,7 +74,7 @@ func _ready():
 		score_txt.position.y = 130
 
 var hp:float = 50:
-	set(val): hp = clampf(val, health_bar.min_value, health_bar.max_value)
+	set(val): hp = clampf(val, 0, 100)
 func _process(delta):
 	health_bar.value = lerpf(health_bar.value, hp, delta * 7)
 	offset.x = (scale.x - 1.0) * -(Game.screen[0] * 0.5)
