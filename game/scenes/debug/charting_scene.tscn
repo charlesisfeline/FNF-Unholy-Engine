@@ -1,9 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://deksi37bicvb3"]
+[gd_scene load_steps=5 format=3 uid="uid://deksi37bicvb3"]
 
 [ext_resource type="Script" path="res://game/scenes/debug/Charting_Scene.gd" id="1_li1ut"]
 [ext_resource type="Texture2D" uid="uid://dgbcc7lfrqbk1" path="res://assets/images/menuDark.png" id="2_g7jes"]
 [ext_resource type="PackedScene" uid="uid://cj2ryjlbhxh8b" path="res://game/objects/ui/strum_line.tscn" id="3_0lda8"]
-[ext_resource type="Script" path="res://game/objects/ui/Icon.gd" id="3_xnvtn"]
 [ext_resource type="FontFile" uid="uid://csunsdevou3rf" path="res://assets/fonts/vcr.ttf" id="5_85d4d"]
 
 [node name="Charting_Scene" type="Node2D"]
@@ -13,37 +12,28 @@ script = ExtResource("1_li1ut")
 position = Vector2(639, 362)
 texture = ExtResource("2_g7jes")
 
+[node name="Notes" type="Node2D" parent="."]
+
 [node name="StrumLine" type="ColorRect" parent="."]
 offset_left = -50.0
 offset_top = 140.0
 offset_right = 650.0
 offset_bottom = 143.0
 
-[node name="NoteGroup" type="CanvasGroup" parent="."]
-visible = false
+[node name="Left" parent="StrumLine" instance=ExtResource("3_0lda8")]
+position = Vector2(170, -20)
+scale = Vector2(0.37, 0.37)
 
-[node name="OppIcon" type="Sprite2D" parent="NoteGroup"]
-position = Vector2(70, 80)
-script = ExtResource("3_xnvtn")
-
-[node name="PlayIcon" type="Sprite2D" parent="NoteGroup"]
-position = Vector2(750, 80)
-script = ExtResource("3_xnvtn")
-
-[node name="Opponent" parent="NoteGroup" instance=ExtResource("3_0lda8")]
-position = Vector2(100, 100)
-scale = Vector2(0.7, 0.7)
-
-[node name="Player" parent="NoteGroup" instance=ExtResource("3_0lda8")]
-position = Vector2(415, 100)
-scale = Vector2(0.7, 0.7)
+[node name="Right" parent="StrumLine" instance=ExtResource("3_0lda8")]
+position = Vector2(330, -20)
+scale = Vector2(0.37, 0.37)
 
 [node name="Cam" type="Camera2D" parent="."]
 position = Vector2(639, 360)
 
 [node name="Info" type="Window" parent="."]
 title = "Song Data"
-position = Vector2i(930, 105)
+position = Vector2i(930, 71)
 size = Vector2i(280, 475)
 
 [node name="TimeTxt" type="Label" parent="Info"]

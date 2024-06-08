@@ -6,7 +6,12 @@ class_name Strum_Line; extends Node2D;
 		is_cpu = cpu
 		for i in get_strums(): i.is_player = !cpu
 	
-var spacing:float = 110
+@onready var spacing:float = 110:
+	set(new_space):
+		spacing = new_space
+		for i in get_strums():
+			i.position.x = spacing * i.dir
+			
 var singer:Character = null
 
 func _ready():
