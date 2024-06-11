@@ -149,7 +149,10 @@ func for_all_audio(do:String, arg = null, is_var:bool = false):
 				if arg == true: audio.stream = null
 				continue
 			audio.call(do, arg)
-
+			
+func get_beats_at_time(time:float):
+	if time > 0:
+		pass
 
 func reset():
 	reset_beats()

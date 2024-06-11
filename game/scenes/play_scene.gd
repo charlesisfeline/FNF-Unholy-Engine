@@ -201,7 +201,7 @@ func _process(delta):
 				note.follow_song_pos(ui.player_strums[note.dir] if note.must_press else ui.opponent_strums[note.dir])
 				if note.is_sustain:
 					if note.must_press:
-						if note.can_hit and note.should_hit:
+						if note.can_hit and note.should_hit and !note.was_good_hit:
 							#var check = (auto_play or Input.is_action_pressed(key_names[note.dir]))
 							note.holding = (auto_play or Input.is_action_pressed(key_names[note.dir]))
 							good_sustain_press(note, delta)

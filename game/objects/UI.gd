@@ -66,6 +66,7 @@ func _ready():
 	
 	health_bar.position.x = (Game.screen[0] / 2.0) # 340
 	health_bar.position.y = 85 if downscroll else 630
+	health_bar.z_index = -2
 	icon_p1.follow_spr = health_bar
 	icon_p2.follow_spr = health_bar
 	

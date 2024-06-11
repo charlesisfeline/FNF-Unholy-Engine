@@ -2,7 +2,7 @@ extends CanvasLayer
 
 var time_existed:float = 0
 var vol_visible:bool = false
-var vol_tween
+var vol_tween:Tween
 var volume:float = 1:
 	set(vol):
 		$VolumeBar.position.y = 0

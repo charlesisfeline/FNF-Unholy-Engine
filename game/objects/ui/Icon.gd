@@ -45,7 +45,7 @@ func _process(delta):
 			else:
 				position.x = cen - (150 * scale.x) / 2 - 26 * 2
 		
-			position.y = -75 + (75 * scale.y) # goofy..
+			position.y = -80 + (75 * scale.y) # goofy..
 			
 			if has_lose:
 				if is_player:
