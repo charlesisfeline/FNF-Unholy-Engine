@@ -163,6 +163,7 @@ func _process(delta):
 		try_death()
 		
 	if Input.is_action_just_pressed("debug_1"):
+		await RenderingServer.frame_post_draw
 		Game.switch_scene('debug/Charting_Scene')
 	if Input.is_action_just_pressed("back"):
 		auto_play = !auto_play
@@ -241,7 +242,7 @@ func section_hit(section):
 	ui.zoom += 0.04
 	cam.zoom += Vector2(0.08, 0.08)
 
-	if SONG.notes.size() > section:
+	if JsonHandler.parse_type != 'base' and SONG.notes.size() > section:
 		section_data = SONG.notes[section]
 
 		move_cam(section_data.mustHitSection)
@@ -406,7 +407,8 @@ func good_sustain_press(sustain:Note, delt:float = 0.0):
 
 func opponent_note_hit(note:Note):
 	if note.type.length() > 0: print(note.type, ' dad')
-	if section_data.has('altAnim') and section_data.altAnim:
+
+	if section_data != null and section_data.has('altAnim') and section_data.altAnim:
 		note.alt = '-alt'
 		
 	if Conductor.vocals.stream != null:
@@ -421,7 +423,7 @@ func opponent_sustain_press(sustain:Note):
 		var v = Conductor.vocals_opp if Conductor.mult_vocals else Conductor.vocals
 		v.volume_db = linear_to_db(1)
 		
-	if section_data.has('altAnim') and section_data.altAnim:
+	if section_data != null and section_data.has('altAnim') and section_data.altAnim:
 		sustain.alt = '-alt'
 	ui.opponent_group.singer = gf if sustain.type.to_lower().contains('gf') else dad
 	ui.opponent_group.note_hit(sustain)
@@ -453,17 +455,20 @@ func pop_up_combo(rating:String = 'sick', combo = -1, is_miss:bool = false):
 			var new_rating = Judge.make_rating(rating)
 			cam.call(new_rating)
 	
-			var r_tween = create_tween()
-			r_tween.tween_property(new_rating, "modulate:a", 0, 0.2).set_delay(Conductor.crochet * 0.001)
-			r_tween.finished.connect(new_rating.queue_free)
+			if new_rating != null: # opening chart editor at the wrong time would fuck it	
+				var r_tween = create_tween()
+				r_tween.tween_property(new_rating, "modulate:a", 0, 0.2).set_delay(Conductor.crochet * 0.001)
+				r_tween.finished.connect(new_rating.queue_free)
 		
 		if (combo is int and combo > -1) or (combo is String and combo.length() > 0):
 			for num in Judge.make_combo(combo):
 				cam.call(num)
-				var n_tween = create_tween()
-				if is_miss: num.modulate = Color.DARK_RED
-				n_tween.tween_property(num, "modulate:a", 0, 0.2).set_delay(Conductor.crochet * 0.002)
-				n_tween.finished.connect(num.queue_free)
+				
+				if num != null:
+					var n_tween = create_tween()
+					if is_miss: num.modulate = Color.DARK_RED
+					n_tween.tween_property(num, "modulate:a", 0, 0.2).set_delay(Conductor.crochet * 0.002)
+					n_tween.finished.connect(num.queue_free)
 	
 func kill_note(note:Note):
 	note.spawned = false

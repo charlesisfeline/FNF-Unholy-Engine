@@ -2,11 +2,11 @@
 
 [ext_resource type="Script" path="res://game/objects/ScrollSprite.gd" id="1_fgt6k"]
 [ext_resource type="Script" path="res://game/scenes/stages/philly.gd" id="1_hhiqb"]
-[ext_resource type="Texture2D" uid="uid://d1v8beqvjkvuc" path="res://assets/images/stages/philly/sky.png" id="3_4wq54"]
-[ext_resource type="Texture2D" uid="uid://dblwsaiq2mwhi" path="res://assets/images/stages/philly/city.png" id="4_klsyb"]
-[ext_resource type="Texture2D" uid="uid://btkmem7lt1jpl" path="res://assets/images/stages/philly/window.png" id="5_q0fgx"]
-[ext_resource type="Texture2D" uid="uid://dq5f71dptpmf5" path="res://assets/images/stages/philly/behindTrain.png" id="6_rhhbe"]
-[ext_resource type="Texture2D" uid="uid://bk8e1t1d3j6o" path="res://assets/images/stages/philly/street.png" id="7_3qlgt"]
+[ext_resource type="Texture2D" uid="uid://b3ws6d8nnldya" path="res://assets/images/stages/philly/sky.png" id="3_4wq54"]
+[ext_resource type="Texture2D" uid="uid://8vvv8xu2xrby" path="res://assets/images/stages/philly/city.png" id="4_klsyb"]
+[ext_resource type="Texture2D" uid="uid://bdjsqjqob4qdd" path="res://assets/images/stages/philly/window.png" id="5_q0fgx"]
+[ext_resource type="Texture2D" uid="uid://curluhonnbwm4" path="res://assets/images/stages/philly/behindTrain.png" id="6_rhhbe"]
+[ext_resource type="Texture2D" uid="uid://djpobcyuqxgdd" path="res://assets/images/stages/philly/street.png" id="7_3qlgt"]
 
 [node name="Philly" type="Node2D"]
 script = ExtResource("1_hhiqb")

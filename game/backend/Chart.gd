@@ -1,18 +1,16 @@
 class_name Chart; extends Node2D;
 # makes a chart from a stated json, and sends it to JsonHandler chart_notes and song_events
-signal notes_loaded
-signal finished_loading
 
-var total_notes:int = 0
+static var _notes:Array = []
+static func load(data, chart_type:String = 'psych', diff:String = 'normal'):
+	if data == null: return []
+	_notes.clear()
+	match chart_type:
+		'old_base', 'psych': return load_common(data)
+		'base': return load_base(data, diff)
 
-func load_chart(data):
-	if data == null:
-		return
-		
-	# load events whenever chart is made
-	JsonHandler.song_events = get_events(data.song.to_lower().strip_edges().replace(' ', '-'))
-	
-	var _notes = []
+# old base game/psych
+static func load_common(data):
 	for sec in data.notes:
 		for note in sec.sectionNotes:
 			var time:float = maxf(0, note[0])
@@ -29,11 +27,21 @@ func load_chart(data):
 				_notes.append(to_add)
 			_notes.sort_custom(func(a, b): return a[0] < b[0])
 			
-			call_deferred('emit_signal', 'notes_loaded', str(_notes.size()) +' / '+ str(total_notes))
-	#print(str(dupe) +' notes were skipped')
+	return _notes
+
+static func load_base(data, diff:String = 'normal'):
+	#print(data.notes['normal'])
+	for note in data.notes[diff]:
+		var time:float = maxf(0, note.t)
+		var sustain_length:float = maxf(0, note.l) if note.has('l') else 0
+		var type:String = str(note.k) if note.has('k') else ''
+		if type == 'true': type = 'alt'
+			
+		var to_add = [round(time), int(note.d), sustain_length > 0, sustain_length, note.d <= 3, type]
+		if !_notes.has(to_add): # skip adding a note that exists
+			_notes.append(to_add)
+		_notes.sort_custom(func(a, b): return a[0] < b[0])
 	
-	call_deferred('emit_signal', 'loaded')
-	JsonHandler.chart_notes = _notes
 	return _notes
 
 func get_events(song:String = ''):
@@ -63,6 +71,3 @@ func get_events(song:String = ''):
 	
 	events.sort_custom(func(a, b): return a.strum_time < b.strum_time)
 	return events
-
-func _exit_tree():
-	pass

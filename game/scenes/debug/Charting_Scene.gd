@@ -56,7 +56,13 @@ func _ready():
 	Conductor.load_song(SONG.song)
 	Conductor.bpm = SONG.bpm
 	
-
+	if !Conductor.mult_vocals:
+		tab('Chart', 'VoiceOpp').button_pressed = false
+		tab('Chart', 'VoiceOpp').disabled = true
+		tab('Chart', 'VoiceOpp/Vol').editable = false
+		tab('Chart', 'VoiceOpp').modulate = Color.DIM_GRAY
+		tab('Chart', 'VoiceOpp/Vol').modulate = Color.DIM_GRAY
+		
 	tab('Song', 'BPM').value = SONG.bpm
 	tab('Song', 'Song').text = SONG.song
 	tab('Song', 'Speed').value = SONG.speed
@@ -128,12 +134,26 @@ var over_grid:bool = false
 
 func _process(delta):
 	$StrumLine/TimeTxt.text = str(floor(Conductor.song_pos))
-
 	$StrumLine.position.y = floor(get_y_from_time(fmod(Conductor.song_pos - get_section_time(), Conductor.step_crochet * 16.0)))
 	
 	$Cam.position = $StrumLine.position + Vector2(520, 50) # grid.position + Vector2(grid.width, grid.height / 2)
 	$BG.position = $Cam.position
-
+	
+	# ALERT yucky... for loop this later if you can...
+	if tab('Chart', 'Inst').button_pressed:
+		Conductor.inst.volume_db = linear_to_db(tab('Chart', 'Inst/Vol').value)
+	else:
+		Conductor.inst.volume_db = linear_to_db(0)
+	if tab('Chart', 'Voice').button_pressed:
+		Conductor.vocals.volume_db = linear_to_db(tab('Chart', 'Voice/Vol').value)
+	else:
+		Conductor.vocals.volume_db = linear_to_db(0)
+	if !tab('Chart', 'VoiceOpp').disabled:
+		if tab('Chart', 'VoiceOpp').button_pressed:
+			Conductor.vocals_opp.volume_db = linear_to_db(tab('Chart', 'VoiceOpp/Vol').value)
+		else:
+			Conductor.vocals_opp.volume_db = linear_to_db(0)
+			
 	holding_shift = Input.is_key_pressed(KEY_SHIFT)
 	mouse_pos = get_viewport().get_mouse_position() # mouse pos isnt affected by cam movement like flixel
 	var cam_off = $Cam.get_screen_center_position() - (get_viewport_rect().size / 2.0) + Vector2(100, 0)
@@ -161,7 +181,7 @@ func _process(delta):
 				# probably gonna make bf always right and dad always left
 				if ($ChartUI/HitsoundsP.button_pressed and note.must_press)\
 				 or($ChartUI/HitsoundsO.button_pressed and !note.must_press):
-					Audio.play_sound('hitsound', 0.5)
+					Audio.play_sound('hitsound', 0.3)
 				
 				
 				strums[wrap(note.true_dir, 0, 8)].play_anim('confirm', true)
@@ -193,6 +213,12 @@ func beat_hit(beat:int):
 		load_section(cur_section + 1)
 		#print(str(Conductor.song_pos) +' | '+ str(get_section_time(cur_section)))
 
+func step_hit(step:int):
+	$ChartUI/Info.text = \
+		"Beat: "+ str(Conductor.cur_beat) +"\n"+ \
+		"Step: "+ str(Conductor.cur_step) +"\n"+ \
+		"Sect: "+ str(Conductor.cur_section) +"\n"
+
 func toggle_play():
 	Conductor.paused = !Conductor.paused
 	
@@ -215,6 +241,16 @@ func load_section(section:int = 0, force_time:bool = false):
 	if SONG.notes.size() > section:
 		cur_section = max(section, 0)
 		
+		tab('Section', 'MustHit').button_pressed = SONG.notes[cur_section].mustHitSection
+		if SONG.notes[cur_section].has('altAnim'):
+			tab('Section', 'AltAnim').button_pressed = SONG.notes[cur_section].altAnim
+		if SONG.notes[cur_section].has('changeBPM'):
+			tab('Section', 'ChangeBPM').button_pressed = SONG.notes[cur_section].changeBPM
+			tab('Section', 'NewBPM').value = SONG.notes[cur_section].bpm
+		else:
+			tab('Section', 'ChangeBPM').button_pressed = false
+			tab('Section', 'NewBPM').value = 0
+			
 		update_grids()
 
 		if force_time:
@@ -224,6 +260,7 @@ func load_section(section:int = 0, force_time:bool = false):
 func _input(event): # this is better
 	if event is InputEventMouseButton and !event.is_released() and over_grid:
 		print('click')
+		
 		add_note()
 		
 	if Input.is_key_pressed(KEY_ENTER):
@@ -256,20 +293,21 @@ func _input(event): # this is better
 		cur_quant += 1
 	
 func update_grids():
-	while last_notes.size() != 0:
-		$Notes.remove_child(last_notes[0])
-		last_notes[0].queue_free()
-		last_notes.remove_at(0)
+	Game.remove_all([last_notes, cur_notes, next_notes], $Notes)
+	#while last_notes.size() != 0:
+	#	$Notes.remove_child(last_notes[0])
+	#	last_notes[0].queue_free()
+	#	last_notes.remove_at(0)
 		
-	while cur_notes.size() != 0:
-		$Notes.remove_child(cur_notes[0])
-		cur_notes[0].queue_free()
-		cur_notes.remove_at(0)
+	#while cur_notes.size() != 0:
+	#	$Notes.remove_child(cur_notes[0])
+	#	cur_notes[0].queue_free()
+	#	cur_notes.remove_at(0)
 	
-	while next_notes.size() != 0:
-		$Notes.remove_child(next_notes[0])
-		next_notes[0].queue_free()
-		next_notes.remove_at(0)
+	#while next_notes.size() != 0:
+	#	$Notes.remove_child(next_notes[0])
+	#	next_notes[0].queue_free()
+	#	next_notes.remove_at(0)
 		
 	if SONG.notes[cur_section].has('changeBPM') and SONG.notes[cur_section].changeBPM:
 		Conductor.bpm = max(SONG.notes[cur_section].bpm, 1)
@@ -320,11 +358,18 @@ func update_grids():
 		cur_notes.append(new_note)
 		
 		if info[2] > 0:
-			var sustain = ChartNote.new(new_note, true) # ColorRect.new()
+			var sustain = ColorRect.new() #ChartNote.new(new_note, true)
 			$Notes.add_child(sustain)
 			$Notes.move_child(sustain, 0)
-			sustain.position = new_note.position #+ Vector2(-4, 40) #19)
-			#sustain.custom_minimum_size = Vector2(8, floori(remap(info[2], 0, Conductor.step_crochet * 16, 0, grid.height)))
+			#do_note_shit(sustain, new_note.dir)
+			
+			#print(sustain)
+			sustain.position = new_note.position + Vector2(-4, 40) #19)
+			#sustain.position.y += new_note.note.offset.y / 2
+			#sustain.hold_group.size.x *= 3
+			#sustain.hold_group.size.y *= 3
+			#sustain.resize_hold(false, remap(info[2], 0, Conductor.step_crochet * 16, 0, grid.height) * 100)
+			sustain.custom_minimum_size = Vector2(8, floori(remap(info[2], 0, Conductor.step_crochet * 16, 0, grid.height)))
 			cur_notes.append(sustain)
 	
 	var next_sec
@@ -357,8 +402,9 @@ func do_note_shit(note, dir:int):
 	note.true_dir = dir
 	
 	note.scale = Vector2(0.26, 0.26)
-	note.position.x = 120 + (GRID_SIZE * (dir))
-	note.note.offset.y += GRID_SIZE * 2
+	if !note.is_sustain:
+		note.position.x = 120 + (GRID_SIZE * (dir))
+		note.note.offset.y += GRID_SIZE * 2
 	
 func add_note():
 	var time = get_strum_from_y(selected.position.y) + get_section_time()
@@ -390,16 +436,18 @@ func song_end():
 	Conductor.reset_beats()
 	Conductor.start(0)
 	load_section(0, true)
-
-func ui_item_changed():
-	pass
+	Conductor.paused = true
 
 class ChartNote extends Note: # stupid
 	var true_dir:int
-	func _init(data, sustain:bool):
+	func _init(data, sustain:bool = false):
 		if data is Array:
 			data = NoteData.new(data)
 		super(data, sustain, true)
+	
+	func resize_hold(update:bool = false, to_size:float = 0.0):
+		super(update)
+		hold_group.size.y = to_size
 
 class NoteGrid extends Control:
 	var width:int
@@ -430,7 +478,21 @@ class NoteGrid extends Control:
 				x += cell_size.x
 				
 			y += cell_size.y
-			
-		print(x)
+	
 		width = x
 		height = y
+		
+		var center = ColorRect.new()
+		center.custom_minimum_size = Vector2(3, height)
+		center.modulate = Color.SLATE_GRAY
+		center.position = position
+		center.position.x += (width / 2) - 1.5
+		add_child(center)
+		
+		for i in 4:
+			var beat_mark = ColorRect.new()
+			beat_mark.custom_minimum_size = Vector2(width, 2)
+			beat_mark.modulate = Color.DARK_RED
+			beat_mark.position = position
+			beat_mark.position.y += (height / 4) * i
+			add_child(beat_mark)

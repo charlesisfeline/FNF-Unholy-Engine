@@ -111,6 +111,7 @@ func offset_letter(item):
 		'-': return Vector2(0, 25)
 		'!': return Vector2(0, -5)
 		':': return Vector2(0, 7)
+		"'": return Vector2(0, -5)
 		_: return Vector2.ZERO
 
 class Letter extends AnimatedSprite2D:

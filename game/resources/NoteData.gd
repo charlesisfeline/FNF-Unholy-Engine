@@ -10,7 +10,7 @@ var type:String
 var length:float
 
 func _init(data):
-	if data != null:
+	if data != null and data is Array:
 		strum_time = floor(data[0])
 		dir = int(data[1]) % 4
 		length = data[3]

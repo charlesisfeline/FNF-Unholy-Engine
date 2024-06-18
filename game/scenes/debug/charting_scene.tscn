@@ -68,6 +68,17 @@ offset_right = 1230.0
 offset_bottom = 660.0
 color = Color(0.137255, 0.137255, 0.137255, 0.921569)
 
+[node name="Info" type="Label" parent="ChartUI"]
+offset_left = 675.0
+offset_top = 70.0
+offset_right = 825.0
+offset_bottom = 142.0
+theme_override_fonts/font = ExtResource("5_85d4d")
+theme_override_font_sizes/font_size = 25
+text = "Beat: %s
+Step: %s
+Sect: %s"
+
 [node name="Metronome" type="CheckBox" parent="ChartUI"]
 offset_left = 855.0
 offset_top = 564.0
@@ -100,12 +111,86 @@ offset_right = 1230.0
 offset_bottom = 510.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_omfdg")
 tab_alignment = 1
-current_tab = 4
 tab_focus_mode = 0
 
 [node name="Chart" type="Control" parent="ChartUI/Tabs"]
-visible = false
 layout_mode = 2
+
+[node name="Inst" type="CheckBox" parent="ChartUI/Tabs/Chart"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 285.0
+offset_right = 176.0
+offset_bottom = 316.0
+focus_mode = 0
+button_pressed = true
+text = "Play Inst"
+
+[node name="Vol" type="HSlider" parent="ChartUI/Tabs/Chart/Inst"]
+layout_mode = 0
+offset_left = 170.0
+offset_top = 7.0
+offset_right = 351.0
+offset_bottom = 23.0
+tooltip_text = "Inst Volume"
+focus_mode = 0
+max_value = 2.0
+step = 0.1
+value = 0.5
+
+[node name="Voice" type="CheckBox" parent="ChartUI/Tabs/Chart"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 325.0
+offset_right = 124.0
+offset_bottom = 356.0
+focus_mode = 0
+button_pressed = true
+text = "Play Voices"
+
+[node name="Vol" type="HSlider" parent="ChartUI/Tabs/Chart/Voice"]
+layout_mode = 0
+offset_left = 170.0
+offset_top = 9.0
+offset_right = 351.0
+offset_bottom = 25.0
+tooltip_text = "Main/Player Vocal Volume"
+focus_mode = 0
+max_value = 2.0
+step = 0.1
+value = 0.7
+
+[node name="VoiceOpp" type="CheckBox" parent="ChartUI/Tabs/Chart"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 365.0
+offset_right = 161.0
+offset_bottom = 396.0
+focus_mode = 0
+button_pressed = true
+text = "Play Opp Voices"
+
+[node name="Vol" type="HSlider" parent="ChartUI/Tabs/Chart/VoiceOpp"]
+layout_mode = 0
+offset_left = 170.0
+offset_top = 7.0
+offset_right = 350.0
+offset_bottom = 27.0
+tooltip_text = "Other/Opponent Vocal Volume"
+focus_mode = 0
+max_value = 2.0
+step = 0.1
+value = 0.7
+
+[node name="Label" type="Label" parent="ChartUI/Tabs/Chart"]
+layout_mode = 0
+offset_left = 221.0
+offset_top = 245.0
+offset_right = 317.0
+offset_bottom = 273.0
+theme_override_font_sizes/font_size = 20
+text = "Volume"
+horizontal_alignment = 1
 
 [node name="Events" type="Control" parent="ChartUI/Tabs"]
 visible = false
@@ -123,35 +208,39 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Section" type="Control" parent="ChartUI/Tabs"]
+visible = false
 layout_mode = 2
 
-[node name="CheckBox2" type="CheckBox" parent="ChartUI/Tabs/Section"]
-offset_left = 10.0
-offset_top = 82.0
-offset_right = 165.0
-offset_bottom = 113.0
-text = "Alt Animation (Opponent)"
-
-[node name="CheckBox" type="CheckBox" parent="ChartUI/Tabs/Section"]
+[node name="MustHit" type="CheckBox" parent="ChartUI/Tabs/Section"]
 layout_mode = 0
 offset_left = 10.0
-offset_top = 45.0
+offset_top = 10.0
 offset_right = 165.0
-offset_bottom = 76.0
+offset_bottom = 41.0
 text = "Must Hit Section"
 
-[node name="CheckBox3" type="CheckBox" parent="ChartUI/Tabs/Section"]
+[node name="AltAnim" type="CheckBox" parent="ChartUI/Tabs/Section"]
+layout_mode = 0
 offset_left = 10.0
-offset_top = 120.0
+offset_top = 50.0
 offset_right = 237.0
-offset_bottom = 151.0
+offset_bottom = 81.0
+text = "Alt Animation (Opponent)"
+
+[node name="AltAnimPlayer" type="CheckBox" parent="ChartUI/Tabs/Section"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 75.0
+offset_right = 237.0
+offset_bottom = 106.0
 text = "Alt Animation (Player)"
 
 [node name="SetAll" type="OptionButton" parent="ChartUI/Tabs/Section"]
-offset_left = 16.0
-offset_top = 200.0
-offset_right = 142.0
-offset_bottom = 247.0
+layout_mode = 0
+offset_left = 15.0
+offset_top = 285.0
+offset_right = 141.0
+offset_bottom = 332.0
 item_count = 4
 popup/item_0/text = "default"
 popup/item_0/id = 0
@@ -162,46 +251,109 @@ popup/item_2/id = 2
 popup/item_3/text = "No Anim"
 popup/item_3/id = 3
 
+[node name="Side" type="OptionButton" parent="ChartUI/Tabs/Section/SetAll"]
+layout_mode = 0
+offset_left = 64.0
+offset_top = -40.0
+offset_right = 190.0
+offset_bottom = -9.0
+item_count = 2
+selected = 0
+popup/item_0/text = "Player"
+popup/item_0/id = 0
+popup/item_1/text = "Opponent"
+popup/item_1/id = 1
+
 [node name="Label" type="Label" parent="ChartUI/Tabs/Section/SetAll"]
 layout_mode = 0
-offset_top = -25.0
-offset_right = 84.0
-offset_bottom = -2.0
-text = "Note Type:"
+offset_top = -35.0
+offset_right = 269.0
+offset_bottom = -12.0
+text = "Set All                                      Notes to:"
+
+[node name="Button" type="Button" parent="ChartUI/Tabs/Section/SetAll"]
+layout_mode = 0
+offset_left = 144.0
+offset_top = 8.0
+offset_right = 227.0
+offset_bottom = 39.0
+text = "Set Notes"
+
+[node name="CopySec" type="Button" parent="ChartUI/Tabs/Section"]
+layout_mode = 0
+offset_left = 33.0
+offset_top = 390.0
+offset_right = 116.0
+offset_bottom = 421.0
+text = "Copy"
+
+[node name="PasteSec" type="Button" parent="ChartUI/Tabs/Section"]
+layout_mode = 0
+offset_left = 148.0
+offset_top = 390.0
+offset_right = 231.0
+offset_bottom = 421.0
+text = "Paste"
+
+[node name="ClearSec" type="Button" parent="ChartUI/Tabs/Section"]
+layout_mode = 0
+offset_left = 265.0
+offset_top = 390.0
+offset_right = 348.0
+offset_bottom = 421.0
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+text = "Clear"
+
+[node name="ChangeBPM" type="CheckBox" parent="ChartUI/Tabs/Section"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 135.0
+offset_right = 136.0
+offset_bottom = 166.0
+text = "Change BPM"
+
+[node name="NewBPM" type="SpinBox" parent="ChartUI/Tabs/Section"]
+layout_mode = 0
+offset_left = 13.0
+offset_top = 165.0
+offset_right = 96.0625
+offset_bottom = 196.0
+max_value = 500.0
 
 [node name="Notes" type="Control" parent="ChartUI/Tabs"]
 visible = false
 layout_mode = 2
 
 [node name="Label" type="Label" parent="ChartUI/Tabs/Notes"]
-offset_left = 10.0
-offset_top = 35.0
-offset_right = 100.0
-offset_bottom = 58.0
+layout_mode = 0
+offset_left = 205.0
+offset_top = 12.0
+offset_right = 295.0
+offset_bottom = 35.0
 text = "Strum Time"
 
 [node name="NoteTime" type="TextEdit" parent="ChartUI/Tabs/Notes"]
 layout_mode = 0
 offset_left = 10.0
-offset_top = 60.0
+offset_top = 10.0
 offset_right = 190.0
-offset_bottom = 90.0
+offset_bottom = 40.0
 editable = false
 
 [node name="Length" type="SpinBox" parent="ChartUI/Tabs/Notes"]
 layout_mode = 0
 offset_left = 10.0
-offset_top = 215.0
+offset_top = 50.0
 offset_right = 93.0625
-offset_bottom = 246.0
+offset_bottom = 81.0
 allow_greater = true
 
 [node name="Type" type="OptionButton" parent="ChartUI/Tabs/Notes"]
 layout_mode = 0
 offset_left = 10.0
-offset_top = 156.0
+offset_top = 140.0
 offset_right = 136.0
-offset_bottom = 203.0
+offset_bottom = 187.0
 item_count = 4
 popup/item_0/text = "default"
 popup/item_0/id = 0

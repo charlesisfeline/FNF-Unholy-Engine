@@ -12,8 +12,6 @@ func _ready():
 	DiscordRPC.start_timestamp = int(Time.get_unix_time_from_system())
 	change_presence('Workin on Unholy Engine woop', 'Yuhhh I love daniel')
 	
-	#DiscordRPC.refresh()
-
 func _process(_delta):
 	DiscordRPC.run_callbacks()
 

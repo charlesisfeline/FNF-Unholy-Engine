@@ -72,10 +72,9 @@ func call_func(to_call:String, args:Array[Variant] = [], call_tree:bool = false)
 	else:
 		if scene.has_method(to_call):
 			scene.callv(to_call, args)
-	
-	
-	#else:
-	#	callv(to_call, args)
+
+func format_str(str:String = ''):
+	return str.to_lower().strip_edges().replace(' ', '-').replace('\'', '')
 
 func round_d(num, digit): # bowomp
 	return round(num * pow(10.0, digit)) / pow(10.0, digit)
@@ -83,5 +82,10 @@ func round_d(num, digit): # bowomp
 func rand_bool(chance:float = 50):
 	return true if (randi() % 100) < chance else false
 
-func haxe_remap(v:float, st1:float, st2:float, end1:float, end2:float):
-	return st2 + (v - st1) * ((end2 - st2) / (end1 - st1))
+func remove_all(array:Array[Array], node = null):
+	if node != null:
+		for arr in array:
+			while arr.size() != 0:
+				node.remove_child(arr[0])
+				arr[0].queue_free()
+				arr.remove_at(0)

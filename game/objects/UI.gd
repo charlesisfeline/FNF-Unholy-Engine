@@ -77,7 +77,7 @@ func _ready():
 var hp:float = 50:
 	set(val): hp = clampf(val, 0, 100)
 func _process(delta):
-	health_bar.value = lerpf(health_bar.value, hp, delta * 7)
+	health_bar.value = lerpf(health_bar.value, hp, delta * 8)
 	offset.x = (scale.x - 1.0) * -(Game.screen[0] * 0.5)
 	offset.y = (scale.y - 1.0) * -(Game.screen[1] * 0.5)
 	
@@ -129,7 +129,9 @@ func start_countdown(from_beginning:bool = false):
 	for i in characters:
 		if times_looped % i.dance_beat == 0 and !i.animation.begins_with('sing'):
 			i.dance()
-
+	icon_p1.bump()
+	icon_p2.bump()
+	
 	if times_looped < 4:
 		if times_looped > 0:
 			var spr = Sprite2D.new()

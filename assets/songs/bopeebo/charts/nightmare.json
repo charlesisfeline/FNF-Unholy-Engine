@@ -1,7 +1,8 @@
 {
     "song": {
-        "song": "Bopeebo Erect",
+        "song": "Bopeebo",
         "bpm": 123,
+        "variant": "erect",
         "needsVoices": true,
         "player1": "bf",
         "player2": "dad",

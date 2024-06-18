@@ -105,7 +105,7 @@ func _ready():
 		
 		sustain = TextureRect.new()
 		sustain.texture = load(tex_path + col_array[dir] +'_hold.png')
-		#sustain.stretch_mode = TextureRect.STRETCH_TILE # hmm
+		sustain.stretch_mode = TextureRect.STRETCH_TILE # hmm
 		sustain.set_anchors_preset(Control.PRESET_FULL_RECT)
 		sustain.set_anchor_and_offset(SIDE_BOTTOM, 1.0, -end.texture.get_height())
 		sustain.grow_horizontal = Control.GROW_DIRECTION_BOTH

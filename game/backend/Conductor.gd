@@ -48,6 +48,7 @@ var inst = AudioStreamPlayer.new()
 var vocals = AudioStreamPlayer.new()
 var vocals_opp = AudioStreamPlayer.new()
 
+var bpm_changes
 func _ready():
 	add_child(inst)
 	add_child(vocals)
@@ -58,13 +59,11 @@ func load_song(song:String = ''):
 		printerr('Conductor.load_song: NO SONG ENTERED')
 		song = 'tutorial' #DirAccess.get_directories_at('res://assets/songs')[0]
 	
-	song = song.to_lower().replace(' ', '-')
+	song = Game.format_str(song)
 	var split = song.split('-')
 	var path:String = 'res://assets/songs/'+ song +'/audio/%s.ogg' # myehh
 
-	var suffix:String = ''
-	if split[split.size()-1] == JsonHandler.get_diff:
-		suffix = '-'+ JsonHandler.get_diff
+	var suffix:String = '-'+ JsonHandler._SONG.variant if JsonHandler._SONG.has('variant') else ''
 
 	#print(path % ['Inst'+ suffix])
 	if FileAccess.file_exists(path % ['Inst'+ suffix]):
@@ -150,8 +149,24 @@ func for_all_audio(do:String, arg = null, is_var:bool = false):
 				continue
 			audio.call(do, arg)
 			
+func get_bpm_changes(data):
+	for sec in data.notes:
+		pass
+		
 func get_beats_at_time(time:float):
-	if time > 0:
+	var b
+	var s
+	if time != 0:
+		time = abs(time)
+		#	if song_pos > beat_time + crochet:
+		#		beat_time += crochet
+		#		cur_beat += 1
+		#		if cur_beat % 4 == 0:
+		#			cur_section += 1
+			
+		#	if song_pos > step_time + step_crochet:
+		#		step_time += step_crochet
+		#		cur_step += 1
 		pass
 
 func reset():

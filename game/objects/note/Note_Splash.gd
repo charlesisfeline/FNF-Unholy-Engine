@@ -9,9 +9,5 @@ func _ready():
 	play('%s impact %s' % anim_ + col[strum.dir])
 	position = strum.position
 
-func _process(_delta):
-	pass
-
 func _on_animation_finished():
-	#remove_child(self)
 	queue_free()
