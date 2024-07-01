@@ -59,15 +59,11 @@ func finished():
 	Game.call_func('on_music_finish')
 	
 func play_sound(sound:String, vol:float = 1, use_skin:bool = false):
-	var new_sound := AudioStreamPlayer.new()
-	add_child(new_sound)
 	var path = 'res://assets/sounds/%s.ogg' % [sound]
-	new_sound.stream = load(path)
-	new_sound.volume_db = linear_to_db(vol)
+	var new_sound := AutoSound.new(path, vol)
+	add_child(new_sound)
 	new_sound.play()
 	sound_list.append(new_sound)
-	await new_sound.finished
-	new_sound.queue_free()
 
 func stop_all_sounds():
 	for sound in sound_list:
@@ -76,3 +72,13 @@ func stop_all_sounds():
 			sound.stream = null
 			remove_child(sound)
 			sound_list.remove_at(sound_list.find(sound))
+
+class AutoSound extends AudioStreamPlayer:
+	func _init(sound_path:String = '', vol:float = 1):
+		stream = load(sound_path)
+		volume_db = linear_to_db(vol)
+		finished.connect(finish)
+		
+	func finish():
+		Audio.sound_list.remove_at(Audio.sound_list.find(self))
+		queue_free()

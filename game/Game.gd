@@ -2,6 +2,9 @@ extends Node2D
 
 signal focus_change(is_focused) # when you click on/off the game window
 
+var TRANS = preload('res://game/objects/ui/transition.tscn') # always have it loaded for instantiating
+var cur_trans
+
 var scene = null:
 	get: return get_tree().current_scene
 	
@@ -53,12 +56,27 @@ func center_obj(obj = null, axis:String = 'xy'):
 func reset_scene(_skip_trans:bool = false):
 	get_tree().reload_current_scene()
 
-func switch_scene(new_scene, _skip_trans:bool = false):
+func switch_scene(new_scene, skip_trans:bool = true):
 	if new_scene is String:
 		new_scene = new_scene.to_lower()
 		if new_scene == 'play_scene' and Prefs.chart_player: new_scene += '_empty'
 		var path = 'res://game/scenes/%s.tscn'
-		get_tree().change_scene_to_file(path % new_scene)
+		
+		if skip_trans:
+			get_tree().change_scene_to_file(path % new_scene)
+		else:
+			cur_trans = TRANS.instantiate()
+			add_child(cur_trans)
+			cur_trans.trans_out(0.7, true)
+			cur_trans.on_finish = func():
+				#Game.scene.paused = false
+				#Game.remove_child(cur_trans)
+				get_tree().change_scene_to_file(path % new_scene)
+				cur_trans.trans_in(1, true)
+				cur_trans.on_finish = func():
+					remove_child(cur_trans)
+					cur_trans.queue_free()
+
 	if new_scene is PackedScene:
 		get_tree().change_scene_to_packed(new_scene)
 

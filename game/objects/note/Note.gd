@@ -98,26 +98,26 @@ func _ready():
 		
 		end = TextureRect.new()
 		end.texture = load(tex_path + col_array[dir] +'_end.png')
-		end.stretch_mode = TextureRect.STRETCH_TILE
+		if !chart_note: end.stretch_mode = TextureRect.STRETCH_TILE
 		end.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
 		end.grow_horizontal = Control.GROW_DIRECTION_BOTH
 		end.grow_vertical = Control.GROW_DIRECTION_BEGIN
 		
 		sustain = TextureRect.new()
 		sustain.texture = load(tex_path + col_array[dir] +'_hold.png')
-		sustain.stretch_mode = TextureRect.STRETCH_TILE # hmm
+		if !chart_note: sustain.stretch_mode = TextureRect.STRETCH_TILE # hmm
 		sustain.set_anchors_preset(Control.PRESET_FULL_RECT)
 		sustain.set_anchor_and_offset(SIDE_BOTTOM, 1.0, -end.texture.get_height())
 		sustain.grow_horizontal = Control.GROW_DIRECTION_BOTH
 		sustain.grow_vertical = Control.GROW_DIRECTION_BOTH
 		
-		resize_hold(true)
-		
 		hold_group.add_child(sustain)
 		hold_group.add_child(end)
 		
-		if Prefs.downscroll: hold_group.scale.y = -1
-		if Prefs.behind_strums: hold_group.z_index = -1
+		if !chart_note:
+			resize_hold(true)
+			if Prefs.downscroll: hold_group.scale.y = -1
+			if Prefs.behind_strums: hold_group.z_index = -1
 	else:
 		note = Sprite2D.new()
 		note.texture = load(tex_path + col_array[dir] +'.png')

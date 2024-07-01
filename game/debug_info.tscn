@@ -5,7 +5,7 @@
 
 [node name="Debug_Info" type="CanvasLayer"]
 process_mode = 3
-layer = 102
+layer = 128
 script = ExtResource("1_hoswi")
 
 [node name="FPS" type="Label" parent="."]

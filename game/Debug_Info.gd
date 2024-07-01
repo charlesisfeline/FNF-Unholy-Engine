@@ -5,6 +5,12 @@ var vol_visible:bool = false
 var vol_tween:Tween
 var volume:float = 1:
 	set(vol):
+		if vol > volume: 
+			Audio.play_sound('vol/up')
+		elif vol < volume:
+			Audio.play_sound('vol/down')
+		else:
+			Audio.play_sound('vol/max')
 		$VolumeBar.position.y = 0
 		vol_visible = true
 		time_existed = 0
@@ -18,13 +24,13 @@ func _ready():
 
 func _process(delta):
 	if vol_visible:
+		if vol_tween: vol_tween.kill()
 		vol_lerp = lerpf(vol_lerp, volume * 10, delta * 15)
 		$VolumeBar.value = vol_lerp
 		time_existed += delta
 		if time_existed >= 1:
 			vol_visible = false
-			if vol_tween:
-				vol_tween.kill()
+	
 			vol_tween = create_tween()
 			vol_tween.tween_property($VolumeBar, 'position:y', -50, 0.5)
 	

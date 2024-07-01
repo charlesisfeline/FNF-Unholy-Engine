@@ -80,6 +80,7 @@ func _process(delta):
 		#get_tree().reload_current_scene()
 	elif Input.is_action_just_pressed('back') and !retried:
 		Audio.stop_music()
+		Audio.stop_all_sounds()
 		Conductor.reset()
 		get_tree().paused = false
 		Game.switch_scene('menus/freeplay')
