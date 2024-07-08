@@ -20,8 +20,10 @@ var auto_pause:bool = true
 var chart_player:bool = false
 var allow_rpc:bool = true
 var note_splashes:String = 'sicks'
+var splash_sprite:String = 'haxe'
 var behind_strums:bool = false
 var rating_cam:String = 'game'
+var chart_grid:bool = true
 
 var daniel:bool = true
 

@@ -53,3 +53,4 @@ func close():
 	Audio.stop_music()
 	queue_free()
 	get_tree().paused = false
+

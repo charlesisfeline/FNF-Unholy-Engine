@@ -8,7 +8,18 @@ var antialiasing:bool = true:
 	set(alias):
 		antialiasing = alias
 		texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR if alias else CanvasItem.TEXTURE_FILTER_NEAREST
-		
+
+var width:float = 0:
+	get:
+		if is_sustain:
+			return sustain.texture.get_width() * abs(hold_group.scale.x)
+		return note.texture.get_width() * abs(scale.x)
+var height:float = 0:
+	get:
+		if is_sustain:
+			return sustain.texture.get_height() * abs(hold_group.scale.y)
+		return note.texture.get_height() * abs(scale.y)
+	
 const col_array:Array[String] = ['purple', 'blue', 'green', 'red']
 
 var chart_note:bool = false
@@ -23,6 +34,7 @@ var speed:float = 1:
 		if is_sustain: resize_hold()
 		
 var alt:String = ""
+var gf:bool = false
 var no_anim:bool = false
 var type:String = "":
 	set(new_type):
@@ -30,12 +42,14 @@ var type:String = "":
 		match type.to_lower():
 			'alt animation', 'alt': alt = '-alt'
 			'no animation': no_anim = true
+			'gf sing': gf = true
 			'markov note': 
 				no_anim = true
 				should_hit = false
 				early_mod = 0.5
 				late_mod = 0.5
 				modulate = Color.DIM_GRAY
+		if type.to_lower().contains('gf sing'): gf = true
 
 var should_hit:bool = true
 var can_hit:bool = false#:

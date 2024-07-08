@@ -67,6 +67,7 @@ func load_char(new_char:String = 'bf'):
 		
 	sprite_frames = load('res://assets/images/'+ path)
 	
+	offsets.clear()
 	for anim in json.animations:
 		offsets[anim.anim] = [-anim.offsets[0], -anim.offsets[1]]
 	
@@ -86,11 +87,14 @@ func load_char(new_char:String = 'bf'):
 	set_stuff()
 	
 	if cur_char.contains('monster'): swap_sing('singUP', 'singDOWN')
-	if !is_player and json.flip_x:
+	if (!is_player and json.flip_x) or (is_player and !json.flip_x):
 		scale.x *= -1
 		position.x += width
 		focus_offsets.x -= width / 2
-		swap_sing('singLEFT', 'singRIGHT')
+		if sing_anims[0] == 'singLEFT':
+			swap_sing('singLEFT', 'singRIGHT')
+	elif true:
+		pass 
 		
 	print('loaded '+ cur_char)
 	
@@ -184,7 +188,7 @@ func copy_char(char:Character):
 func get_closest(char:String = 'bf'): # if theres no character named like "pico-but-devil" itll just use reg pico
 	for file in DirAccess.get_files_at('res://assets/data/characters'):
 		file = file.replace('.json', '')
-		if char.contains(file): return file
+		if char.to_lower().contains(file): return file
 	return 'bf'
 
 #func get_anim(anim:String): # get the animation from the json file

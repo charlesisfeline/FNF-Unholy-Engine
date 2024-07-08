@@ -164,7 +164,7 @@ func get_character(character:String = 'bf'):
 	var json_path = 'res://assets/data/characters/%s.json' % [character]
 	if !FileAccess.file_exists(json_path):
 		printerr('JSON: get_character | JSON FILE [%s.json] COULD NOT BE FOUND' % [character]);
-		return 'Nothin'
+		return null
 	var file = FileAccess.open(json_path, FileAccess.READ)
 	return JSON.parse_string(file.get_as_text())
 

@@ -347,7 +347,10 @@ func event_hit(event:EventNote):
 			match event.values[0].to_lower():
 				'2', 'gf', 'girlfriend': char = "gf"
 				'1', 'dad', 'opponent': char = "dad"
-				
+			
+			var last_pos = get(char).position
+			get(char).load_char(event.values[1])
+			get(char).position = last_pos
 			#new_char = Character.new(char.position, event.values[1], char == boyfriend)
 			#remove_child(char)
 			#char.queue_free()
@@ -361,7 +364,7 @@ func good_note_hit(note:Note):
 	if Conductor.vocals.stream != null: 
 		Conductor.vocals.volume_db = linear_to_db(1)
 		
-	ui.player_group.singer = gf if note.type.to_lower().contains('gf') else boyfriend 
+	ui.player_group.singer = gf if note.gf else boyfriend 
 	ui.player_group.note_hit(note)
 	combo += 1
 	
@@ -398,7 +401,7 @@ func good_sustain_press(sustain:Note, delt:float = 0.0):
 	if sustain.holding:
 		if Conductor.vocals.stream != null: 
 			Conductor.vocals.volume_db = linear_to_db(1) 
-		ui.player_group.singer = gf if sustain.type.to_lower().contains('gf') else boyfriend
+		ui.player_group.singer = gf if sustain.gf else boyfriend
 		ui.player_group.note_hit(sustain)
 
 		score += floor(500 * delt)
@@ -414,7 +417,7 @@ func opponent_note_hit(note:Note):
 	if Conductor.vocals.stream != null:
 		var v = Conductor.vocals_opp if Conductor.mult_vocals else Conductor.vocals
 		v.volume_db = linear_to_db(1)
-	ui.opponent_group.singer = gf if note.type.to_lower().contains('gf') else dad
+	ui.opponent_group.singer = gf if note.gf else dad
 	ui.opponent_group.note_hit(note)
 	kill_note(note)
 
@@ -425,7 +428,7 @@ func opponent_sustain_press(sustain:Note):
 		
 	if section_data != null and section_data.has('altAnim') and section_data.altAnim:
 		sustain.alt = '-alt'
-	ui.opponent_group.singer = gf if sustain.type.to_lower().contains('gf') else dad
+	ui.opponent_group.singer = gf if sustain.gf else dad
 	ui.opponent_group.note_hit(sustain)
 
 func note_miss(note:Note):

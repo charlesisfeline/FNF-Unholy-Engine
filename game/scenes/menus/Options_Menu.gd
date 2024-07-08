@@ -20,9 +20,11 @@ var visuals = [
 	['allow_rpc',     'bool'],
 	['chart_player',  'bool'],
 	['note_splashes', 'array', ['sicks', 'all', 'none']],
+	['splash_sprite', 'array', ['base', 'haxe']],
 	['behind_strums', 'bool'],
 	['rating_cam',    'array', ['game', 'hud', 'none']],
 	['auto_pause',    'bool'],
+	['chart_grid',    'bool'],
 	['daniel',        'bool']
 ]
 #var controls = []
@@ -91,7 +93,8 @@ func show_catagory(catagory:String):
 	else:
 		var loops:int = 0
 		for pref in get(catagory):
-			var new_pref = Option.new(pref, descriptions[pref[0]])
+			var desc = descriptions[pref[0]] if descriptions.has(pref[0]) else 'Missing Description'
+			var new_pref = Option.new(pref, desc)
 			new_pref.is_menu = true
 			new_pref.target_y = loops
 			new_pref.lock.x = 1300
