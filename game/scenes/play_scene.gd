@@ -49,7 +49,13 @@ var misses:int = 0
 func _ready():
 	auto_play = Prefs.auto_play # there is a reason
 	SONG = JsonHandler._SONG
-	if Prefs.daniel: SONG.player1 = 'bf-girl'
+	if Prefs.daniel and !SONG.player1.contains('bf-girl'):
+		var try = SONG.player1.replace('bf', 'bf-girl')
+		if FileAccess.file_exists('res://assets/data/characters/'+ try +'.json'):
+			SONG.player1 = try
+		else:
+			SONG.player1 = 'bf-girl'
+
 	
 	Conductor.load_song(SONG.song)
 	cur_speed = SONG.speed

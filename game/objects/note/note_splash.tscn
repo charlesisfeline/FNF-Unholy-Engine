@@ -5,7 +5,7 @@
 
 [node name="Note_Splash" type="AnimatedSprite2D"]
 sprite_frames = ExtResource("1_5y6nc")
-animation = &"haxe impact red"
+animation = &"note impact 2 blue"
 script = ExtResource("2_skjh2")
 
 [connection signal="animation_finished" from="." to="." method="_on_animation_finished"]

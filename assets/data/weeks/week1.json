@@ -10,6 +10,7 @@
 		"bf",
 		"gf"
 	],
+	"difficulties": ["easy", "normal", "hard", "erect", "nightmare"],
 	"weekBackground": "stage",
 
 	"storyName": "Daddy Dearest",

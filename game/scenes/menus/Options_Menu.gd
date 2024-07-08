@@ -20,7 +20,7 @@ var visuals = [
 	['allow_rpc',     'bool'],
 	['chart_player',  'bool'],
 	['note_splashes', 'array', ['sicks', 'all', 'none']],
-	['splash_sprite', 'array', ['base', 'haxe']],
+	['splash_sprite', 'array', ['base', 'haxe', 'forever']],
 	['behind_strums', 'bool'],
 	['rating_cam',    'array', ['game', 'hud', 'none']],
 	['auto_pause',    'bool'],
