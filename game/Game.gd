@@ -1,5 +1,6 @@
 extends Node2D
 
+# note to self, strech mode for canvas items isnt bad, but it makes the text butt ugly, maybe see if you cant fix that
 signal focus_change(is_focused) # when you click on/off the game window
 
 var TRANS = preload('res://game/objects/ui/transition.tscn') # always have it loaded for instantiating

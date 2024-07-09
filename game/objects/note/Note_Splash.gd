@@ -3,7 +3,7 @@ extends AnimatedSprite2D
 var strum
 const col = ['purple', 'blue', 'green', 'red']
 
-var _info = {
+var _info:Dictionary = {
 	'base'    = ['note',    [1, 2],  1],
 	'haxe'    = ['haxe',    [],    0.9],
 	'forever' = ['forever', [1, 2],  1]

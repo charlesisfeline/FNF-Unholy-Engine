@@ -24,7 +24,9 @@ var last_anim:StringName = ''
 var anim_timer:float = 0: # play an anim for a certain amount of time
 	set(time):
 		anim_timer = time
-		last_anim = animation
+		if !special_anim and time > 0:
+			special_anim = true
+			last_anim = animation
 
 var width:float = 0:
 	get: return width * abs(scale.x)
@@ -102,9 +104,8 @@ func load_char(new_char:String = 'bf'):
 
 func _process(delta):
 	#if !is_player:
-	if anim_timer > 0: special_anim = true
 	if special_anim:
-		if anim_timer == 0:
+		if anim_timer <= 0:
 			await animation_finished
 			special_anim = false
 			dance()
@@ -113,6 +114,7 @@ func _process(delta):
 			if anim_timer <= 0:
 				special_anim = false
 				if animation == last_anim:
+					print('boogie')
 					dance()
 	else:
 		if animation.begins_with('sing'):

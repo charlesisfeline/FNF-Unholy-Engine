@@ -6,10 +6,14 @@ signal loaded
 var base_diffs:Array[String] = ['easy', 'normal', 'hard']
 var get_diff:String
 
+var charted:bool = false
 var _SONG = null
-var total_notes:int = 0
+
 var chart_notes:Array = [] # keep loaded chart and events for restarting songs
 var song_events:Array[EventNote] = []
+var old_notes:Array = []
+var old_events:Array[EventNote] = []
+
 var song_meta = null
 var parse_type:String = ''
 func parse_song(song:String, diff:String, auto_create:bool = false, type:String = 'psych'):

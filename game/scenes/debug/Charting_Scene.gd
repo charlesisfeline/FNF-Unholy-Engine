@@ -17,6 +17,7 @@ var cur_quant:int = 3:
 	set(new_quant):
 		cur_quant = wrap(new_quant, 0, quant_list.size() - 1)
 		note_snap = quant_list[cur_quant]
+		update_text()
 		
 var quant_list:Array[int] = [
 	4, 8, 12, 16, 
@@ -25,7 +26,7 @@ var quant_list:Array[int] = [
 ]
 
 var selected:ColorRect
-var this_note:ChartNote
+var this_note:Array = []
 var last_notes:Array = []
 var cur_notes:Array = []
 var next_notes:Array = []
@@ -55,6 +56,8 @@ func _ready():
 	if JsonHandler.chart_notes.is_empty(): 
 		JsonHandler.parse_song('dad-battle', 'hard', true)
 	SONG = JsonHandler._SONG
+
+	#JsonHandler.old_notes = JsonHandler.chart_notes.duplicate()
 	Conductor.load_song(SONG.song)
 	Conductor.bpm = SONG.bpm
 	
@@ -119,7 +122,7 @@ func _ready():
 	prev_grid = NoteGrid.new(Vector2(GRID_SIZE, GRID_SIZE), Vector2(GRID_SIZE * 8, GRID_SIZE * 16))
 	prev_grid.position.x = OFF
 	prev_grid.position.y = grid.position.y - grid.height
-	#prev_grid.modulate = Color.DIM_GRAY
+	prev_grid.modulate = Color.DIM_GRAY
 	prev_grid.name = 'PrevGrid'
 	add_child(prev_grid)
 	move_child(prev_grid, get_node('Notes').get_index())
@@ -127,7 +130,7 @@ func _ready():
 	next_grid = NoteGrid.new(Vector2(GRID_SIZE, GRID_SIZE), Vector2(GRID_SIZE * 8, GRID_SIZE * 16))
 	next_grid.position.x = OFF
 	next_grid.position.y = grid.position.y + grid.height
-	#next_grid.modulate = Color.DIM_GRAY
+	next_grid.modulate = Color.DIM_GRAY
 	next_grid.name = 'NextGrid'
 	add_child(next_grid)
 	move_child(next_grid, get_node('Notes').get_index())
@@ -137,6 +140,7 @@ func _ready():
 	$Notes.add_child(selected)
 	$Notes.move_child(selected, 0)
 
+	tab('Chart', 'ToggleGrid').button_pressed = Prefs.chart_grid
 	_toggle_grid(tab('Chart', 'ToggleGrid').button_pressed) # update the visibility before we get goin
 	#update_grids()
 
@@ -189,15 +193,15 @@ func _process(delta):
 	if !Conductor.paused:
 		for note in last_notes:
 			if note.is_sustain and note.hitting: # sustains that go over
-				strums[wrap(note.true_dir, 0, 8)].play_anim('confirm', true)
-				strums[wrap(note.true_dir, 0, 8)].reset_timer = 0.15
+				strums[wrap(note.visual_dir, 0, 8)].play_anim('confirm', true)
+				strums[wrap(note.visual_dir, 0, 8)].reset_timer = 0.15
 				
 		for note in cur_notes:
 			if note.strum_time <= Conductor.song_pos:
 				if note.is_sustain:
 					if note.hitting:
-						strums[wrap(note.true_dir, 0, 8)].play_anim('confirm', true)
-						strums[wrap(note.true_dir, 0, 8)].reset_timer = 0.15
+						strums[wrap(note.visual_dir, 0, 8)].play_anim('confirm', true)
+						strums[wrap(note.visual_dir, 0, 8)].reset_timer = 0.15
 				elif note.modulate != Color.GRAY:
 					note.modulate = Color.GRAY
 
@@ -205,9 +209,13 @@ func _process(delta):
 					 or(tab('Chart', 'HitsoundsO').button_pressed and !note.must_press):
 						Audio.play_sound('hitsound', 0.3)
 				
-					strums[wrap(note.true_dir, 0, 8)].play_anim('confirm', true)
-					strums[wrap(note.true_dir, 0, 8)].reset_timer = 0.15
-				
+					strums[wrap(note.visual_dir, 0, 8)].play_anim('confirm', true)
+					strums[wrap(note.visual_dir, 0, 8)].reset_timer = 0.15
+	
+	if this_note != null:
+		pass
+		#this_note.modulate.a = 0.5
+		
 	if Input.is_action_just_pressed("back"):
 		Conductor.reset_beats()
 		Game.reset_scene()
@@ -318,13 +326,14 @@ func load_section(section:int = 0, force_time:bool = false):
 	
 func _input(event): # this is better
 	if event is InputEventMouseButton:
-		if !event.is_released() and over_grid:
+		#if event.is_pressed(): return
+		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and !event.is_released():
 			print('click')
 			check_note()
 			
-			print(str(mouse_pos) +' | '+ str(cur_notes[0].position))
+			#print(str(mouse_pos - Vector2(100, 0)) +' | '+ str(cur_notes[0].position) +' | '+ str(cur_notes[0].width))
 			var click_point = ColorRect.new()
-			click_point.custom_minimum_size = Vector2(3, 3)
+			click_point.custom_minimum_size = Vector2(5, 5)
 			click_point.modulate = Color.BLUE_VIOLET
 			click_point.position = mouse_pos - Vector2(100, 0)
 			add_child(click_point)
@@ -343,6 +352,15 @@ func _input(event): # this is better
 		
 		if Input.is_key_pressed(KEY_SPACE):
 			toggle_play()
+	
+		if !this_note.is_empty():
+			if Input.is_key_pressed(KEY_Q):
+				this_note[2] -= Conductor.step_crochet
+				this_note[2] = max(this_note[2], 0)
+				update_grids()
+			if Input.is_key_pressed(KEY_E):
+				this_note[2] += Conductor.step_crochet
+				update_grids()
 	
 		if Input.is_key_pressed(KEY_R):
 			if holding_shift:
@@ -396,14 +414,20 @@ func update_grids():
 
 	$StrumLine/BPMTxt.text = str(Conductor.bpm) +' BPM'
 	
+	#var secs_to_use = {'PrevGrid' = SONG.notes[cur_section - 1], 'Grid' = SONG.notes[cur_section], 'NextGrid' = SONG.notes[cur_section + 1]}
+	#for item in [prev_grid, grid, next_grid]:
+	#	if item != null:
+	#		pass
+	#	pass
+		
 	var last_sec = SONG.notes[cur_section - 1] if cur_section > 0 else null
 	prev_grid.visible = last_sec != null
 	if last_sec != null:
 		for info in last_sec.sectionNotes:
-			if tab('Chart', 'ToggleGrid').button_pressed:
-				prev_grid.modulate = Color.DIM_GRAY
-			else:
-				prev_grid.modulate = Color.WHITE
+			#if tab('Chart', 'ToggleGrid').button_pressed:
+			#	prev_grid.modulate = Color.DIM_GRAY
+			#else:
+			#	prev_grid.modulate = Color.WHITE
 				
 			if info[1] == -1: continue
 			if !(info[2] is float): info[2] = 0
@@ -412,6 +436,7 @@ func update_grids():
 			var new_note = ChartNote.new([info[0], info[1], null, info[2], must_press, type], false)
 			$Notes.add_child(new_note)
 			
+			new_note.true_dir = info[1]
 			var fake_dir = info[1]
 			if last_sec.mustHitSection:
 				if must_press:
@@ -432,7 +457,7 @@ func update_grids():
 				var sustain = ChartNote.new(new_note, true) #ColorRect.new()
 				$Notes.add_child(sustain)
 				$Notes.move_child(sustain, 1)
-				do_note_shit(sustain, new_note.true_dir)
+				do_note_shit(sustain, new_note.visual_dir)
 			
 				sustain.hold_group.size.x = 50 # close enough for now
 				sustain.hold_group.size.y = floori(remap(info[2], 0, Conductor.step_crochet * 16.0, 0, prev_grid.height * 3.87))
@@ -457,6 +482,8 @@ func update_grids():
 		var type = (str(info[3]) if info.size() > 3 else '')
 		var new_note = ChartNote.new([info[0], info[1], null, info[2], must_press, type], false)
 		$Notes.add_child(new_note)
+		
+		new_note.true_dir = info[1]
 		var fake_dir = info[1]
 		if new_sec.mustHitSection:
 			if must_press:
@@ -479,7 +506,7 @@ func update_grids():
 			var sustain = ChartNote.new(new_note, true) #ColorRect.new()
 			$Notes.add_child(sustain)
 			$Notes.move_child(sustain, 1)
-			do_note_shit(sustain, new_note.true_dir)
+			do_note_shit(sustain, new_note.visual_dir)
 			
 			sustain.modulate = new_note.modulate
 			sustain.modulate.a = 0.6
@@ -497,10 +524,10 @@ func update_grids():
 		
 	if next_sec != null:
 		for info in next_sec.sectionNotes:
-			if tab('Chart', 'ToggleGrid').button_pressed:
-				next_grid.modulate = Color.DIM_GRAY
-			else:
-				next_grid.modulate = Color.WHITE
+			#if tab('Chart', 'ToggleGrid').button_pressed:
+			#	next_grid.modulate = Color.DIM_GRAY
+			#else:
+			#	next_grid.modulate = Color.WHITE
 				
 			if info[1] == -1: continue
 			if !(info[2] is float): info[2] = 0
@@ -530,7 +557,7 @@ func update_grids():
 				var sustain = ChartNote.new(new_note, true) #ColorRect.new()
 				$Notes.add_child(sustain)
 				$Notes.move_child(sustain, 1)
-				do_note_shit(sustain, new_note.true_dir)
+				do_note_shit(sustain, new_note.visual_dir)
 			
 				sustain.hold_group.size.x = 50 # close enough for now
 				sustain.hold_group.size.y = floori(remap(info[2], 0, Conductor.step_crochet * 16.0, 0, next_grid.height * 3.87))
@@ -550,7 +577,7 @@ func update_grids():
 	print('loaded '+ str(new_sec.sectionNotes.size()) +' notes')
 	
 func do_note_shit(note, dir:int):
-	note.true_dir = dir
+	note.visual_dir = dir
 	
 	note.scale = Vector2(0.26, 0.26)
 	if !note.is_sustain:
@@ -558,20 +585,46 @@ func do_note_shit(note, dir:int):
 		note.note.offset.y += GRID_SIZE * 2
 	
 func check_note():
-	if Input.is_key_pressed(KEY_CTRL):
-		this_note
-	else:
-		for note in cur_notes:
-			if mouse_pos.x > note.position.x - 100 and mouse_pos.x < note.position.x + note.width - 100 \
-			and mouse_pos.y > note.position.y and mouse_pos.y < note.position.y + note.height:
-				print('overlaped note')
-	
+	var clicked_note:bool = false
+	for note in cur_notes:
+		if !note.is_sustain:
+			var note_pos = note.position.x - note.width / 2
+			if mouse_pos.x - 100 >= note_pos and mouse_pos.x - 100 <= note_pos + note.width \
+			and mouse_pos.y >= note.position.y and mouse_pos.y <= note.position.y + note.height:
+				clicked_note = true
+				if Input.is_key_pressed(KEY_CTRL): #Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
+					select_note(note)
+				else:
+					remove_note(note)
+		
+	# so you can select and remove notes that are somehow off the grid
+	if !clicked_note and over_grid:
+		add_note()
+		
 func add_note():
 	var time = get_strum_from_y(selected.position.y) + get_section_time()
-	var direct:int = floor(mouse_pos.x / GRID_SIZE) - 5
+	var direct:int = floor(mouse_pos.x / GRID_SIZE) - (1 if SONG.notes[cur_section].mustHitSection else 5)
 	
 	SONG.notes[cur_section].sectionNotes.append([time, direct, 0])
 	SONG.notes[cur_section].sectionNotes.sort_custom(func(a, b): return a[0] < b[0])
+	
+	update_grids()
+	
+func select_note(note:ChartNote):
+	var id:int = 0
+	for i in SONG.notes[cur_section].sectionNotes:
+		if floor(i[0]) == note.strum_time and i[1] == note.true_dir:
+			this_note = SONG.notes[cur_section].sectionNotes[id]
+			print('selected note')
+			break
+		id += 1
+
+func remove_note(note:ChartNote):
+	for i in SONG.notes[cur_section].sectionNotes:
+		if floor(i[0]) == note.strum_time and i[1] == note.true_dir:
+			this_note.clear()
+			SONG.notes[cur_section].sectionNotes.erase(i)
+			print('cleared note')
 	
 	update_grids()
 
@@ -613,9 +666,9 @@ func song_end():
 	Conductor.paused = true
 	load_section(0, true)
 
-
 class ChartNote extends Note: # stupid
-	var true_dir:int
+	var visual_dir:int # for chart editor, for keeping player notes on right and opp on left
+	var true_dir:int # the actual direction the note is
 	var hitting:bool = false
 	func _init(data, sustain:bool = false):
 		if data is Array:
@@ -671,7 +724,7 @@ class NoteGrid extends Control:
 		center.custom_minimum_size = Vector2(3, height)
 		center.modulate = Color.SLATE_GRAY
 		center.position = position
-		center.position.x += (width / 2) - 1.5
+		center.position.x += (width / 2.0) - 1.5
 		add_child(center)
 		
 		for i in 4:
@@ -684,7 +737,7 @@ class NoteGrid extends Control:
 			
 		for i in 16:
 			var step_mark = ColorRect.new()
-			step_mark.custom_minimum_size = Vector2(width - (width / 4), 2)
+			step_mark.custom_minimum_size = Vector2(width - (width / 4.0), 2)
 			step_mark.modulate = Color.SKY_BLUE
 			step_mark.modulate.a = 0.8
 			step_mark.position = position
