@@ -124,7 +124,7 @@ func _ready():
 	ui.opponent_group.singer = dad
 	
 	if cur_stage.contains('school'):
-		ui.cur_style = 'pixel'
+		cur_style = 'pixel'
 	if cur_stage == 'limo': # lil dumb...
 		remove_child(gf)
 		stage.add_child(gf)
@@ -175,6 +175,7 @@ func _process(delta):
 	if Input.is_action_just_pressed("back"):
 		auto_play = !auto_play
 	if Input.is_action_just_pressed("accept"):
+		Conductor.resync_audio()
 		get_tree().paused = true
 		other.add_child(load('res://game/scenes/pause_screen.tscn').instantiate())
 	

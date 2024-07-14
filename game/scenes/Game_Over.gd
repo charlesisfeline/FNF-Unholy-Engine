@@ -16,14 +16,18 @@ func _ready():
 	$BG.modulate.a = 0
 	$Fade.modulate.a = 0
 	
-	dead = Character.new(this.boyfriend.position, this.boyfriend.death_char, true)
+	var da_boy = this.boyfriend.death_char
+	if da_boy == 'bf-dead' and FileAccess.file_exists('res://assets/data/characters/'+ this.boyfriend.cur_char +'-dead.json'):
+		da_boy = this.boyfriend.cur_char +'-dead'
+		
+	dead = Character.new(this.boyfriend.position, da_boy, true)
 	#print(this.boyfriend.position - Vector2(-15, this.boyfriend.height * 0.83))
 
 	add_child(dead)
 	move_child(dead, 1)
 
 	dead.play_anim('deathStart', true)
-	Audio.play_sound('skins/default/fnf_loss_sfx')
+	Audio.play_sound('fnf_loss_sfx', 1, true)
 	
 	last_cam_pos = this.cam.position
 	last_zoom = this.cam.zoom
@@ -34,7 +38,7 @@ func _ready():
 	await get_tree().create_timer(2.5).timeout
 	
 	if !retried:
-		Audio.play_music('skins/default/gameOver-pico')
+		Audio.play_music('skins/'+ this.cur_style +'/gameOver')
 		dead.play_anim('deathLoop')
 
 func fade_in():
@@ -57,9 +61,9 @@ func _process(delta):
 		this.cam.position = dead.position + Vector2(dead.width / 2, (dead.height / 2) - 30)
 
 
-	if Input.is_action_just_pressed('accept'):
+	if Input.is_action_just_pressed('accept') and !retried:
 		retried = true
-		Audio.play_music('skins/default/gameOverEnd-pico', false)
+		Audio.play_music('skins/'+ this.cur_style +'/gameOverEnd', false)
 		dead.play_anim('deathConfirm', true)
 		await get_tree().create_timer(2).timeout
 		var cam_twen = create_tween().tween_property(this.cam, 'position', last_cam_pos, 1).set_trans(Tween.TRANS_SINE)

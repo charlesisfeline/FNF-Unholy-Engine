@@ -59,7 +59,10 @@ func finished():
 	Game.call_func('on_music_finish')
 	
 func play_sound(sound:String, vol:float = 1, use_skin:bool = false):
-	var path = 'res://assets/sounds/%s.ogg' % [sound]
+	if use_skin and !sound.begins_with('skins/'): 
+		sound = 'skins/'+ Game.scene.cur_style +'/'+ sound
+	print(sound)
+	var path = 'res://assets/sounds/%s.ogg' % sound
 	var new_sound := AutoSound.new(path, vol)
 	add_child(new_sound)
 	new_sound.play()

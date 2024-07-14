@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://game/scenes/stages/limo.gd" id="1_eghoy"]
 [ext_resource type="Script" path="res://game/objects/ScrollSprite.gd" id="1_fgt6k"]
-[ext_resource type="Texture2D" uid="uid://djnjc1nvnyijy" path="res://assets/images/stages/limo/limoSunset.png" id="3_yfw1f"]
+[ext_resource type="Texture2D" uid="uid://dpe0wd67x63j3" path="res://assets/images/stages/limo/limoSunset.png" id="3_yfw1f"]
 [ext_resource type="SpriteFrames" uid="uid://cjxb6jdx6srfv" path="res://assets/images/stages/limo/bgLimo.res" id="4_vq5r0"]
 [ext_resource type="SpriteFrames" uid="uid://dft0d8wo6xkih" path="res://assets/images/stages/limo/limoDrive.res" id="5_mus74"]
 

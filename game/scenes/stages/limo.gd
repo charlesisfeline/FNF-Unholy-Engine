@@ -11,7 +11,7 @@ func _ready():
 	#$FGLimo.play()
 	for i in 5: # fuck positioning things by hand
 		var limo = $BGLimo/Sprite.position
-		var new_dancer = LimoDancer.new(Vector2((370 * i) + 440 + limo.x, limo.y - 875))
+		var new_dancer = LimoDancer.new(Vector2((370 * i) + 440 + limo.x, limo.y - 870))
 		$BGLimo/LimoDancers.add_child(new_dancer)
 		dancers.append(new_dancer)
 

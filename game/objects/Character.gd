@@ -55,7 +55,7 @@ func load_char(new_char:String = 'bf'):
 		return
 		
 	cur_char = new_char
-	if !FileAccess.file_exists('res://assets/data/characters/%s.json' % [cur_char]):
+	if !FileAccess.file_exists('res://assets/data/characters/%s.json' % cur_char):
 		printerr('CHARACTER '+ cur_char +' does NOT have a json')
 		print(get_closest(cur_char))
 		cur_char = get_closest(cur_char)
@@ -81,7 +81,7 @@ func load_char(new_char:String = 'bf'):
 	focus_offsets.x = json.camera_position[0]
 	focus_offsets.y = json.camera_position[1]
 	
-	dance_idle = offsets.has('danceLeft')
+	dance_idle = offsets.has('danceLeft') and offsets.has('danceRight')
 	if dance_idle: dance_beat = 1
 	if cur_char == 'senpai-angry': forced_suffix = '-alt' # boooo
 	
@@ -152,7 +152,7 @@ func swap_sing(anim1:String, anim2:String):
 func play_anim(anim:String, forced:bool = false):
 	if forced_suffix.length() > 0: 
 		anim += forced_suffix
-	if !sprite_frames.has_animation(anim): 
+	if !has_anim(anim): 
 		printerr(anim +' doesnt exist on '+ cur_char)
 		return
 		
