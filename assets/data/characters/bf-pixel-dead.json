@@ -3,8 +3,8 @@
 		{
 			"loop": false,
 			"offsets": [
-				-26,
-				-12
+				0,
+				0
 			],
 			"fps": 24,
 			"anim": "deathConfirm",
@@ -14,8 +14,8 @@
 		{
 			"loop": true,
 			"offsets": [
-				-30,
-				-12
+				0,
+				0
 			],
 			"fps": 24,
 			"anim": "deathLoop",
@@ -25,20 +25,20 @@
 		{
 			"loop": false,
 			"offsets": [
-				0,
-				0
+				5,
+				2
 			],
 			"fps": 24,
-			"anim": "firstDeath",
+			"anim": "deathStart",
 			"indices": [],
 			"name": "BF Dies pixel"
 		}
 	],
 	"no_antialiasing": true,
-	"image": "characters/bfPixelsDEAD",
+	"image": "characters/bf/pixel/dead",
 	"position": [
-		0,
-		350
+		-10,
+		7
 	],
 	"healthicon": "bf-pixel",
 	"flip_x": true,
