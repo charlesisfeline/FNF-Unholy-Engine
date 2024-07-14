@@ -61,7 +61,7 @@ func finished():
 func play_sound(sound:String, vol:float = 1, use_skin:bool = false):
 	if use_skin and !sound.begins_with('skins/'): 
 		sound = 'skins/'+ Game.scene.cur_style +'/'+ sound
-	print(sound)
+	#print(sound)
 	var path = 'res://assets/sounds/%s.ogg' % sound
 	var new_sound := AutoSound.new(path, vol)
 	add_child(new_sound)
