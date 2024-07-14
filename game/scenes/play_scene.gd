@@ -58,6 +58,7 @@ func _ready():
 
 	
 	Conductor.load_song(SONG.song)
+	Conductor.paused = false
 	cur_speed = SONG.speed
 	if SONG.has('stage'):
 		cur_stage = SONG.stage.to_lower().replace(' ', '-')

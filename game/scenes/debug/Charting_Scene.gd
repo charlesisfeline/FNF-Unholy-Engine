@@ -32,13 +32,6 @@ var cur_notes:Array = []
 var next_notes:Array = []
 
 # TODO
-# add adding/removing notes
-# buttons to move song position
-# zooming/snapping
-# fix grid colors
-# make option buttons get the song chars
-# add scroll speed option
-# add other menus (to edit notes, sections and junk)
 # add events
 
 var def_order = [ # fuck you!!
@@ -49,6 +42,8 @@ var def_order = [ # fuck you!!
 	'parents-christmas', 'monster-christmas', 
 	'senpai', 'senpai-angry', 'spirit', 'tankman', 'pico-speaker'
 ]
+
+var exist_chars = DirAccess.get_files_at('res://assets/data/characters')
 
 var SONG
 func _ready():
@@ -95,9 +90,10 @@ func _ready():
 		tab('Song', 'Player2').add_item(char)
 		tab('Song', 'GF').add_item(char)
 		
-	for char in DirAccess.get_files_at('res://assets/data/characters'):
+	for char in exist_chars:
 		char = char.replace('.json', '')
 		if def_order.has(char): continue
+		def_order.insert(def_order.size() - 1, char)
 		tab('Song', 'Player1').add_item(char)
 		tab('Song', 'Player2').add_item(char)
 		tab('Song', 'GF').add_item(char)
@@ -250,15 +246,19 @@ func step_hit(step:int):
 
 func toggle_play():
 	Conductor.paused = !Conductor.paused
-	
+
 func set_dropdown(dropdown:OptionButton, to_val:String = ''): # set a optionbutton's value automatically
-	if dropdown != null or to_val.length() > 0:
+	if dropdown != null:
 		var items:Array = []
 		for i in dropdown.item_count:
 			items.append(dropdown.get_item_text(i))
 			
 		if items.has(to_val):
 			dropdown.select(items.find(to_val))
+		else:
+			dropdown.modulate = Color.RED
+			dropdown.add_item(to_val)
+			dropdown.select(items.size())
 
 func tab(tab:String, node:String):
 	return get_node('ChartUI/Tabs/'+ tab +'/'+ node)
@@ -345,8 +345,11 @@ func _input(event): # this is better
 	if event is InputEventKey:
 		if Input.is_key_pressed(KEY_ENTER):
 			Conductor.reset_beats()
-			#JsonHandler._SONG = SONG
-			#JsonHandler.generate_chart(SONG)
+			Conductor.paused = true
+			SONG.bpm = tab('Song', 'BPM').value
+			SONG.speed = tab('Song', 'Speed').value
+			JsonHandler._SONG = SONG
+			JsonHandler.generate_chart(SONG)
 			Conductor.for_all_audio('volume_db', linear_to_db(1), true)
 			Game.switch_scene('Play_Scene')
 		
@@ -597,8 +600,7 @@ func check_note():
 				else:
 					remove_note(note)
 		
-	# so you can select and remove notes that are somehow off the grid
-	if !clicked_note and over_grid:
+	if !clicked_note and over_grid: # so you can click notes that are somehow off the grid, but not add more
 		add_note()
 		
 func add_note():
@@ -608,6 +610,7 @@ func add_note():
 	SONG.notes[cur_section].sectionNotes.append([time, direct, 0])
 	SONG.notes[cur_section].sectionNotes.sort_custom(func(a, b): return a[0] < b[0])
 	
+	this_note = SONG.notes[cur_section].sectionNotes[(SONG.notes[cur_section].sectionNotes.find([time, direct, 0]))]
 	update_grids()
 	
 func select_note(note:ChartNote):
@@ -659,6 +662,10 @@ func get_section_time(this_sec:int = -1):
 			bpm = max(da_sec.bpm, 1)
 		pos += 4.0 * (1000.0 * 60.0 / bpm)
 	return pos
+
+func _ui_item_changed(ui_item, index:int = -2):
+	if ['Player1', 'Player2', 'GF'].has(ui_item.name):
+		pass
 
 func song_end():
 	Conductor.reset_beats()
