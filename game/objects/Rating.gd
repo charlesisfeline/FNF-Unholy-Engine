@@ -10,6 +10,7 @@ var ratings_data:Dictionary = {
 	'name':       ['sick', 'good', 'bad', 'shit'],
 	'score':      [  350,    200,   100,    50],
 	'hit_window': [   45,     90,   135,  null],
+	'penalty':    [    1,   0.75,   0.5,   0.2],
 	'hit_mod':    [    1,   0.75,   0.5,   0.2] # 1.0, 0.9, 0.7, 0.4, 0.2
 }
 
@@ -28,6 +29,7 @@ func get_score(rating:String):
 	var index = ratings_data.name.find(rating)
 	to_return.append(ratings_data.score[index])
 	to_return.append(ratings_data.hit_mod[index])
+	to_return.append(ratings_data.penalty[index])
 	return to_return
 
 func make_rating(rate:String = 'sick'):

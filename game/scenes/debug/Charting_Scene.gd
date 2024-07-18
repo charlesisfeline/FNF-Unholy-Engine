@@ -51,6 +51,9 @@ func _ready():
 	if JsonHandler.chart_notes.is_empty(): 
 		JsonHandler.parse_song('dad-battle', 'hard', true)
 	SONG = JsonHandler._SONG
+	
+	Discord.change_presence('Charting '+ SONG.song.captialize(), 'One must imagine a charter happy')
+	
 
 	#JsonHandler.old_notes = JsonHandler.chart_notes.duplicate()
 	Conductor.load_song(SONG.song)
@@ -346,6 +349,10 @@ func _input(event): # this is better
 		if Input.is_key_pressed(KEY_ENTER):
 			Conductor.reset_beats()
 			Conductor.paused = true
+			SONG.player1 = def_order[wrap(tab('Song', 'Player1').selected, 0, def_order.size())]
+			SONG.player2 = def_order[wrap(tab('Song', 'Player2').selected, 0, def_order.size())]
+			SONG.gfVersion = def_order[wrap(tab('Song', 'GF').selected, 0, def_order.size())]
+			
 			SONG.bpm = tab('Song', 'BPM').value
 			SONG.speed = tab('Song', 'Speed').value
 			JsonHandler._SONG = SONG
@@ -479,7 +486,7 @@ func update_grids():
 	var new_sec = SONG.notes[cur_section]
 		
 	for info in new_sec.sectionNotes:
-		if info[1] == -1: continue
+		if info.is_empty() or info[1] == -1: continue
 		if !(info[2] is float): info[2] = 0
 		var must_press = (new_sec.mustHitSection and info[1] <= 3) or (!new_sec.mustHitSection and info[1] > 3)
 		var type = (str(info[3]) if info.size() > 3 else '')

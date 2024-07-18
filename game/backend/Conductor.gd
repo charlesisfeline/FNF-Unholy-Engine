@@ -22,7 +22,7 @@ var song_pos:float = 0.0:
 
 #var offset:float = 0
 var safe_zone:float = 166.0
-var song_length:float = 0.0
+var song_length:float = 5000.0
 
 var beat_time:float = 0
 var step_time:float = 0
@@ -88,27 +88,27 @@ func _process(delta):
 		if !song_started: 
 			start()
 			return
-		if inst.stream != null: 
-			if song_pos > beat_time + crochet:
-				beat_time += crochet
-				cur_beat += 1
-				beat_hit.emit(cur_beat)
-				Game.call_func('beat_hit', [cur_beat])
-				if cur_beat % 4 == 0:
-					cur_section += 1
-					section_hit.emit(cur_section)
-					Game.call_func('section_hit', [cur_section])
+
+		if song_pos > beat_time + crochet:
+			beat_time += crochet
+			cur_beat += 1
+			beat_hit.emit(cur_beat)
+			Game.call_func('beat_hit', [cur_beat])
+			if cur_beat % 4 == 0:
+				cur_section += 1
+				section_hit.emit(cur_section)
+				Game.call_func('section_hit', [cur_section])
 			
-			if song_pos > step_time + step_crochet:
-				step_time += step_crochet
-				cur_step += 1
-				step_hit.emit(cur_step)
-				Game.call_func('step_hit', [cur_step])
+		if song_pos > step_time + step_crochet:
+			step_time += step_crochet
+			cur_step += 1
+			step_hit.emit(cur_step)
+			Game.call_func('step_hit', [cur_step])
 			
-			if song_pos >= song_length and song_loaded:
-				print('Song Finished')
-				
-				Game.call_func('song_end')
+		if song_pos >= song_length and song_loaded:
+			print('Song Finished')
+			
+			Game.call_func('song_end')
 		
 		for audio in [inst, vocals, vocals_opp]:
 			if audio.stream != null and audio.playing:
@@ -127,8 +127,9 @@ func resync_audio():
 func stop():
 	song_pos = 0
 	for_all_audio('stop', true)
+	reset_beats()
 
-func pause():
+func pause(): # NOTE: you shouldn't call this function, you should set Conductor.paused instead
 	for_all_audio('stream_paused', paused, true)
 
 func start(at_point:float = -1):
@@ -149,33 +150,11 @@ func for_all_audio(do:String, arg = null, is_var:bool = false):
 				continue
 			audio.call(do, arg)
 			
-func get_bpm_changes(data):
-	for sec in data.notes:
-		pass
-		
-func get_beats_at_time(time:float):
-	var b
-	var s
-	if time != 0:
-		time = abs(time)
-		#	if song_pos > beat_time + crochet:
-		#		beat_time += crochet
-		#		cur_beat += 1
-		#		if cur_beat % 4 == 0:
-		#			cur_section += 1
-			
-		#	if song_pos > step_time + step_crochet:
-		#		step_time += step_crochet
-		#		cur_step += 1
-		pass
-
 func reset():
-	reset_beats()
-	stop()
-	bpm = 100
-	
 	song_started = false
 	song_loaded = false
+	stop()
+	bpm = 100
 
 func reset_beats():
 	beat_time = 0; step_time = 0;

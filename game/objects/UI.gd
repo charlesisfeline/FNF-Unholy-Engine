@@ -5,6 +5,7 @@ var SPLASH = preload('res://game/objects/note/note_splash.tscn')
 # probably gonna move some note shit in here
 @onready var cur_scene = get_tree().current_scene
 @onready var score_txt:Label = $Score_Txt
+@onready var time_bar:Control = $TimeBar
 @onready var health_bar:Control = $HealthBar
 @onready var icon_p1:Sprite2D = $HealthBar/IconP1
 @onready var icon_p2:Sprite2D = $HealthBar/IconP2
@@ -25,6 +26,7 @@ var cur_style:String = 'default':
 			cur_style = new_style
 			change_style(new_style)
 			
+var finished_countdown:bool = false
 var countdown_spr:Array[String] = ['ready', 'set', 'go']
 var sounds:Array[String] = ['intro3', 'intro2', 'intro1', 'introGo']
 
@@ -32,6 +34,7 @@ var total_hit:float = 0
 var note_percent:float = 0
 var accuracy:float = -1
 var hit_count:Dictionary = {'sick': 0, 'good': 0, 'bad': 0, 'shit': 0}
+var fc:String = 'N/A'
 
 var zoom:float = 1:
 	set(new_zoom):
@@ -39,6 +42,9 @@ var zoom:float = 1:
 		scale = Vector2(zoom, zoom)
 
 func _ready():
+	time_bar.fill_mode = 0
+	time_bar.set_colors(Color.BLACK, Color.WHITE)
+	
 	strums.append_array(opponent_strums)
 	strums.append_array(player_strums)
 	
@@ -76,7 +82,11 @@ func _ready():
 
 var hp:float = 50:
 	set(val): hp = clampf(val, 0, 100)
+	
 func _process(delta):
+	if finished_countdown:
+		time_bar.value = (abs(Conductor.song_pos / Conductor.song_length) * 100.0)
+		$Text.text = str(Game.to_time(abs(Conductor.song_length - Conductor.song_pos)))
 	health_bar.value = lerpf(health_bar.value, hp, delta * 8)
 	offset.x = (scale.x - 1.0) * -(Game.screen[0] * 0.5)
 	offset.y = (scale.y - 1.0) * -(Game.screen[1] * 0.5)
@@ -118,6 +128,7 @@ var times_looped:int = -1
 
 func start_countdown(from_beginning:bool = false):
 	if from_beginning:
+		finished_countdown = false
 		Conductor.song_pos = -Conductor.crochet * 5
 		count_down = Timer.new() # get_tree.create_timer starts automatically and isn't reusable
 		add_child(count_down)
@@ -146,6 +157,7 @@ func start_countdown(from_beginning:bool = false):
 		Audio.play_sound('skins/'+ cur_style +'/'+ sounds[times_looped])
 		start_countdown()
 	else:
+		finished_countdown = true
 		remove_child(count_down)
 		count_down.queue_free()
 		times_looped = -1

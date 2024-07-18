@@ -36,6 +36,8 @@ var in_sub:bool = false
 var main_text:Array[Alphabet]
 var pref_list:Array[Alphabet]
 func _ready():
+	Discord.change_presence('Maining some Menus', 'Checkin some options')
+	
 	var b = JSON.new()
 	b.parse(FileAccess.open('res://assets/data/prefInfo.json', FileAccess.READ).get_as_text())
 	descriptions = b.data
@@ -99,8 +101,7 @@ func show_catagory(catagory:String):
 			new_pref.target_y = loops
 			new_pref.lock.x = 1300
 			var twen = create_tween()\
-			.tween_property(new_pref, 'lock:x', 550, 0.3).set_delay(0.1 * loops)\
-			.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+			.tween_property(new_pref, 'lock:x', 550, 0.3).set_trans(Tween.TRANS_CIRC).set_ease(Tween.EASE_OUT)
 			
 			add_child(new_pref)
 			pref_list.append(new_pref)

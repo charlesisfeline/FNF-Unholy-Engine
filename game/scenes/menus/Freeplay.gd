@@ -14,7 +14,8 @@ var songs:Array[FreeplaySong] = []
 var icons:Array[Icon] = []
 func _ready():
 	if Audio.Player.stream == null:
-		Audio.play_music('freakyMenu')
+		Audio.play_music('freakyMenu', true, 0.7)
+	Discord.change_presence('Maining some Menus', 'In Freeplay')
 	
 	for i in order: added_weeks.append(i.strip_edges())
 	
@@ -41,7 +42,11 @@ func _ready():
 	for song in DirAccess.get_directories_at('res://assets/songs'):
 		add_song(FreeplaySong.new([song, 'bf', [100, 100, 100]]))
 	
-	if JsonHandler._SONG != null: 
+	if JsonHandler._SONG != null:
+		if JsonHandler.charted and !JsonHandler.old_notes.is_empty():
+			JsonHandler.chart_notes = JsonHandler.old_notes.duplicate()
+			JsonHandler.song_events = JsonHandler.old_events.duplicate()
+			
 		last_loaded.song = JsonHandler._SONG.song.to_lower().replace(' ', '-')
 		last_loaded.diff = JsonHandler.get_diff
 		cur_song = added_songs.find(last_loaded.song)
@@ -69,7 +74,7 @@ var lerp_score:int = 0
 var actual_score:int = 2384397
 func _process(delta):
 	lerp_score = lerp(actual_score, lerp_score, exp(-delta * 24))
-	$SongInfo/Score.text = 'Personal Best: ' + str(lerp_score)
+	$SongInfo/Score.text = 'Best Score: ' + str(lerp_score)
 	$SongInfo/Score.position.x = Game.screen[0] - $SongInfo/Score.size[0] - 6
 	$SongInfo/ScoreBG.scale.x = Game.screen[0] - $SongInfo/Score.position.x + 6
 	$SongInfo/ScoreBG.position.x = Game.screen[0] - ($SongInfo/ScoreBG.scale.x / 2)

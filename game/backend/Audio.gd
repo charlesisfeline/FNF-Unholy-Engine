@@ -6,7 +6,8 @@ var Player = AudioStreamPlayer.new()
 var volume:float = 1:
 	set(vol): 
 		volume = vol
-		Player.volume_db = linear_to_db(volume)
+		if Player.stream != null:
+			Player.volume_db = linear_to_db(volume)
 		
 var pos:float = 0 # in case you need the position for something or whatever
 
@@ -25,28 +26,30 @@ func _process(delta):
 	if Player.stream != null:
 		pos += delta * 1000
 
-func set_music(new_music:String, volume:float = 1, looped:bool = true): # set the music without auto playing it
+func set_music(new_music:String, vol:float = 1, looped:bool = true): # set the music without auto playing it
 	var path:String = 'assets/music/'+ new_music +'.ogg'
 	if FileAccess.file_exists('res://'+ path):
 		Player.stream = load('res://'+ path)
 		music = new_music
-		self.volume = volume
+		volume = vol
 		loop_music = looped
 	else: 
 		printerr('MUSIC PLAYER | SET MUSIC: CAN\'T FIND FILE "'+ path +'"')
 	
-func play_music(to_play:String = '', looped:bool = true): # play the stated music. if called empty, will play the last stated track, if there is one
+# play the stated music. if called empty, will play the last stated track, if there is one
+func play_music(to_play:String = '', looped:bool = true, vol:float = 1):
 	if to_play.is_empty() and Player.stream == null: # why not, fuck errors
 		printerr('MUSIC PLAYER | PLAY_MUSIC: MUSIC IS NULL')
 		return
 	
 	if !to_play.is_empty(): #and to_play != music:
-		set_music(to_play, volume, looped)
-		
+		set_music(to_play, vol, looped)
+	
 	if !music.is_empty():
 		pos = 0
 		Player.seek(0)
 		Player.play()
+	#Player.stream.volume_db = linear_to_db(vol)
 	
 func stop_music(clear:bool = true): # stop and clear the stream if needed
 	Player.stop()
@@ -61,7 +64,7 @@ func finished():
 func play_sound(sound:String, vol:float = 1, use_skin:bool = false):
 	if use_skin and !sound.begins_with('skins/'): 
 		sound = 'skins/'+ Game.scene.cur_style +'/'+ sound
-	#print(sound)
+
 	var path = 'res://assets/sounds/%s.ogg' % sound
 	var new_sound := AutoSound.new(path, vol)
 	add_child(new_sound)

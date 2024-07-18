@@ -5,6 +5,8 @@ var this = Game.scene
 var last_cam_pos:Vector2
 var last_zoom:Vector2
 func _ready():
+	Discord.change_presence('Game Over on '+ this.SONG.song.capitalize() +' - '+ JsonHandler.get_diff.to_upper(), 'I\'ll get it next time maybe')
+	
 	#await RenderingServer.frame_post_draw
 	this.ui.process_mode = Node.PROCESS_MODE_ALWAYS
 	this.cam.process_mode = Node.PROCESS_MODE_ALWAYS
@@ -51,6 +53,7 @@ func _process(delta):
 	$BG.position = (get_viewport().get_camera_2d().get_screen_center_position() - (get_viewport_rect().size / 2.0) / this.cam.zoom)
 	$BG.position -= Vector2(5, 5) # you could see the stage bg leak out
 	$Fade.position = $BG.position
+
 	if !retried:
 		this.cam.zoom.x = lerpf(this.cam.zoom.x, 1.05, delta * 4)
 		this.cam.zoom.y = this.cam.zoom.x
@@ -59,7 +62,6 @@ func _process(delta):
 		focused = true
 		this.cam.position_smoothing_speed = 2
 		this.cam.position = dead.position + Vector2(dead.width / 2, (dead.height / 2) - 30)
-
 
 	if Input.is_action_just_pressed('accept') and !retried:
 		retried = true

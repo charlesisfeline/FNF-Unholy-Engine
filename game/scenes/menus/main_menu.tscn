@@ -1,18 +1,22 @@
-[gd_scene load_steps=7 format=3 uid="uid://c0c427w6cul2x"]
+[gd_scene load_steps=9 format=3 uid="uid://c0c427w6cul2x"]
 
 [ext_resource type="Script" path="res://game/scenes/menus/Main_Menu.gd" id="1_3iiqa"]
-[ext_resource type="Texture2D" uid="uid://b50nb4xrv3tmc" path="res://assets/images/menuBG.png" id="2_m1ms6"]
+[ext_resource type="Texture2D" uid="uid://blocvtedd1tvk" path="res://assets/images/menuBG.png" id="2_m1ms6"]
+[ext_resource type="Script" path="res://game/objects/ScrollSprite.gd" id="2_r4b4n"]
 [ext_resource type="SpriteFrames" uid="uid://ow5p14d6snwg" path="res://assets/images/main_menu/menu_story_mode.res" id="3_kkkin"]
 [ext_resource type="SpriteFrames" uid="uid://bhyejko6u1ivh" path="res://assets/images/main_menu/menu_freeplay.res" id="4_668ve"]
 [ext_resource type="SpriteFrames" uid="uid://c27hvg6wcqyay" path="res://assets/images/main_menu/menu_donate.res" id="5_q6c1y"]
 [ext_resource type="SpriteFrames" uid="uid://cyqkiyjdqah78" path="res://assets/images/main_menu/menu_options.res" id="6_bjomy"]
+[ext_resource type="SpriteFrames" uid="uid://djy7e7f7k8qpx" path="res://assets/images/main_menu/menu_credits.res" id="8_v0fd6"]
 
 [node name="Main_Menu" type="Node2D"]
 script = ExtResource("1_3iiqa")
 
-[node name="ParallaxBackground" type="ParallaxBackground" parent="."]
+[node name="MenuBG" type="Node2D" parent="."]
+script = ExtResource("2_r4b4n")
+scroll_factor = Vector2(0, 0.1)
 
-[node name="MenuBG" type="Sprite2D" parent="."]
+[node name="Sprite2D" type="Sprite2D" parent="MenuBG"]
 position = Vector2(640, 360)
 texture = ExtResource("2_m1ms6")
 
@@ -39,3 +43,11 @@ position = Vector2(651, 572)
 sprite_frames = ExtResource("6_bjomy")
 animation = &"normal"
 frame_progress = 0.204616
+
+[node name="Credits" type="AnimatedSprite2D" parent="."]
+position = Vector2(648, 704)
+sprite_frames = ExtResource("8_v0fd6")
+animation = &"normal"
+
+[node name="Cam" type="Camera2D" parent="."]
+position = Vector2(640, 360)

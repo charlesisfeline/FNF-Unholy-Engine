@@ -37,7 +37,7 @@ var is_paused:bool = false:
 func focus_changed(is_focused:bool):
 	if Prefs.auto_pause:
 		Engine.max_fps = Prefs.fps if is_focused else 12 # no need to process shit if its paused
-		Audio.volume = 1 if is_focused else 0 # pausing this is too much work ill just mute it
+		Audio.process_mode = Node.PROCESS_MODE_ALWAYS if is_focused else Node.PROCESS_MODE_DISABLED # pausing this is too much work ill just mute it
 		if is_focused:
 			if is_paused: is_paused = false
 		else:
@@ -108,3 +108,21 @@ func remove_all(array:Array[Array], node = null):
 				node.remove_child(arr[0])
 				arr[0].queue_free()
 				arr.remove_at(0)
+
+func to_time(secs:float, is_milli:bool = true, show_ms:bool = false):
+	if is_milli: secs = secs / 1000
+	var time_part1:String = str(int(secs / 60)) + ":"
+	var time_part2:int = int(secs) % 60
+	if time_part2 < 10:
+		time_part1 += "0"
+
+	time_part1 += str(time_part2)
+	if show_ms:
+		time_part1 += "."
+		time_part2 = int((secs - int(secs)) * 100);
+		if time_part2 < 10:
+			time_part1 += "0"
+	
+		time_part1 += str(time_part2)
+	
+	return time_part1;

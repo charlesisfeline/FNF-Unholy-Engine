@@ -3,9 +3,20 @@ extends Node2D
 @export var option_list:Array[String] = ['Resume', 'Restart Song', 'Options', 'Exit To Menu']
 var options = []
 var cur_option:int = 0
+
+var break_text = [
+	'Havin a snack break', 'Stop fucking pinging me', 'Oop I fell down the stairs', 
+	'Damn, I can\'t funk like this', 'Time to touch some grass', 'Shittin rn keep it down'
+]
 func _ready():
+	var this = Game.scene
+	Discord.change_presence('Paused '+ this.SONG.song.capitalize() +' - '+ JsonHandler.get_diff.to_upper(), break_text.pick_random())
 	Conductor.paused = true
-	Audio.play_music('skins/%s/breakfast' % Game.scene.cur_style)
+
+	Audio.play_music('skins/%s/breakfast' % this.cur_style, true, 0)
+
+	create_tween().tween_property(Audio, 'volume', 0.7, 20).set_delay(1)
+	
 	$BG.modulate.a = 0
 	var twen = create_tween()
 	twen.tween_property($BG, 'modulate:a', 0.6, 0.4).set_trans(Tween.TRANS_CIRC).set_ease(Tween.EASE_OUT)
@@ -39,6 +50,7 @@ func _process(_delta):
 				close()
 				Conductor.reset()
 				Game.switch_scene('menus/freeplay')
+				Discord.change_presence('Maining some Menus', 'In Freeplay')
 			_: 
 				Audio.play_sound('cancelMenu')
 

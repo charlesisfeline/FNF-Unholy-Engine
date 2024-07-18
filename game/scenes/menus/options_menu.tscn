@@ -8,7 +8,7 @@
 script = ExtResource("1_b1snu")
 
 [node name="MenuBG" type="Sprite2D" parent="."]
-position = Vector2(640, 361)
+position = Vector2(640, 360)
 texture = ExtResource("1_xcv5o")
 
 [node name="TextBG" type="ColorRect" parent="."]

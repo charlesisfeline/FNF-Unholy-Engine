@@ -1,11 +1,18 @@
 extends Node2D
 
-@onready var menu_sprites = [$StoryMode, $Freeplay, $Donate, $Options]
-var scene_to_load = ['story_mode', 'freeplay', 'donate', 'options_menu']
+@onready var menu_sprites = [$StoryMode, $Freeplay, $Donate, $Options, $Credits]
+var scene_to_load = ['story_mode', 'freeplay', 'donate', 'options_menu', 'credits']
 var cur_option:int = 0
 
 func _ready():
-	Discord.change_presence('Menu-ing some shit', '')
+	Discord.change_presence('Maining some Menus', 'In the Mainest Menu')
+	Audio.volume = 0.7
+	for i in menu_sprites.size():
+		Game.center_obj(menu_sprites[i])
+		menu_sprites[i].position.y = (88 + (135 * i))
+	
+	$Cam.position.y = $MenuBG/Sprite2D.position.y - 3 #menu_sprites[ceil(menu_sprites.size() / 2)].position.y - 3
+		
 	change_selection()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -25,11 +32,15 @@ func _process(delta):
 	if Input.is_action_just_pressed('back'):
 		Audio.play_sound('cancelMenu')
 		Game.switch_scene('menus/title_scene')
-
+	
+	
+	
 func change_selection(by:int = 0):
 	if by != 0: Audio.play_sound('scrollMenu')
 	cur_option = wrapi(cur_option + by, 0, menu_sprites.size())
 	menu_sprites[cur_option].play('selected')
+
+	
 	for i in menu_sprites.size():
 		if i == cur_option: continue
 		menu_sprites[i].play('normal')
