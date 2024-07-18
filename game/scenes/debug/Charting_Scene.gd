@@ -52,7 +52,7 @@ func _ready():
 		JsonHandler.parse_song('dad-battle', 'hard', true)
 	SONG = JsonHandler._SONG
 	
-	Discord.change_presence('Charting '+ SONG.song.captialize(), 'One must imagine a charter happy')
+	Discord.change_presence('Charting '+ SONG.song.capitalize(), 'One must imagine a charter happy')
 	
 
 	#JsonHandler.old_notes = JsonHandler.chart_notes.duplicate()
