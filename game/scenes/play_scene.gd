@@ -401,7 +401,7 @@ func good_note_hit(note:Note) -> void:
 	var judge_info = Judge.get_score(hit_rating)
 	pop_up_combo(hit_rating, combo)
 	#print(int(judge_info[0] * (1.0 - (1.0 / (1.0 + exp(-0.08 * (abs(time) - 40)))) + 50)) / 40)
-	score += (500 * judge_info[2]) / abs(time) #floor(judge_info[0] * (1.0 - (1.0 / (1.0 + exp(-0.08 * (abs(time) - 54.99)))) + 50) / 35) #/ (fmod(45, time)) #+ (combo / judge_info[2] + (100 * abs(time + 1)))
+	score += (500 * judge_info[2]) #/ abs(time) #floor(judge_info[0] * (1.0 - (1.0 / (1.0 + exp(-0.08 * (abs(time) - 54.99)))) + 50) / 35) #/ (fmod(45, time)) #+ (combo / judge_info[2] + (100 * abs(time + 1)))
 	
 	#print(combo / judge_info[2] + (100 * abs(time + 1)))
 	ui.note_percent += judge_info[1]
