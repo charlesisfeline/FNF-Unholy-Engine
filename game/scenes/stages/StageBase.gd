@@ -29,5 +29,4 @@ var bf_cam_offset:Vector2 = Vector2(0, 0)
 var dad_cam_offset:Vector2 = Vector2(0, 0)
 var gf_cam_offset:Vector2 = Vector2(0, 0)
 
-func _ready():
-	pass # Replace with function body.
+func _ready(): pass

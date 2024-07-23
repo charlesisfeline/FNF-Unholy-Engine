@@ -11,11 +11,11 @@ func _ready():
 	bf_pos += Vector2(70, -50)
 	dad_pos += Vector2(100, -50)
 	add_child(train)
-	move_child(train, 3)
+	move_child(train, 4)
 
 
 func _process(delta):
-	$Windows/Sprite.self_modulate.a -= (Conductor.crochet / 1000) * delta * 1.5;
+	$Windows/Sprite.self_modulate.a -= (Conductor.crochet / 1000) * delta * 1.5
 
 func beat_hit():
 	train.beat_hit(beat)
@@ -25,10 +25,10 @@ func beat_hit():
 	
 class Train extends Sprite2D:
 	var active:bool = false
-	var starting:bool = false
+	var started:bool = false
 	var stopping:bool = false
 	
-	var frame_limit:float = 0
+	var frame_limit:float = 0.0
 	var sound = AudioStreamPlayer.new()
 	var cars:int = 8
 	var cooldown:int = 0
@@ -38,17 +38,18 @@ class Train extends Sprite2D:
 		position = pos
 		texture = load('res://assets/images/stages/philly/train.png')
 		sound.stream = load('res://assets/sounds/train_passes.ogg')
-		self.add_child(sound)
+		add_child(sound)
 		
 	func _process(delta):
 		if active:
 			frame_limit += delta
-			if frame_limit >= 1 / 24:
+			if frame_limit >= 1.0 / 24.0: #you gotta be kidding me
+				frame_limit = 0.0
 				if sound.get_playback_position() >= 4.7:
-					starting = true
-					#Game.scene.gf.idle_suffix = '-hair' #play_anim('hairBlow')
+					started = true
+					Game.scene.gf.idle_suffix = '-hair' #play_anim('hairBlow')
 					#Game.scene.gf.special_anim = true
-				if starting:
+				if started:
 					position.x -= 400
 					if position.x < -2000 && !stopping:
 						position.x = -1150
@@ -58,7 +59,6 @@ class Train extends Sprite2D:
 					
 					if position.x < -4000 && stopping:
 						restart()
-				frame_limit = 0
 				
 	func beat_hit(beat):
 		if !active:
@@ -67,16 +67,17 @@ class Train extends Sprite2D:
 		if beat % 8 == 4 && Game.rand_bool(30) && !active && cooldown > 8:
 			cooldown = randi_range(-4, 0)
 			active = true
-			if !sound.playing:
-				sound.play()
+			sound.play(0)
 				
-	func restart():
-		Game.scene.gf.play_anim('hairLand')
-		Game.scene.gf.special_anim = true
+	func restart() -> void:
 		Game.scene.gf.idle_suffix = ''
+		Game.scene.gf.play_anim('hairFall')
+		Game.scene.gf.special_anim = true
+		#Game.scene.gf.danced = Game.scene.gf.danced
 		
-		position.x = Game.screen[0] + 200
+		
+		position.x = Game.screen[0] + 300
 		active = false
 		cars = 8
 		stopping = false
-		starting = false
+		started = false

@@ -2,10 +2,10 @@
 
 [ext_resource type="Script" path="res://game/scenes/stages/school.gd" id="1_7so5l"]
 [ext_resource type="Script" path="res://game/objects/ScrollSprite.gd" id="1_fgt6k"]
-[ext_resource type="Texture2D" uid="uid://c6yeex2hvtlon" path="res://assets/images/stages/school/weebSky.png" id="3_wfeh0"]
-[ext_resource type="Texture2D" uid="uid://c087lvybj2qkh" path="res://assets/images/stages/school/weebSchool.png" id="4_p2ijp"]
-[ext_resource type="Texture2D" uid="uid://f7ncks0vjliq" path="res://assets/images/stages/school/weebStreet.png" id="5_reupb"]
-[ext_resource type="Texture2D" uid="uid://f0wbuju4tyxj" path="res://assets/images/stages/school/weebTreesBack.png" id="6_orcuo"]
+[ext_resource type="Texture2D" uid="uid://d31wdieurxpwt" path="res://assets/images/stages/school/weebSky.png" id="3_wfeh0"]
+[ext_resource type="Texture2D" uid="uid://dyaug8om5pqvx" path="res://assets/images/stages/school/weebSchool.png" id="4_p2ijp"]
+[ext_resource type="Texture2D" uid="uid://b7k0uvk1f3um7" path="res://assets/images/stages/school/weebStreet.png" id="5_reupb"]
+[ext_resource type="Texture2D" uid="uid://bg606ljv0auun" path="res://assets/images/stages/school/weebTreesBack.png" id="6_orcuo"]
 [ext_resource type="SpriteFrames" uid="uid://cyaao6ofht74r" path="res://assets/images/stages/school/weebTrees.res" id="7_bh1kv"]
 [ext_resource type="SpriteFrames" path="res://assets/images/stages/school/petals.res" id="8_w8kqe"]
 
@@ -35,7 +35,6 @@ centered = false
 
 [node name="Street" type="Node2D" parent="."]
 script = ExtResource("1_fgt6k")
-scroll_factor = Vector2(0.95, 0.95)
 
 [node name="Sprite" type="Sprite2D" parent="Street"]
 texture_filter = 1

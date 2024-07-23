@@ -43,14 +43,15 @@ func _ready():
 	for song in DirAccess.get_directories_at('res://assets/songs'):
 		add_song(FreeplaySong.new([song, 'bf', [100, 100, 100]]))
 	
-	if !FileAccess.file_exists('user://highscores.cfg'):
-		for song in songs:
-			var da_diffs:Dictionary = {}
-			for dif in song.diff_list: da_diffs[dif] = [0, 0, 'N/A']
-			best_scores.set_value('Song Scores', Game.format_str(song.song), da_diffs) # score, accuracy, fc
-		best_scores.save('user://highscores.cfg')
+	update_save() # you should only need to update it once me
+	#if !FileAccess.file_exists('user://highscores.cfg'):
+	#	for song in songs:
+	#		var da_diffs:Dictionary = {}
+	#		for dif in song.diff_list: da_diffs[dif] = [0, 0, 'N/A']
+	#		best_scores.set_value('Song Scores', Game.format_str(song.song), da_diffs) # score, accuracy, fc
+	#	best_scores.save('user://highscores.cfg')
 	
-	best_scores.load('user://highscores.cfg')
+	#best_scores.load('user://highscores.cfg')
 	if JsonHandler._SONG != null:
 		if JsonHandler.charted and !JsonHandler.old_notes.is_empty():
 			JsonHandler.chart_notes = JsonHandler.old_notes.duplicate()
@@ -142,6 +143,25 @@ func _unhandled_key_input(event):
 		if last_loaded.song != songs[cur_song].text or last_loaded.diff != diff_str:
 			JsonHandler.parse_song(songs[cur_song].text, diff_str, true)
 		Game.switch_scene('play_scene')
+	
+func update_save() -> void: # update the file with any new songs/difficulties
+	if FileAccess.file_exists('user://highscores.cfg'):
+		best_scores.load('user://highscores.cfg')
+	
+	for song in songs:
+		var _name:String = Game.format_str(song.song)
+		var da_diffs:Dictionary = {}
+		if best_scores.has_section_key('Song Scores', _name): # if it exists, get it so we dont delete scores
+			da_diffs = best_scores.get_value('Song Scores', _name)
+		
+		for dif in song.diff_list: 
+			if da_diffs.has(dif): continue
+			print(dif)
+			da_diffs[dif] = [0, 0, 'N/A'] # score, accuracy, fc
+		best_scores.set_value('Song Scores', _name, da_diffs)
+	
+	best_scores.save('user://highscores.cfg') # then save and reload, just to make sure we keep it
+	best_scores.load('user://highscores.cfg')
 	
 class FreeplaySong extends Alphabet:
 	var song:String = 'Tutorial'

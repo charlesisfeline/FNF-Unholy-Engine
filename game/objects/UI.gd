@@ -63,7 +63,7 @@ func _ready():
 		#opponent_group.modulate.a = 0.25
 		#opponent_group.z_index = -1
 		#opponent_group.position = Vector2((Game.screen[0] / 2) - 220, player_group.position.y)
-	
+		time_bar.position.x -= 400
 		player_group.position.x = (Game.screen[0] / 2) - 220
 		opponent_group.modulate.a = 0.4
 		opponent_group.scale = Vector2(0.7, 0.7)
@@ -76,6 +76,7 @@ func _ready():
 	icon_p1.follow_spr = health_bar
 	icon_p2.follow_spr = health_bar
 	
+	time_bar.position.y = 618 if downscroll else 110
 	score_txt.position.x = (Game.screen[0] / 2) - (score_txt.size[0] / 2)
 	if downscroll:
 		score_txt.position.y = 130
@@ -88,6 +89,7 @@ func _process(delta):
 		time_bar.value = (abs(Conductor.song_pos / Conductor.song_length) * 100.0)
 		$Text.text = str(Game.to_time(abs(Conductor.song_length - Conductor.song_pos)))
 	health_bar.value = lerpf(health_bar.value, hp, delta * 8)
+	$Text.position = time_bar.position - Vector2(20, 30)
 	offset.x = (scale.x - 1.0) * -(Game.screen[0] * 0.5)
 	offset.y = (scale.y - 1.0) * -(Game.screen[1] * 0.5)
 	
@@ -136,8 +138,9 @@ func add_to_strum_group(item = null, to_player:bool = true) -> void:
 	group.add_child(item)
 
 func add_behind(item) -> void:
-	add_child(item)
-	move_child(item, 0)
+	$Back.add_child(item) 
+	item.z_index = -1
+	#move_child(item, 0) #layering would get fucked
 
 func change_style(new_style:String) -> void: # change style of whole hud, instead of one by one
 	cur_style = new_style

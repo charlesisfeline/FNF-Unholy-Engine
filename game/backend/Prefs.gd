@@ -6,7 +6,7 @@ var auto_play:bool = false
 var downscroll:bool = false
 var middlescroll:bool = false
 
-var hitsounds:bool = false
+var hitsound_volume:int = 0 # will be divided by 100
 var offset:int = 0
 
 var sick_window:int = 45
@@ -18,14 +18,22 @@ var fps:int = 60:
 	set(new): fps = new; Engine.max_fps = fps
 var auto_pause:bool = true
 var chart_player:bool = false
-var allow_rpc:bool = true
+var allow_rpc:bool = true:
+	set(allow): 
+		allow_rpc = allow
+		if allow: Discord.init_discord()
+		else: Discord.clear()
 var note_splashes:String = 'sicks'
 var splash_sprite:String = 'haxe'
 var behind_strums:bool = false
 var rating_cam:String = 'game'
 var chart_grid:bool = true
 
-var daniel:bool = true
+var daniel:bool = false: # if you switch too much, it'll break lol
+	set(dani): 
+		daniel = dani
+		Discord.clear()
+		Discord.init_discord()
 
 ## KEYBINDS ##
 var note_keys:Array = [

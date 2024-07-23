@@ -1,9 +1,9 @@
 class_name VelocitySprite; extends Sprite2D;
 
 # i steal from sword cube!!!
-var velocity:Vector2 = Vector2.ZERO
-var acceleration:Vector2 = Vector2.ZERO
-var moving:bool = false
+@export var velocity:Vector2 = Vector2.ZERO
+@export var acceleration:Vector2 = Vector2.ZERO
+@export var moving:bool = false
 var antialiasing:bool:
 	get: return texture_filter == CanvasItem.TEXTURE_FILTER_LINEAR
 	set(alias):

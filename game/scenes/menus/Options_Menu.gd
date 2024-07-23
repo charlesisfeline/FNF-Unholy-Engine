@@ -6,26 +6,26 @@ var catagories = ['Gameplay', 'Visuals', 'Controls']
 # options that will be in each catagory
 # pref name, type, if type is int/float [min_num, max_num], if type is array ['list', 'of', 'choices']
 var gameplay = [ 
-	['auto_play',     'bool'],
-	['downscroll',    'bool'], 
-	['middlescroll',  'bool'], 
-	['hitsounds',     'bool'],
-	['offset',        'int', [0, 300]], 
-	['sick_window',   'int', [15, 45]], 
-	['good_window',   'int', [15, 90]], 
-	['bad_window' ,   'int', [15, 135]]
+	['auto_play',        'bool'],
+	['downscroll',       'bool'], 
+	['middlescroll',     'bool'], 
+	['hitsound_volume',   'int', [0, 100]],
+	['offset',            'int', [0, 300]], 
+	['sick_window',       'int', [15, 45]], 
+	['good_window',       'int', [15, 90]], 
+	['bad_window' ,       'int', [15, 135]]
 ]
 var visuals = [
-	['fps',           'int', [0, 240]], 
-	['allow_rpc',     'bool'],
-	['chart_player',  'bool'],
+	['fps',             'int', [0, 240]], 
+	['allow_rpc',      'bool'],
+	['chart_player',   'bool'],
 	['note_splashes', 'array', ['sicks', 'all', 'none']],
 	['splash_sprite', 'array', ['base', 'haxe', 'forever']],
-	['behind_strums', 'bool'],
+	['behind_strums',  'bool'],
 	['rating_cam',    'array', ['game', 'hud', 'none']],
-	['auto_pause',    'bool'],
-	['chart_grid',    'bool'],
-	['daniel',        'bool']
+	['auto_pause',     'bool'],
+	['chart_grid',     'bool'],
+	['daniel',         'bool']
 ]
 #var controls = []
 

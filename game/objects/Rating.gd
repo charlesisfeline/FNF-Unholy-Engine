@@ -10,7 +10,7 @@ var ratings_data:Dictionary = {
 	'name':       ['sick', 'good', 'bad', 'shit'],
 	'score':      [  350,    200,   100,    50],
 	'hit_window': [   45,     90,   135,  null],
-	'penalty':    [    1,    0.8,   0.5,  0.35],
+	'penalty':    [    1,   0.73,  0.38,  0.10],
 	'hit_mod':    [    1,   0.75,   0.5,   0.2] # 1.0, 0.9, 0.7, 0.4, 0.2
 }
 

@@ -396,20 +396,6 @@ func _input(event): # this is better
 	
 func update_grids() -> void:
 	Game.remove_all([last_notes, cur_notes, next_notes], $Notes)
-	#while last_notes.size() != 0:
-	#	$Notes.remove_child(last_notes[0])
-	#	last_notes[0].queue_free()
-	#	last_notes.remove_at(0)
-		
-	#while cur_notes.size() != 0:
-	#	$Notes.remove_child(cur_notes[0])
-	#	cur_notes[0].queue_free()
-	#	cur_notes.remove_at(0)
-	
-	#while next_notes.size() != 0:
-	#	$Notes.remove_child(next_notes[0])
-	#	next_notes[0].queue_free()
-	#	next_notes.remove_at(0)
 	
 	$StrumLine/Highlight.position = ($StrumLine/IconR.position if SONG.notes[cur_section].mustHitSection else $StrumLine/IconL.position) - Vector2(37.5, 37.5)
 	if SONG.notes[cur_section].has('changeBPM') and SONG.notes[cur_section].changeBPM:
@@ -424,23 +410,22 @@ func update_grids() -> void:
 
 	$StrumLine/BPMTxt.text = str(Conductor.bpm) +' BPM'
 	
+	prev_grid.visible = cur_section > 0
+	next_grid.visible = cur_section < SONG.notes.size() - 1
+	
 	#var secs_to_use = {'PrevGrid' = SONG.notes[cur_section - 1], 'Grid' = SONG.notes[cur_section], 'NextGrid' = SONG.notes[cur_section + 1]}
 	#for item in [prev_grid, grid, next_grid]:
 	#	if item != null:
 	#		pass
 	#	pass
 		
-	var last_sec = SONG.notes[cur_section - 1] if cur_section > 0 else null
-	prev_grid.visible = last_sec != null
-	if last_sec != null:
+
+	if cur_section > 0:
+		var last_sec = SONG.notes[cur_section - 1]
 		for info in last_sec.sectionNotes:
-			#if tab('Chart', 'ToggleGrid').button_pressed:
-			#	prev_grid.modulate = Color.DIM_GRAY
-			#else:
-			#	prev_grid.modulate = Color.WHITE
-				
-			if info[1] == -1: continue
+			if info.is_empty() or info[1] == -1: continue
 			if !(info[2] is float): info[2] = 0
+			
 			var must_press = (last_sec.mustHitSection and info[1] <= 3) or (!last_sec.mustHitSection and info[1] > 3)
 			var type = (str(info[3]) if info.size() > 3 else '')
 			var new_note = ChartNote.new([info[0], info[1], null, info[2], must_press, type], false)
@@ -449,13 +434,7 @@ func update_grids() -> void:
 			new_note.true_dir = info[1]
 			var fake_dir = info[1]
 			if last_sec.mustHitSection:
-				if must_press:
-					fake_dir = info[1] + 4
-				else:
-					fake_dir = info[1] - 4
-			else:
-				if must_press:
-					fake_dir = info[1]
+				fake_dir += 4 if must_press else -4
 		
 			do_note_shit(new_note, fake_dir)
 			new_note.position.y = floori(get_y_from_time(fmod(floor(info[0]) - get_section_time(cur_section - 1), Conductor.step_crochet * 16))) - grid.height
@@ -464,7 +443,7 @@ func update_grids() -> void:
 			last_notes.append(new_note)
 		
 			if info[2] > 0:
-				var sustain = ChartNote.new(new_note, true) #ColorRect.new()
+				var sustain = ChartNote.new(new_note, true)
 				$Notes.add_child(sustain)
 				$Notes.move_child(sustain, 1)
 				do_note_shit(sustain, new_note.visual_dir)
@@ -476,18 +455,12 @@ func update_grids() -> void:
 				sustain.modulate = prev_grid.modulate
 				sustain.alpha = 0.6
 				last_notes.append(sustain)
-				#var sustain = ColorRect.new() #Note.new(new_note, true, true)
-				#$Notes.add_child(sustain)
-				#$Notes.move_child(sustain, 0)
-				#sustain.position = new_note.position + Vector2(-4, 40) #19)
-				#sustain.custom_minimum_size = Vector2(8, floori(remap(info[2], 0, Conductor.step_crochet * 16, 0, grid.height)))
-				#last_notes.append(sustain)
 	
 	var new_sec = SONG.notes[cur_section]
-		
 	for info in new_sec.sectionNotes:
 		if info.is_empty() or info[1] == -1: continue
 		if !(info[2] is float): info[2] = 0
+		
 		var must_press = (new_sec.mustHitSection and info[1] <= 3) or (!new_sec.mustHitSection and info[1] > 3)
 		var type = (str(info[3]) if info.size() > 3 else '')
 		var new_note = ChartNote.new([info[0], info[1], null, info[2], must_press, type], false)
@@ -496,13 +469,7 @@ func update_grids() -> void:
 		new_note.true_dir = info[1]
 		var fake_dir = info[1]
 		if new_sec.mustHitSection:
-			if must_press:
-				fake_dir = info[1] + 4
-			else:
-				fake_dir = info[1] - 4
-		else:
-			if must_press:
-				fake_dir = info[1]
+			fake_dir += 4 if must_press else -4
 		
 		do_note_shit(new_note, fake_dir)
 		new_note.position.y = floori(get_y_from_time(fmod(floor(info[0]) - get_section_time(), Conductor.step_crochet * 16)))
@@ -513,7 +480,7 @@ func update_grids() -> void:
 		cur_notes.append(new_note)
 			
 		if info[2] > 0:
-			var sustain = ChartNote.new(new_note, true) #ColorRect.new()
+			var sustain = ChartNote.new(new_note, true)
 			$Notes.add_child(sustain)
 			$Notes.move_child(sustain, 1)
 			do_note_shit(sustain, new_note.visual_dir)
@@ -527,20 +494,12 @@ func update_grids() -> void:
 			
 			cur_notes.append(sustain)
 	
-	var next_sec
-	if SONG.notes.size() - 1 > cur_section + 1:
-		next_sec = SONG.notes[cur_section + 1]
-	#else:
-		
-	if next_sec != null:
+	if cur_section < SONG.notes.size() - 1:
+		var next_sec = SONG.notes[cur_section + 1]
 		for info in next_sec.sectionNotes:
-			#if tab('Chart', 'ToggleGrid').button_pressed:
-			#	next_grid.modulate = Color.DIM_GRAY
-			#else:
-			#	next_grid.modulate = Color.WHITE
-				
-			if info[1] == -1: continue
+			if info.is_empty() or info[1] == -1: continue
 			if !(info[2] is float): info[2] = 0
+			
 			var must_press = (next_sec.mustHitSection and info[1] <= 3) or (!next_sec.mustHitSection and info[1] > 3)
 			var type = (str(info[3]) if info.size() > 3 else '')
 			var new_note = ChartNote.new([info[0], info[1], null, info[2], must_press, type], false)
@@ -548,13 +507,7 @@ func update_grids() -> void:
 			
 			var fake_dir = info[1]
 			if next_sec.mustHitSection:
-				if must_press:
-					fake_dir = info[1] + 4
-				else:
-					fake_dir = info[1] - 4
-			else:
-				if must_press:
-					fake_dir = info[1]
+				fake_dir += 4 if must_press else -4
 		
 			do_note_shit(new_note, fake_dir)
 		
@@ -564,7 +517,7 @@ func update_grids() -> void:
 			next_notes.append(new_note)
 		
 			if info[2] > 0:
-				var sustain = ChartNote.new(new_note, true) #ColorRect.new()
+				var sustain = ChartNote.new(new_note, true)
 				$Notes.add_child(sustain)
 				$Notes.move_child(sustain, 1)
 				do_note_shit(sustain, new_note.visual_dir)
@@ -572,17 +525,11 @@ func update_grids() -> void:
 				sustain.hold_group.size.x = 50 # close enough for now
 				sustain.hold_group.size.y = floori(remap(info[2], 0, Conductor.step_crochet * 16.0, 0, next_grid.height * 3.87))
 			
-				sustain.position = new_note.position + Vector2(-7, 40) #19)
+				sustain.position = new_note.position + Vector2(-7, 40)
 				sustain.modulate = next_grid.modulate
 				sustain.alpha = 0.6
 				
 				next_notes.append(sustain)
-				#var sustain = ColorRect.new() #Note.new(new_note, true, true)
-				#$Notes.add_child(sustain)
-				#$Notes.move_child(sustain, 0)
-				#sustain.position = new_note.position + Vector2(-4, 40) #19)
-				#sustain.custom_minimum_size = Vector2(8, floori(remap(info[2], 0, Conductor.step_crochet * 16, 0, next_grid.height)))
-				#next_notes.append(sustain)
 	
 	print('loaded '+ str(new_sec.sectionNotes.size()) +' notes')
 	

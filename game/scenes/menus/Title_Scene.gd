@@ -13,6 +13,7 @@ var show_cow:bool = Game.rand_bool(5)
 var blurb:Array = []
 func _ready():
 	Discord.change_presence('Title Screen', 'Welcome to the Funkin')
+	
 	flash.color = Color.BLACK
 	flash.position = Vector2(-15, -15)
 	flash.size = Vector2(1300, 755)

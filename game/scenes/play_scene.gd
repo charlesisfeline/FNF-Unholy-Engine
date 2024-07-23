@@ -105,18 +105,19 @@ func _ready():
 		SONG.player2 = SONG.players[1]
 		SONG.gfVersion = SONG.players[2]
 		
+	var add:Callable = stage.get_node('CharGroup').add_child if stage.has_node('CharGroup') else add_child
 	gf = Character.new(stage.gf_pos, gf_ver if gf_ver != null else 'gf')
-	add_child(gf)
+	add.call(gf)
 	
 	dad = Character.new(stage.dad_pos, SONG.player2)
-	add_child(dad)
+	add.call(dad)
 	if dad.cur_char == gf.cur_char and dad.cur_char.contains('gf'): #and SONG.song == 'Tutorial':
 		dad.position = gf.position
 		dad.focus_offsets.x -= dad.width / 4
 		gf.visible = false
 	
 	boyfriend = Character.new(stage.bf_pos, SONG.player1, true)
-	add_child(boyfriend)
+	add.call(boyfriend)
 	
 	ui.icon_p1.change_icon(boyfriend.icon, true)
 	ui.icon_p2.change_icon(dad.icon)
@@ -221,7 +222,8 @@ func _process(delta):
 							#var check = (auto_play or Input.is_action_pressed(key_names[note.dir]))
 							note.holding = (auto_play or Input.is_action_pressed(key_names[note.dir]))
 							good_sustain_press(note, delta)
-						if note.strum_time < Conductor.song_pos - (300 / note.speed) and !note.holding: note_miss(note)
+						if !auto_play and note.strum_time < Conductor.song_pos - (300 / note.speed) \
+							and !note.holding: note_miss(note)
 					else:
 						if note.can_hit and !note.was_good_hit:
 							opponent_sustain_press(note)
@@ -320,10 +322,11 @@ func song_end() -> void:
 		var scores = ConfigFile.new()
 		scores.load('user://highscores.cfg')
 		var to_save = scores.get_value('Song Scores', Game.format_str(SONG.song))
-		to_save[JsonHandler.get_diff] = [score, ui.accuracy, ui.fc]
+		if to_save[JsonHandler.get_diff] == [0, 0, 'N/A'] or score > to_save[JsonHandler.get_diff][0]: 
+			to_save[JsonHandler.get_diff] = [score, ui.accuracy, ui.fc]
 
-		scores.set_value('Song Scores', Game.format_str(SONG.song), to_save)
-		scores.save('user://highscores.cfg')
+			scores.set_value('Song Scores', Game.format_str(SONG.song), to_save)
+			scores.save('user://highscores.cfg')
 		
 	#refresh(false)
 	Conductor.reset()
@@ -400,10 +403,8 @@ func good_note_hit(note:Note) -> void:
 	var hit_rating = Judge.get_rating(time)
 	var judge_info = Judge.get_score(hit_rating)
 	pop_up_combo(hit_rating, combo)
-	#print(int(judge_info[0] * (1.0 - (1.0 / (1.0 + exp(-0.08 * (abs(time) - 40)))) + 50)) / 40)
-	score += (500 * judge_info[2]) #/ abs(time) #floor(judge_info[0] * (1.0 - (1.0 / (1.0 + exp(-0.08 * (abs(time) - 54.99)))) + 50) / 35) #/ (fmod(45, time)) #+ (combo / judge_info[2] + (100 * abs(time + 1)))
-	
-	#print(combo / judge_info[2] + (100 * abs(time + 1)))
+	score += int(300 * (((1.0 + exp(-0.08 * (abs(time) - 40))) + 54.99)) / (55 / judge_info[2])) # good enough im happy
+	#print(int(300 * (((1.0 + exp(-0.08 * (abs(time) - 40))) + 54.99)) / (55 / judge_info[2])))
 	ui.note_percent += judge_info[1]
 	ui.total_hit += 1
 	ui.hit_count[hit_rating] += 1
@@ -415,8 +416,8 @@ func good_note_hit(note:Note) -> void:
 			
 	ui.update_score_txt()
 	kill_note(note)
-	if Prefs.hitsounds:
-		Audio.play_sound('hitsound', 0.7)
+	if Prefs.hitsound_volume != 0:
+		Audio.play_sound('hitsound', Prefs.hitsound_volume / 100.0)
 
 
 var time_dropped:float = 0
@@ -517,7 +518,5 @@ func pop_up_combo(rating:String = 'sick', combo = -1, is_miss:bool = false) -> v
 func kill_note(note:Note) -> void:
 	if note != null:
 		note.spawned = false
-		var note_id = notes.find(note)
-		if note_id < notes.size():
-			notes.remove_at(notes.find(note))
+		notes.remove_at(notes.find(note))
 		note.queue_free()

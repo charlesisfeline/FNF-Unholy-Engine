@@ -36,7 +36,7 @@ func set_music(new_music:String, vol:float = 1, looped:bool = true): # set the m
 	else: 
 		printerr('MUSIC PLAYER | SET MUSIC: CAN\'T FIND FILE "'+ path +'"')
 	
-# play the stated music. if called empty, will play the last stated track, if there is one
+# play the stated music. if called empty, will replay current track, if there is one
 func play_music(to_play:String = '', looped:bool = true, vol:float = 1) -> void:
 	if to_play.is_empty() and Player.stream == null: # why not, fuck errors
 		printerr('MUSIC PLAYER | PLAY_MUSIC: MUSIC IS NULL')
