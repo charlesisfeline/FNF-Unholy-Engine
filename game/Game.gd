@@ -20,9 +20,19 @@ func _ready():
 	focus_change.connect(focus_changed)
 	print(scene.name)
 
+var just_pressed:bool = false
+var is_full:bool = false
+
 var global_delta:float
 func _process(delta):
 	global_delta = delta
+	if Input.is_key_pressed(KEY_F5):
+		if !just_pressed:
+			var window_mode = DisplayServer.WINDOW_MODE_FULLSCREEN if !is_full else DisplayServer.WINDOW_MODE_WINDOWED
+			DisplayServer.window_set_mode(window_mode)
+			is_full = !is_full
+		just_pressed = true
+	else: just_pressed = false
 
 func _notification(what):
 	if what == MainLoop.NOTIFICATION_APPLICATION_FOCUS_IN:
@@ -43,7 +53,7 @@ func focus_changed(is_focused:bool):
 		else:
 			if !get_tree().paused: is_paused = true
 
-func center_obj(obj = null, axis:String = 'xy'):
+func center_obj(obj = null, axis:String = 'xy') -> void:
 	if obj == null: return
 	#var obj_size = obj.texture.size()
 	if obj is Sprite2D:
@@ -54,10 +64,10 @@ func center_obj(obj = null, axis:String = 'xy'):
 		'y': obj.position.y = (screen[1] / 2) #- (obj_size.y / 2)
 		_: obj.position = Vector2(screen[0] / 2, screen[1] / 2)
 
-func reset_scene(_skip_trans:bool = false):
+func reset_scene(_skip_trans:bool = false) -> void:
 	get_tree().reload_current_scene()
 
-func switch_scene(new_scene, skip_trans:bool = true):
+func switch_scene(new_scene, skip_trans:bool = true) -> void:
 	if new_scene is String:
 		new_scene = new_scene.to_lower()
 		if new_scene == 'play_scene' and Prefs.chart_player: new_scene += '_empty'
@@ -81,7 +91,8 @@ func switch_scene(new_scene, skip_trans:bool = true):
 	if new_scene is PackedScene:
 		get_tree().change_scene_to_packed(new_scene)
 
-func call_func(to_call:String, args:Array[Variant] = [], call_tree:bool = false): # call function on nodes or somethin
+# call function on nodes or somethin
+func call_func(to_call:String, args:Array[Variant] = [], call_tree:bool = false) -> void:
 	if to_call.length() < 1 or scene == null: return
 	if call_tree:
 		for node in get_tree().get_nodes_in_group(scene.name):
@@ -92,16 +103,16 @@ func call_func(to_call:String, args:Array[Variant] = [], call_tree:bool = false)
 		if scene.has_method(to_call):
 			scene.callv(to_call, args)
 
-func format_str(str:String = ''):
+func format_str(str:String = '') -> String:
 	return str.to_lower().strip_edges().replace(' ', '-').replace('\'', '')
 
-func round_d(num, digit): # bowomp
+func round_d(num, digit) -> float: # bowomp
 	return round(num * pow(10.0, digit)) / pow(10.0, digit)
 	
-func rand_bool(chance:float = 50):
+func rand_bool(chance:float = 50) -> bool:
 	return true if (randi() % 100) < chance else false
 
-func remove_all(array:Array[Array], node = null):
+func remove_all(array:Array[Array], node = null) -> void:
 	if node != null:
 		for arr in array:
 			while arr.size() != 0:
@@ -109,7 +120,7 @@ func remove_all(array:Array[Array], node = null):
 				arr[0].queue_free()
 				arr.remove_at(0)
 
-func to_time(secs:float, is_milli:bool = true, show_ms:bool = false):
+func to_time(secs:float, is_milli:bool = true, show_ms:bool = false) -> String:
 	if is_milli: secs = secs / 1000
 	var time_part1:String = str(int(secs / 60)) + ":"
 	var time_part2:int = int(secs) % 60

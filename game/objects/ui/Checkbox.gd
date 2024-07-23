@@ -17,4 +17,4 @@ func _init():
 func _process(_delta):
 	if follow_spr != null:
 		position.x = follow_spr.position.x - 15
-		position.y = -15 #follow_spr.position.y + follow_spr.height / 2
+		position.y = -25 #follow_spr.position.y + follow_spr.height / 2

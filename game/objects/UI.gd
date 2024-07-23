@@ -33,7 +33,7 @@ var sounds:Array[String] = ['intro3', 'intro2', 'intro1', 'introGo']
 var total_hit:float = 0
 var note_percent:float = 0
 var accuracy:float = -1
-var hit_count:Dictionary = {'sick': 0, 'good': 0, 'bad': 0, 'shit': 0}
+var hit_count:Dictionary = {'sick': 0, 'good': 0, 'bad': 0, 'shit': 0, 'miss': 0}
 var fc:String = 'N/A'
 
 var zoom:float = 1:
@@ -91,16 +91,38 @@ func _process(delta):
 	offset.x = (scale.x - 1.0) * -(Game.screen[0] * 0.5)
 	offset.y = (scale.y - 1.0) * -(Game.screen[1] * 0.5)
 	
-func update_score_txt():
+func update_score_txt() -> void:
 	var stuff = [cur_scene.score, get_acc(), cur_scene.misses]
 	score_txt.text = 'Score: %s - Accuracy: [%s] - Misses: %s' % stuff
 
-func get_acc():
+func get_acc() -> String:
 	var new_acc = clampf(note_percent / total_hit, 0, 1)
 	if is_nan(new_acc): return '?'
-	return str(Game.round_d(new_acc * 100, 2)) +'%'
+	accuracy = Game.round_d(new_acc * 100, 2)
+	fc = get_fc()
+	return str(accuracy) +'% - '+ fc 
 	
-func spawn_splash(strum:Strum):
+func get_fc() -> String:
+	if hit_count['miss'] == 0: # dumb
+		var da_fc:String = 'SFC'
+		if hit_count['good'] > 0: da_fc = 'GFC'
+		if hit_count['bad'] > 0 or hit_count['shit'] > 0: da_fc = 'FC'
+		return da_fc
+	if hit_count['miss'] in range(1, 10):
+		return 'SDCB'
+	return 'Clear'
+	
+func reset_count() -> void:
+	fc = 'N/A'
+	total_hit = 0
+	note_percent = 0
+	accuracy = -1
+	for i in hit_count.keys():
+		hit_count[i] = 0
+	
+	update_score_txt()
+	
+func spawn_splash(strum:Strum) -> void:
 	var new_splash = SPLASH.instantiate()
 	new_splash.strum = strum
 	add_to_strum_group(new_splash, true)
@@ -108,16 +130,16 @@ func spawn_splash(strum:Strum):
 	$Strum_Group/Player.remove_child(new_splash)
 	new_splash.queue_free()
 	
-func add_to_strum_group(item = null, to_player:bool = true):
+func add_to_strum_group(item = null, to_player:bool = true) -> void:
 	if item == null: return
 	var group = $'Strum_Group/Player' if to_player else $'Strum_Group/Opponent'
 	group.add_child(item)
 
-func add_behind(item):
+func add_behind(item) -> void:
 	add_child(item)
 	move_child(item, 0)
 
-func change_style(new_style:String): # change style of whole hud, instead of one by one
+func change_style(new_style:String) -> void: # change style of whole hud, instead of one by one
 	cur_style = new_style
 	STYLE.load_style(new_style)
 	for strum in strums: strum.load_skin(STYLE)
@@ -126,7 +148,7 @@ func change_style(new_style:String): # change style of whole hud, instead of one
 var count_down:Timer
 var times_looped:int = -1
 
-func start_countdown(from_beginning:bool = false):
+func start_countdown(from_beginning:bool = false) -> void:
 	if from_beginning:
 		finished_countdown = false
 		Conductor.song_pos = -Conductor.crochet * 5

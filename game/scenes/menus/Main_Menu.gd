@@ -33,9 +33,7 @@ func _process(delta):
 		Audio.play_sound('cancelMenu')
 		Game.switch_scene('menus/title_scene')
 	
-	
-	
-func change_selection(by:int = 0):
+func change_selection(by:int = 0) -> void:
 	if by != 0: Audio.play_sound('scrollMenu')
 	cur_option = wrapi(cur_option + by, 0, menu_sprites.size())
 	menu_sprites[cur_option].play('selected')

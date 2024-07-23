@@ -30,6 +30,6 @@ class LimoDancer extends AnimatedSprite2D:
 		sprite_frames = load('res://assets/images/stages/limo/limoDancer.res')
 		frame = sprite_frames.get_frame_count('danceLeft') - 1
 	
-	func dance():
+	func dance() -> void:
 		danced = !danced
 		play('dance'+ ('Right' if danced else 'Left'))

@@ -37,8 +37,10 @@ var opponent_strums:Array[Strum] = []
 
 var key_names = ['note_left', 'note_down', 'note_up', 'note_right']
 
+var should_save:bool = !Prefs.auto_play
 @onready var auto_play:bool:
 	set(auto):
+		if auto: should_save = false
 		auto_play = auto
 		ui.player_group.is_cpu = auto_play
 
@@ -48,6 +50,7 @@ var misses:int = 0
 
 func _ready():
 	auto_play = Prefs.auto_play # there is a reason
+	
 	SONG = JsonHandler._SONG
 	if Prefs.daniel and !SONG.player1.contains('bf-girl'):
 		var try = SONG.player1.replace('bf', 'bf-girl')
@@ -240,7 +243,7 @@ func _process(delta):
 				event_hit(event)
 				events.remove_at(0)
 
-func beat_hit(beat):
+func beat_hit(beat) -> void:
 	for i in ui.characters:
 		if !i.animation.contains('sing') and beat % i.dance_beat == 0:
 			i.dance()
@@ -250,9 +253,9 @@ func beat_hit(beat):
 	if stage.has_method('beat_hit'):
 		stage.call('beat_hit')
 
-func step_hit(_step): pass
+func step_hit(_step) -> void: pass
 
-func section_hit(section):
+func section_hit(section) -> void:
 	ui.zoom += 0.04
 	cam.zoom += Vector2(0.08, 0.08)
 
@@ -265,19 +268,19 @@ func section_hit(section):
 				Conductor.bpm = section_data.bpm
 				print('Changed BPM: ' + str(section_data.bpm))
 
-func move_cam(to_player:bool = true):
+func move_cam(to_player:bool = true) -> void:
 	var char = boyfriend if to_player else dad
 	var cam_off:Vector2 = stage.bf_cam_offset if to_player else stage.dad_cam_offset
 	var new_pos:Vector2 = char.get_cam_pos()
 	cam.position = new_pos + cam_off
 
-func _unhandled_key_input(_event):
+func _unhandled_key_input(_event) -> void:
 	if auto_play: return
 	for i in 4:
 		if Input.is_action_just_pressed(key_names[i]): key_press(i)
 		if Input.is_action_just_released(key_names[i]): key_release(i)
 
-func key_press(key:int = 0):
+func key_press(key:int = 0) -> void:
 	var hittable_notes:Array[Note] = notes.filter(func(i:Note):
 		return i.dir == key and i.spawned and !i.is_sustain and i.must_press and i.can_hit and !i.was_good_hit
 	)
@@ -299,28 +302,34 @@ func key_press(key:int = 0):
 		strum.play_anim('press')
 		strum.reset_timer = 0
 
-func key_release(key:int = 0):
+func key_release(key:int = 0) -> void:
 	ui.player_strums[key].play_anim('static')
 
-func try_death():
+func try_death() -> void:
 	for item in ['combo', 'score', 'misses']: set(item, 0)
-	ui.total_hit = 0
-	ui.note_percent = 0
-	ui.accuracy = -1
+	ui.reset_count()
 	
-	ui.update_score_txt()
 	boyfriend.process_mode = Node.PROCESS_MODE_ALWAYS
 	gf.play_anim('sad')
 	get_tree().paused = true
 	var death_screen = load('res://game/scenes/game_over.tscn').instantiate()
 	add_child(death_screen)
 
-func song_end():
-	refresh(false)
-	#Conductor.reset()
-	#Game.switch_scene("menus/freeplay")
+func song_end() -> void:
+	if should_save:
+		var scores = ConfigFile.new()
+		scores.load('user://highscores.cfg')
+		var to_save = scores.get_value('Song Scores', Game.format_str(SONG.song))
+		to_save[JsonHandler.get_diff] = [score, ui.accuracy, ui.fc]
+
+		scores.set_value('Song Scores', Game.format_str(SONG.song), to_save)
+		scores.save('user://highscores.cfg')
+		
+	#refresh(false)
+	Conductor.reset()
+	Game.switch_scene("menus/freeplay")
 	
-func refresh(restart:bool = true): # start song from beginning with no restarts
+func refresh(restart:bool = true) -> void: # start song from beginning with no restarts
 	Conductor.reset_beats()
 	Conductor.bpm = SONG.bpm # reset bpm to init whoops
 
@@ -342,7 +351,7 @@ func refresh(restart:bool = true): # start song from beginning with no restarts
 		Conductor.start(0)
 	section_hit(0)
 
-func event_hit(event:EventNote):
+func event_hit(event:EventNote) -> void:
 	print(event.event, event.values)
 	match event.event:
 		'Hey!':
@@ -366,8 +375,9 @@ func event_hit(event:EventNote):
 				'1', 'dad', 'opponent': char = "dad"
 			
 			var last_pos = get(char).position
-			get(char).load_char(event.values[1])
-			get(char).position = last_pos
+			if JsonHandler.get_character(event.values[1]) != null:
+				get(char).load_char(event.values[1])
+				get(char).position = last_pos
 			#new_char = Character.new(char.position, event.values[1], char == boyfriend)
 			#remove_child(char)
 			#char.queue_free()
@@ -375,7 +385,7 @@ func event_hit(event:EventNote):
 			#char = new_char
 		_: false
 
-func good_note_hit(note:Note):
+func good_note_hit(note:Note) -> void:
 	if note.type.length() > 0: print(note.type, ' bf')
 
 	if Conductor.vocals.stream != null: 
@@ -390,8 +400,9 @@ func good_note_hit(note:Note):
 	var hit_rating = Judge.get_rating(time)
 	var judge_info = Judge.get_score(hit_rating)
 	pop_up_combo(hit_rating, combo)
+	#print(int(judge_info[0] * (1.0 - (1.0 / (1.0 + exp(-0.08 * (abs(time) - 40)))) + 50)) / 40)
+	score += (500 * judge_info[2]) / abs(time) #floor(judge_info[0] * (1.0 - (1.0 / (1.0 + exp(-0.08 * (abs(time) - 54.99)))) + 50) / 35) #/ (fmod(45, time)) #+ (combo / judge_info[2] + (100 * abs(time + 1)))
 	
-	score += judge_info[0] #+ (combo / judge_info[2] + (100 * abs(time + 1)))
 	#print(combo / judge_info[2] + (100 * abs(time + 1)))
 	ui.note_percent += judge_info[1]
 	ui.total_hit += 1
@@ -406,10 +417,10 @@ func good_note_hit(note:Note):
 	kill_note(note)
 	if Prefs.hitsounds:
 		Audio.play_sound('hitsound', 0.7)
-	#	ui
+
 
 var time_dropped:float = 0
-func good_sustain_press(sustain:Note, delt:float = 0.0):
+func good_sustain_press(sustain:Note, delt:float = 0.0) -> void:
 	if !auto_play and Input.is_action_just_released(key_names[sustain.dir]) and !sustain.was_good_hit:
 		#sustain.dropped = true
 		sustain.holding = false
@@ -429,7 +440,7 @@ func good_sustain_press(sustain:Note, delt:float = 0.0):
 		ui.hp += (4 * delt)
 		ui.update_score_txt()
 
-func opponent_note_hit(note:Note):
+func opponent_note_hit(note:Note) -> void:
 	if note.type.length() > 0: print(note.type, ' dad')
 
 	if section_data != null and section_data.has('altAnim') and section_data.altAnim:
@@ -442,7 +453,7 @@ func opponent_note_hit(note:Note):
 	ui.opponent_group.note_hit(note)
 	kill_note(note)
 
-func opponent_sustain_press(sustain:Note):
+func opponent_sustain_press(sustain:Note) -> void:
 	if Conductor.vocals.stream != null:
 		var v = Conductor.vocals_opp if Conductor.mult_vocals else Conductor.vocals
 		v.volume_db = linear_to_db(1)
@@ -453,10 +464,11 @@ func opponent_sustain_press(sustain:Note):
 	ui.opponent_group.note_hit(sustain)
 
 var grace:bool = true
-func note_miss(note:Note):
+func note_miss(note:Note) -> void:
 	if note.should_hit:
 		ui.player_group.note_miss(note)
 		misses += 1
+		ui.hit_count['miss'] = misses
 		score -= floor(note.length * 2) if note.is_sustain else int(30 + (15 * floor(misses / 3)))
 		#print(int(30 + (15 * floor(misses / 3))))
 		ui.total_hit += 1
@@ -479,7 +491,7 @@ func note_miss(note:Note):
 	kill_note(note)
 	
 	
-func pop_up_combo(rating:String = 'sick', combo = -1, is_miss:bool = false):
+func pop_up_combo(rating:String = 'sick', combo = -1, is_miss:bool = false) -> void:
 	if Prefs.rating_cam != 'none':
 		var cam:Callable = ui.add_behind if Prefs.rating_cam == 'hud' else add_child
 	
@@ -502,7 +514,10 @@ func pop_up_combo(rating:String = 'sick', combo = -1, is_miss:bool = false):
 					n_tween.tween_property(num, "modulate:a", 0, 0.2).set_delay(Conductor.crochet * 0.002)
 					n_tween.finished.connect(num.queue_free)
 	
-func kill_note(note:Note):
-	note.spawned = false
-	notes.remove_at(notes.find(note))
-	note.queue_free()
+func kill_note(note:Note) -> void:
+	if note != null:
+		note.spawned = false
+		var note_id = notes.find(note)
+		if note_id < notes.size():
+			notes.remove_at(notes.find(note))
+		note.queue_free()

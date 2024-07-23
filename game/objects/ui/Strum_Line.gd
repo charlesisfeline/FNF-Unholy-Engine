@@ -22,10 +22,10 @@ func _ready():
 		cur_strum.is_player = !is_cpu
 		#if !is_cpu: cur_strum.rotation = 11 # 8.2?
 
-func get_strums():
+func get_strums() -> Array[Strum]:
 	return [$Strums/Left, $Strums/Down, $Strums/Up, $Strums/Right]
 	
-func note_hit(note:Note):
+func note_hit(note:Note) -> void:
 	if !note.is_sustain or (note.is_sustain and get_strums()[note.dir].anim_timer <= 0):
 		strum_anim(note.dir, !is_cpu)
 	
@@ -37,11 +37,11 @@ func note_hit(note:Note):
 		else:
 			singer.sing(note.dir, note.alt, !note.is_sustain)
 
-func note_miss(note:Note):
-	if singer == null: return
-	singer.sing(note.dir, 'miss')
+func note_miss(note:Note) -> void:
+	if singer != null:
+		singer.sing(note.dir, 'miss')
 	
-func strum_anim(dir:int = 0, player:bool = false):
+func strum_anim(dir:int = 0, player:bool = false) -> void:
 	var strum:Strum = get_strums()[dir]
 
 	strum.play_anim('confirm', true)

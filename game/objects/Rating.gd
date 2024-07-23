@@ -10,29 +10,30 @@ var ratings_data:Dictionary = {
 	'name':       ['sick', 'good', 'bad', 'shit'],
 	'score':      [  350,    200,   100,    50],
 	'hit_window': [   45,     90,   135,  null],
-	'penalty':    [    1,   0.75,   0.5,   0.2],
+	'penalty':    [    1,    0.8,   0.5,  0.35],
 	'hit_mod':    [    1,   0.75,   0.5,   0.2] # 1.0, 0.9, 0.7, 0.4, 0.2
 }
 
 var cur_index = 0
-func get_rating(diff:float):
+func get_rating(diff:float) -> String:
 	cur_index = 0
 	for i in ratings_data.hit_window.size() - 1:
-		var win = Prefs.get(ratings_data.name[i] + '_window')
+		var win = Prefs.get(ratings_data.name[i] +'_window')
 		if absf(diff) <= win:
 			return ratings_data.name[i]
 		cur_index += 1
 	return ratings_data.name[ratings_data.name.size() - 1]
 
-func get_score(rating:String):
-	var to_return = []
+func get_score(rating:String) -> Array:
+	var to_return:Array = []
 	var index = ratings_data.name.find(rating)
+	
 	to_return.append(ratings_data.score[index])
 	to_return.append(ratings_data.hit_mod[index])
 	to_return.append(ratings_data.penalty[index])
 	return to_return
 
-func make_rating(rate:String = 'sick'):
+func make_rating(rate:String = 'sick') -> VelocitySprite:
 	var rating = VelocitySprite.new()
 	rating.position = rating_pos
 	rating.texture = style.rating_skin
@@ -47,9 +48,9 @@ func make_rating(rate:String = 'sick'):
 	
 	return rating
 
-func make_combo(combo):
+func make_combo(combo) -> Array[VelocitySprite]:
 	var loops:int = 0
-	var all_nums = []
+	var all_nums:Array[VelocitySprite] = []
 	for i in str(combo).split():
 		var num = VelocitySprite.new()
 		num.position = combo_pos

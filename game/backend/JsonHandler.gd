@@ -67,12 +67,12 @@ func parse_song(song:String, diff:String, auto_create:bool = false, type:String 
 		#thread.start(generate_chart.bind(_SONG))
 		#await thread.wait_to_finish()
 
-func base(song:String): 
+func base(song:String) -> Dictionary:
 	parse_type = 'base'
 	var json = you_WILL_get_a_json(song) #FileAccess.open('res://assets/songs/'+ song +'/charts/chart.json', FileAccess.READ).get_as_text()
 	return JSON.parse_string(json.get_as_text())
 	
-func psych(song:String):
+func psych(song:String) -> Dictionary:
 	parse_type = 'psych'
 	var json = you_WILL_get_a_json(song)
 	var parsed = JSON.parse_string(json.get_as_text())
@@ -82,7 +82,7 @@ func psych(song:String):
 #func maru(song:String): pass
 #func osu(song:String): pass
 
-func you_WILL_get_a_json(song:String):
+func you_WILL_get_a_json(song:String) -> FileAccess:
 	var path:String = 'res://assets/songs/%s/charts/' % [song]
 	var returned:String
 	
@@ -102,10 +102,9 @@ func you_WILL_get_a_json(song:String):
 		
 	return FileAccess.open(returned, FileAccess.READ)
 
-func generate_chart(data): # idea, split chart into parts, then load each seperately
+func generate_chart(data) -> Array: # idea, split chart into parts, then load each seperately
 	if data == null: 
-		parse_song('tutorial', get_diff)
-		return
+		return parse_song('tutorial', get_diff)
 	#var chart = Chart.new()
 	#chart.load_chart(_SONG)
 	# load events whenever chart is made
@@ -132,10 +131,7 @@ func generate_chart(data): # idea, split chart into parts, then load each sepera
 	chart_notes = _notes
 	return _notes
 
-func generate_chunks(amount):
-	pass
-
-func get_events(song:String = ''):
+func get_events(song:String = '') -> Array[EventNote]:
 	var path_to_check = 'res://assets/songs/%s/events.json' % [song]
 	#if parse_type == 'base': path_to_check.replace('events', 'charts/chart')
 	var events_found:Array = []
@@ -167,7 +163,7 @@ func get_events(song:String = ''):
 func get_character(character:String = 'bf'):
 	var json_path = 'res://assets/data/characters/%s.json' % [character]
 	if !FileAccess.file_exists(json_path):
-		printerr('JSON: get_character | JSON FILE [%s.json] COULD NOT BE FOUND' % [character]);
+		printerr('JSON: get_character | [%s.json] COULD NOT BE FOUND' % [character]);
 		return null
 	var file = FileAccess.open(json_path, FileAccess.READ)
 	return JSON.parse_string(file.get_as_text())

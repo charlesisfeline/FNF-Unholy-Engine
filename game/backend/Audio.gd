@@ -37,7 +37,7 @@ func set_music(new_music:String, vol:float = 1, looped:bool = true): # set the m
 		printerr('MUSIC PLAYER | SET MUSIC: CAN\'T FIND FILE "'+ path +'"')
 	
 # play the stated music. if called empty, will play the last stated track, if there is one
-func play_music(to_play:String = '', looped:bool = true, vol:float = 1):
+func play_music(to_play:String = '', looped:bool = true, vol:float = 1) -> void:
 	if to_play.is_empty() and Player.stream == null: # why not, fuck errors
 		printerr('MUSIC PLAYER | PLAY_MUSIC: MUSIC IS NULL')
 		return
@@ -51,7 +51,7 @@ func play_music(to_play:String = '', looped:bool = true, vol:float = 1):
 		Player.play()
 	#Player.stream.volume_db = linear_to_db(vol)
 	
-func stop_music(clear:bool = true): # stop and clear the stream if needed
+func stop_music(clear:bool = true) -> void: # stop and clear the stream if needed
 	Player.stop()
 	if clear:
 		Player.stream = null
@@ -61,7 +61,7 @@ func finished():
 	if loop_music: play_music()
 	Game.call_func('on_music_finish')
 	
-func play_sound(sound:String, vol:float = 1, use_skin:bool = false):
+func play_sound(sound:String, vol:float = 1, use_skin:bool = false) -> void:
 	if use_skin and !sound.begins_with('skins/'): 
 		sound = 'skins/'+ Game.scene.cur_style +'/'+ sound
 
@@ -71,7 +71,7 @@ func play_sound(sound:String, vol:float = 1, use_skin:bool = false):
 	new_sound.play()
 	sound_list.append(new_sound)
 
-func stop_all_sounds():
+func stop_all_sounds() -> void:
 	for sound in sound_list:
 		if sound != null and sound.stream != null and sound.playing:
 			sound.stop()

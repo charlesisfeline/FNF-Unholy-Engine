@@ -54,7 +54,7 @@ func _ready():
 	add_child(vocals)
 	add_child(vocals_opp)
 
-func load_song(song:String = ''):
+func load_song(song:String = '') -> void:
 	if song.length() < 1:
 		printerr('Conductor.load_song: NO SONG ENTERED')
 		song = 'tutorial' #DirAccess.get_directories_at('res://assets/songs')[0]
@@ -115,30 +115,30 @@ func _process(delta):
 				if absf(audio.get_playback_position() * 1000 - song_pos) > 20: 
 					resync_audio()
 				
-func check_resync(sound:AudioStreamPlayer): # ill keep this here for now
+func check_resync(sound:AudioStreamPlayer) -> void: # ill keep this here for now
 	if absf(sound.get_playback_position() * 1000 - song_pos) > 20:
 		sound.seek(song_pos / 1000)
 		print('resynced')
 
-func resync_audio():
+func resync_audio() -> void:
 	for_all_audio('seek', song_pos / 1000.0)
 	print('resynced audios')
 
-func stop():
+func stop() -> void:
 	song_pos = 0
 	for_all_audio('stop', true)
 	reset_beats()
 
-func pause(): # NOTE: you shouldn't call this function, you should set Conductor.paused instead
+func pause() -> void: # NOTE: you shouldn't call this function, you should set Conductor.paused instead
 	for_all_audio('stream_paused', paused, true)
 
-func start(at_point:float = -1):
+func start(at_point:float = -1) -> void:
 	song_started = true # lol
 	if at_point != -1:
 		song_pos = absf(at_point) / 1000.0
 	for_all_audio('play', song_pos)
 
-func for_all_audio(do:String, arg = null, is_var:bool = false):
+func for_all_audio(do:String, arg = null, is_var:bool = false) -> void:
 	for audio in [inst, vocals, vocals_opp]:
 		if audio.stream == null: continue
 		if is_var: 
@@ -150,13 +150,13 @@ func for_all_audio(do:String, arg = null, is_var:bool = false):
 				continue
 			audio.call(do, arg)
 			
-func reset():
+func reset() -> void:
 	song_started = false
 	song_loaded = false
 	stop()
 	bpm = 100
 
-func reset_beats():
+func reset_beats() -> void:
 	beat_time = 0; step_time = 0;
 	cur_beat = 0; cur_step = 0; cur_section = 0;
 	last_beat = -1; last_step = -1; last_section = -1;

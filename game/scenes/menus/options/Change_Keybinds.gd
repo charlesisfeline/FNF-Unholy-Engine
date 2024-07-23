@@ -75,19 +75,18 @@ func _unhandled_key_input(event):
 	is_changing = false
 	remove_child(notif)
 	
-func update_selection(amount:int = 0):
+func update_selection(amount:int = 0) -> void:
 	cur_bind = wrapi(cur_bind + amount, 0, key_binds.size())
 	$SelectBox.position = key_binds[cur_bind].position - Vector2(10, 55)
 	
-func start_change(bind:String):
+func start_change(bind:String) -> void:
 	notif.text = 'Press a key for: '+ bind.replace('_', ' ')
 	add_child(notif)
 	await get_tree().create_timer(0.15).timeout #wait a sec so it doesnt auto set it to enter or something
 	selected_bind = bind
 	is_changing = true
 	
-	
-func swap_menu(to_keys:String = 'note'):
+func swap_menu(to_keys:String = 'note') -> void:
 	var colum:int = 0
 	var rows:int = 0
 	var _binds

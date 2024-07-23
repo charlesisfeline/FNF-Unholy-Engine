@@ -1,5 +1,6 @@
 extends Node2D
 
+var best_scores = ConfigFile.new()
 @onready var order = FileAccess.open('res://assets/data/weeks/week-order.txt', FileAccess.READ).get_as_text().split('\n')
 var added_songs:Array[String] = [] # a list of all the song names, so no dupes are added
 var added_weeks:Array[String] = [] # same but for week jsons
@@ -42,6 +43,14 @@ func _ready():
 	for song in DirAccess.get_directories_at('res://assets/songs'):
 		add_song(FreeplaySong.new([song, 'bf', [100, 100, 100]]))
 	
+	if !FileAccess.file_exists('user://highscores.cfg'):
+		for song in songs:
+			var da_diffs:Dictionary = {}
+			for dif in song.diff_list: da_diffs[dif] = [0, 0, 'N/A']
+			best_scores.set_value('Song Scores', Game.format_str(song.song), da_diffs) # score, accuracy, fc
+		best_scores.save('user://highscores.cfg')
+	
+	best_scores.load('user://highscores.cfg')
 	if JsonHandler._SONG != null:
 		if JsonHandler.charted and !JsonHandler.old_notes.is_empty():
 			JsonHandler.chart_notes = JsonHandler.old_notes.duplicate()
@@ -53,8 +62,8 @@ func _ready():
 	
 	update_list()
 	
-func add_song(song:FreeplaySong):
-	var song_name = song.song.to_lower().strip_edges().replace(' ', '-')
+func add_song(song:FreeplaySong) -> void:
+	var song_name = Game.format_str(song.song)
 	if added_songs.has(song_name):
 		#print_rich("[color=yellow]"+ song.song +"[/color] already added, skipping")
 		return
@@ -73,7 +82,10 @@ func add_song(song:FreeplaySong):
 var lerp_score:int = 0
 var actual_score:int = 2384397
 func _process(delta):
-	lerp_score = lerp(actual_score, lerp_score, exp(-delta * 24))
+	lerp_score = floor(lerp(actual_score, lerp_score, exp(-delta * 24)))
+	if abs(lerp_score - actual_score) <= 10:
+		lerp_score = actual_score
+		
 	$SongInfo/Score.text = 'Best Score: ' + str(lerp_score)
 	$SongInfo/Score.position.x = Game.screen[0] - $SongInfo/Score.size[0] - 6
 	$SongInfo/ScoreBG.scale.x = Game.screen[0] - $SongInfo/Score.position.x + 6
@@ -88,7 +100,7 @@ func _process(delta):
 	#	switch_list()
 
 var col_tween
-func update_list(amount:int = 0):
+func update_list(amount:int = 0) -> void:
 	if amount != 0: Audio.play_sound('scrollMenu')
 	cur_song = wrapi(cur_song + amount, 0, songs.size())
 	
@@ -97,10 +109,7 @@ func update_list(amount:int = 0):
 	col_tween = create_tween()
 	col_tween.tween_property($MenuBG, 'modulate', songs[cur_song].bg_color, 0.3)
 	
-	if songs[cur_song].diff_list.size() > 0:
-		diff_list = songs[cur_song].diff_list
-	else:
-		diff_list = JsonHandler.base_diffs
+	diff_list = songs[cur_song].diff_list
 	change_diff()
 	
 	for i in songs.size():
@@ -108,12 +117,13 @@ func update_list(amount:int = 0):
 		item.target_y = i - cur_song
 		item.modulate.a = (1.0 if i == cur_song else 0.6)
 
-func change_diff(amount:int = 0):
+func change_diff(amount:int = 0) -> void:
 	#diff_list = JsonHandler.get_diffs #something for later i suppose
 	diff_int = wrapi(diff_int + amount, 0, diff_list.size())
 	diff_str = diff_list[diff_int]
 	var text = '< '+ diff_str.to_upper() +' >'
 	if diff_list.size() == 1: text = text.replace('<', ' ').replace('>', ' ')
+	actual_score = best_scores.get_value('Song Scores', added_songs[cur_song])[diff_str][0]
 	$SongInfo/Difficulty.text = text
 
 func _unhandled_key_input(event):
@@ -135,7 +145,7 @@ func _unhandled_key_input(event):
 	
 class FreeplaySong extends Alphabet:
 	var song:String = 'Tutorial'
-	var diff_list:Array = []
+	var diff_list:Array = JsonHandler.base_diffs
 	var bg_color:Color = Color.WHITE
 	var icon:String = 'face'
 

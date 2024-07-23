@@ -49,7 +49,7 @@ var type:String = "":
 				early_mod = 0.5
 				late_mod = 0.5
 				modulate = Color.DIM_GRAY
-		if type.to_lower().contains('gf sing'): gf = true
+		#if type.to_lower().contains('gf sing'): gf = true
 
 var should_hit:bool = true
 var can_hit:bool = false#:
@@ -166,7 +166,7 @@ func _process(delta):
 			can_hit = false
 			was_good_hit = strum_time <= Conductor.song_pos
 
-func follow_song_pos(strum:Strum):
+func follow_song_pos(strum:Strum) -> void:
 	if is_sustain and holding: 
 		position.y = strum.position.y
 		return
@@ -179,7 +179,7 @@ func follow_song_pos(strum:Strum):
 	if !is_sustain:
 		rotation = strum.rotation
 
-func load_skin(skin):
+func load_skin(skin) -> void:
 	tex_path = 'res://assets/images/ui/styles/'+ skin.style +'/notes/'+ col_array[dir]
 	antialiasing = skin.antialiased
 	scale = skin.note_scale
@@ -192,7 +192,7 @@ func load_skin(skin):
 	else:
 		note.texture = load(tex_path +'.png')
 
-func resize_hold(update_control:bool = false):
+func resize_hold(update_control:bool = false) -> void:
 	if !spawned: return
 	hold_group.size.y = ((length * 0.63) * speed)
 	var rounded_scale = Game.round_d(style.note_scale.y, 1)
@@ -204,7 +204,7 @@ func resize_hold(update_control:bool = false):
 		hold_group.size.x = maxf(end.texture.get_width(), sustain.texture.get_width())
 		hold_group.position.x = 0 - hold_group.size.x * 0.5
 
-func copy_from(item):
+func copy_from(item) -> void:
 	if item != null and (item is Note or item is NoteData):
 		strum_time = item.strum_time
 		dir = item.dir

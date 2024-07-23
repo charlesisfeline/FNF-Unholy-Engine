@@ -49,7 +49,7 @@ func _init(pos:Vector2 = Vector2.ZERO, char:String = 'bf', player:bool = false):
 	print('init ' + char)
 	load_char(char)
 	
-func load_char(new_char:String = 'bf'):
+func load_char(new_char:String = 'bf') -> void:
 	if new_char == cur_char:
 		print(new_char +' already loaded') 
 		return
@@ -123,7 +123,7 @@ func _process(delta):
 			if hold_timer >= Conductor.step_crochet * (0.0011 * sing_duration) and can_dance:
 				dance()
 
-func dance(forced:bool = false):
+func dance(forced:bool = false) -> void:
 	if special_anim: return
 	var idle:String = 'idle'
 	if dance_idle:
@@ -134,7 +134,7 @@ func dance(forced:bool = false):
 	hold_timer = 0
 	sing_timer = 0
 
-func sing(dir:int = 0, suffix:String = '', reset:bool = true):
+func sing(dir:int = 0, suffix:String = '', reset:bool = true) -> void:
 	hold_timer = 0
 	if reset:
 		sing_timer = 0
@@ -143,13 +143,13 @@ func sing(dir:int = 0, suffix:String = '', reset:bool = true):
 		if !reset: sing_timer = Conductor.step_crochet * 0.001
 		play_anim(sing_anims[dir] + suffix, true)
 	
-func swap_sing(anim1:String, anim2:String):
+func swap_sing(anim1:String, anim2:String) -> void:
 	var index1 = sing_anims.find(anim1)
 	var index2 = sing_anims.find(anim2)
 	sing_anims[index1] = anim2
 	sing_anims[index2] = anim1
 
-func play_anim(anim:String, forced:bool = false):
+func play_anim(anim:String, forced:bool = false) -> void:
 	if forced_suffix.length() > 0: 
 		anim += forced_suffix
 	if !has_anim(anim): 
@@ -167,12 +167,12 @@ func play_anim(anim:String, forced:bool = false):
 	else:
 		offset = Vector2(0, 0)
 
-func get_cam_pos():
+func get_cam_pos() -> Vector2:
 	var midpoint = Vector2(position.x + width / 2, position.y + height / 2)
 	var pos:= Vector2(midpoint.x + (-100 if is_player else 150), midpoint.y - 100)
 	return pos + focus_offsets
 	
-func set_stuff():
+func set_stuff() -> void:
 	var anim:String = 'danceLeft' if dance_idle else 'idle'
 	if has_anim('deathStart') and !has_anim(anim): anim = 'deathStart' # if its a death char
 	if has_anim(anim):
@@ -180,14 +180,14 @@ func set_stuff():
 		width = sprite_frames.get_frame_texture(anim, 0).get_width()
 		height = sprite_frames.get_frame_texture(anim, 0).get_height()
 
-func has_anim(anim:String):
+func has_anim(anim:String) -> bool:
 	return sprite_frames.has_animation(anim) if sprite_frames != null else false
 
-func copy_char(char:Character):
+func copy_char(char:Character) -> Character:
 	self.position = char.position
 	return Character.new(self.position, self.cur_char, self.is_player)
 
-func get_closest(char:String = 'bf'): # if theres no character named like "pico-but-devil" itll just use reg pico
+func get_closest(char:String = 'bf') -> String: # if theres no character named "pico-but-devil" itll just use "pico"
 	for file in DirAccess.get_files_at('res://assets/data/characters'):
 		file = file.replace('.json', '')
 		if char.to_lower().contains(file): return file

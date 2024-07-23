@@ -15,7 +15,7 @@ func _ready():
 func _process(_delta):
 	DiscordRPC.run_callbacks()
 
-func change_presence(main:String = 'Nuttin', sub:String = 'Check it'):
+func change_presence(main:String = 'Nuttin', sub:String = 'Check it') -> void:
 	DiscordRPC.details = 'I LOVE DANIEL' if Prefs.daniel else main
 	DiscordRPC.state = 'I LOVE DANIEL' if Prefs.daniel else sub
 	DiscordRPC.refresh()

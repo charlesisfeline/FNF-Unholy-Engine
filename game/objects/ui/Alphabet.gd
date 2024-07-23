@@ -29,7 +29,7 @@ func _init(init_text:String = '', is_bold:bool = true):
 	if init_text.length() > 0:
 		text = init_text
 	
-func make_text(tx:String):
+func make_text(tx:String) -> void:
 	all_letters.clear()
 	var letters_made:Array[Letter] = []
 	
@@ -65,7 +65,7 @@ func make_text(tx:String):
 			letter.play(let)
 			letter.offset = offset_letter(i) #Vector2.ZERO #true_offsets
 			letter.modulate = Color.BLACK if !bold else Color.WHITE
-			if !bold: letter.offset.y -= letter._height / 1.2
+			if !bold: letter.offset.y -= letter._height / 1.05
 			offsets.x += letter._width
 			
 		letters_made.append(letter)
@@ -88,7 +88,7 @@ func _process(delta):
 		)
 		position = scroll
 
-func get_anim(item):
+func get_anim(item) -> String:
 	item = item.dedent()
 	match item:
 		"{": return "(" if !bold else "{"
@@ -106,7 +106,7 @@ func get_anim(item):
 					return "%s".dedent() % [item.to_lower() + casing]
 			return item.to_lower().dedent()
 
-func offset_letter(item):
+func offset_letter(item) -> Vector2:
 	match item:
 		'-': return Vector2(0, 25)
 		'!': return Vector2(0, -5)
@@ -134,6 +134,6 @@ class Letter extends AnimatedSprite2D:
 		self.id = id; self.row = row;
 		
 	func get_thing(the:String):
-		if sprite_frames == null or !sprite_frames.has_animation(char): return 47 if the == 'width' else 65
+		if sprite_frames == null or !sprite_frames.has_animation(char): return 47.0 if the == 'width' else 65.0
 		if the == 'width': return sprite_frames.get_frame_texture(char, 0).get_width()
 		if the == 'height': return sprite_frames.get_frame_texture(char, 0).get_height()

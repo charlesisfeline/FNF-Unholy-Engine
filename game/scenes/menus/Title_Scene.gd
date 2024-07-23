@@ -31,7 +31,7 @@ func _ready():
 	#Conductor.inst = Audio.Player
 
 var danced:bool = false
-func beat_hit(beat):
+func beat_hit(beat) -> void:
 	danced = !danced
 	$TitleGF.play('dance'+ ('Left' if danced else 'Right'))
 	$Funkin.scale = Vector2(1.1, 1.1)
@@ -110,7 +110,7 @@ func _process(delta):
 				Game.switch_scene('menus/main_menu')
 				Conductor.reset()
 
-func finish_intro():
+func finish_intro() -> void:
 	finished_intro = true
 	remove_funny()
 	
@@ -124,7 +124,7 @@ func finish_intro():
 	flash.color = Color.WHITE
 	create_tween().tween_property(flash, 'modulate:a', 0, 4)
 	
-func make_funny(text:Array, offset:int = 0):
+func make_funny(text:Array, offset:int = 0) -> void:
 	for i in text.size():
 		var new_text = Alphabet.new(text[i])
 		new_text.position.x = (Game.screen[0] / 2) - (new_text.width / 2)
@@ -132,17 +132,17 @@ func make_funny(text:Array, offset:int = 0):
 		add_child(new_text)
 		added_text.append(new_text)
 	
-func add_funny(text:String, offset:int = 0):
+func add_funny(text:String, offset:int = 0) -> void:
 	var new_text = Alphabet.new(text)
 	new_text.position.x = (Game.screen[0] / 2) - (new_text.width / 2)
 	new_text.position.y += (added_text.size() * 60) + 200 + offset
 	add_child(new_text)
 	added_text.append(new_text)
 	
-func remove_funny():
+func remove_funny() -> void:
 	Game.remove_all([added_text], self)
 		
-func get_funny():
+func get_funny() -> Array[Array]:
 	var intro_txt = FileAccess.open('res://assets/data/introText.txt', FileAccess.READ).get_as_text().split('\n')
 	var split_intro:Array[Array] = []
 	

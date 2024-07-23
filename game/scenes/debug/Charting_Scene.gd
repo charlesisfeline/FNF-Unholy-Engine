@@ -227,7 +227,7 @@ func _process(delta):
 		#JsonHandler._SONG.gfVersion = $Info/GF.text
 
 var bg_tween:Tween
-func beat_hit(beat:int):
+func beat_hit(beat:int) -> void:
 	$StrumLine/IconL.bump(0.6)
 	$StrumLine/IconR.bump(0.6)
 	#$NoteGroup/OppIcon.bump(0.8)
@@ -244,13 +244,13 @@ func beat_hit(beat:int):
 		load_section(cur_section + 1)
 		#print(str(Conductor.song_pos) +' | '+ str(get_section_time(cur_section)))
 
-func step_hit(step:int):
+func step_hit(step:int) -> void:
 	update_text()
 
-func toggle_play():
+func toggle_play() -> void:
 	Conductor.paused = !Conductor.paused
 
-func set_dropdown(dropdown:OptionButton, to_val:String = ''): # set a optionbutton's value automatically
+func set_dropdown(dropdown:OptionButton, to_val:String = '') -> void: # set a optionbutton's value automatically
 	if dropdown != null:
 		var items:Array = []
 		for i in dropdown.item_count:
@@ -263,10 +263,10 @@ func set_dropdown(dropdown:OptionButton, to_val:String = ''): # set a optionbutt
 			dropdown.add_item(to_val)
 			dropdown.select(items.size())
 
-func tab(tab:String, node:String):
+func tab(tab:String, node:String) -> Node:
 	return get_node('ChartUI/Tabs/'+ tab +'/'+ node)
 		
-func load_section(section:int = 0, force_time:bool = false):
+func load_section(section:int = 0, force_time:bool = false) -> void:
 	if SONG.notes.size() <= section:
 		return
 		#var new = {
@@ -355,8 +355,8 @@ func _input(event): # this is better
 			
 			SONG.bpm = tab('Song', 'BPM').value
 			SONG.speed = tab('Song', 'Speed').value
-			JsonHandler._SONG = SONG
-			JsonHandler.generate_chart(SONG)
+			#JsonHandler._SONG = SONG
+			#JsonHandler.generate_chart(SONG)
 			Conductor.for_all_audio('volume_db', linear_to_db(1), true)
 			Game.switch_scene('Play_Scene')
 		
@@ -394,7 +394,7 @@ func _input(event): # this is better
 		if Input.is_key_pressed(KEY_RIGHT):
 			cur_quant += 1
 	
-func update_grids():
+func update_grids() -> void:
 	Game.remove_all([last_notes, cur_notes, next_notes], $Notes)
 	#while last_notes.size() != 0:
 	#	$Notes.remove_child(last_notes[0])
@@ -586,7 +586,7 @@ func update_grids():
 	
 	print('loaded '+ str(new_sec.sectionNotes.size()) +' notes')
 	
-func do_note_shit(note, dir:int):
+func do_note_shit(note, dir:int) -> void:
 	note.visual_dir = dir
 	
 	note.scale = Vector2(0.26, 0.26)
@@ -594,7 +594,7 @@ func do_note_shit(note, dir:int):
 		note.position.x = 120 + (GRID_SIZE * (dir))
 		note.note.offset.y += GRID_SIZE * 2
 	
-func check_note():
+func check_note() -> void:
 	var clicked_note:bool = false
 	for note in cur_notes:
 		if !note.is_sustain:
@@ -610,7 +610,7 @@ func check_note():
 	if !clicked_note and over_grid: # so you can click notes that are somehow off the grid, but not add more
 		add_note()
 		
-func add_note():
+func add_note() -> void:
 	var time = get_strum_from_y(selected.position.y) + get_section_time()
 	var direct:int = floor(mouse_pos.x / GRID_SIZE) - (1 if SONG.notes[cur_section].mustHitSection else 5)
 	
@@ -620,7 +620,7 @@ func add_note():
 	this_note = SONG.notes[cur_section].sectionNotes[(SONG.notes[cur_section].sectionNotes.find([time, direct, 0]))]
 	update_grids()
 	
-func select_note(note:ChartNote):
+func select_note(note:ChartNote) -> void:
 	var id:int = 0
 	for i in SONG.notes[cur_section].sectionNotes:
 		if floor(i[0]) == note.strum_time and i[1] == note.true_dir:
@@ -629,7 +629,7 @@ func select_note(note:ChartNote):
 			break
 		id += 1
 
-func remove_note(note:ChartNote):
+func remove_note(note:ChartNote) -> void:
 	for i in SONG.notes[cur_section].sectionNotes:
 		if floor(i[0]) == note.strum_time and i[1] == note.true_dir:
 			this_note.clear()
@@ -638,14 +638,14 @@ func remove_note(note:ChartNote):
 	
 	update_grids()
 
-func update_text():
+func update_text() -> void:
 	$ChartUI/Info.text = \
 		"Beat: "+ str(Conductor.cur_beat) +"\n"+ \
 		"Step: "+ str(Conductor.cur_step) +"\n"+ \
 		"Sect: "+ str(cur_section)      +"\n\n"+ \
 		"Snap: "+ str(note_snap) +"th"
 
-func _toggle_grid(toggled:bool):
+func _toggle_grid(toggled:bool) -> void:
 	#Conductor.paused = true
 	for i in [prev_grid, grid, next_grid]:
 		if grid != null:
@@ -653,10 +653,10 @@ func _toggle_grid(toggled:bool):
 			for mrk in i.markers: mrk.visible = !toggled
 	update_grids()
 
-func get_y_from_time(strum_time:float):
+func get_y_from_time(strum_time:float) -> float:
 	return remap(strum_time, 0, 16 * Conductor.step_crochet, grid.position.y, grid.position.y + grid.height)
 
-func get_strum_from_y(y_pos:float):
+func get_strum_from_y(y_pos:float) -> float:
 	return remap(y_pos, grid.position.y, grid.position.y + grid.height, 0, 16 * Conductor.step_crochet)
 
 func get_section_time(this_sec:int = -1):
@@ -689,7 +689,7 @@ class ChartNote extends Note: # stupid
 			data = NoteData.new(data)
 		super(data, sustain, true)
 	
-	func resize_hold(update:bool = false, to_size:float = 0.0):
+	func resize_hold(update:bool = false, to_size:float = 0.0) -> void:
 		#super(update)
 		hold_group.size.y = to_size
 		

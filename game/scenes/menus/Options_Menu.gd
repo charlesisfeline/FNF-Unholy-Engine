@@ -69,7 +69,7 @@ func _process(delta):
 		if Input.is_action_just_pressed("accept"):
 			show_catagory(catagories[cur_option].to_lower())
 
-func show_main():
+func show_main() -> void:
 	Audio.play_sound('cancelMenu')
 	in_sub = false
 	#cur_option = 0
@@ -82,7 +82,7 @@ func show_main():
 	for i in main_text.size():
 		main_text[i].modulate.a = (1.0 if i == cur_option else 0.6)
 	
-func show_catagory(catagory:String):
+func show_catagory(catagory:String) -> void:
 	Audio.play_sound('confirmMenu')
 	in_sub = true
 	sub_option = 0
@@ -108,7 +108,7 @@ func show_catagory(catagory:String):
 			loops += 1
 		update_scroll()
 
-func update_scroll(diff:int = 0):
+func update_scroll(diff:int = 0) -> void:
 	var array:Array = pref_list if in_sub else main_text
 	var op:String = 'cur_option' if array == main_text else 'sub_option'
 
@@ -152,7 +152,7 @@ class Option extends Alphabet:
 			check.checked = Prefs.get(option)
 		
 	# update the preference and the option text
-	func update_option(diff:float = 0): # diff for arrays/nums
+	func update_option(diff:float = 0) -> void: # diff for arrays/nums
 		if type == 'int' or type == 'float':
 			if Input.is_key_pressed(KEY_SHIFT): diff *= 10
 		match type:

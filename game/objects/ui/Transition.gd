@@ -11,7 +11,7 @@ var on_finish:Callable = func():
 	Game.remove_child(self)
 	queue_free()
 
-func trans_in(speed:float = 0.7, call_func:bool = false):
+func trans_in(speed:float = 0.7, call_func:bool = false) -> void:
 	hole.scale = Vector2(0, 0)
 	start()
 	
@@ -22,7 +22,7 @@ func trans_in(speed:float = 0.7, call_func:bool = false):
 	if call_func:
 		on_finish.call()
 
-func trans_out(speed:float = 0.7, call_func:bool = false):
+func trans_out(speed:float = 0.7, call_func:bool = false) -> void:
 	hole.scale = Vector2(15, 15)
 	start()
 	
@@ -33,7 +33,7 @@ func trans_out(speed:float = 0.7, call_func:bool = false):
 	if call_func:
 		on_finish.call()
 	
-func start():
+func start() -> void:
 	#Game.scene.paused = true
 	var new_tex:String = hole_images.pick_random()
 	hole.texture = load('res://assets/images/ui/transitions/'+ new_tex +'.png') # funny random

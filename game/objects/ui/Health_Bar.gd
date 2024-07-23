@@ -20,7 +20,7 @@ var fill_mode:int = 1:
 		$Bar.fill_mode = fill_mode
 		
 var style_box:Dictionary = {'background': null, 'fill': null}
-func set_colors(left:Color, right:Color): # i might use this maybe who knows
+func set_colors(left:Color, right:Color) -> void: # i might use this maybe who knows
 	if left != null: style_box.background.bg_color = left
 	if right != null: style_box.fill.bg_color = right
 	

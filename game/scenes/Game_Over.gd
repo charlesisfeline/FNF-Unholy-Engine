@@ -43,7 +43,7 @@ func _ready():
 		Audio.play_music('skins/'+ this.cur_style +'/gameOver')
 		dead.play_anim('deathLoop')
 
-func fade_in():
+func fade_in() -> void:
 	create_tween().tween_property($BG, 'modulate:a', 0.7, 0.7).set_trans(Tween.TRANS_SINE)
 
 var retried:bool = false

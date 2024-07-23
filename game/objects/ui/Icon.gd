@@ -14,7 +14,7 @@ const min_width:int = 150 # if icon width is less or equal, theres no lose anim
 var has_lose:bool = false
 var default_scale:float = 1.0
 
-func change_icon(new_image:String = 'face', player:bool = false):
+func change_icon(new_image:String = 'face', player:bool = false) -> void:
 	if new_image.begins_with('icon-'): new_image.replace('icon-', '')
 	is_player = player
 	image = new_image
@@ -30,7 +30,7 @@ func change_icon(new_image:String = 'face', player:bool = false):
 func _ready():
 	change_icon(image)
 
-func bump(to_scale:float = 1.2):
+func bump(to_scale:float = 1.2) -> void:
 	scale = Vector2(to_scale, to_scale)
 	
 func _process(delta):

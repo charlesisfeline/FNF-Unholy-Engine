@@ -10,7 +10,7 @@ static func load(data, chart_type:String = 'psych', diff:String = 'normal'):
 		'base': return load_base(data, diff)
 
 # old base game/psych
-static func load_common(data):
+static func load_common(data) -> Array:
 	for sec in data.notes:
 		for note in sec.sectionNotes:
 			var time:float = maxf(0, note[0])
@@ -29,7 +29,7 @@ static func load_common(data):
 			
 	return _notes
 
-static func load_base(data, diff:String = 'normal'):
+static func load_base(data, diff:String = 'normal') -> Array:
 	#print(data.notes['normal'])
 	for note in data.notes[diff]:
 		var time:float = maxf(0, note.t)
@@ -44,7 +44,7 @@ static func load_base(data, diff:String = 'normal'):
 	
 	return _notes
 
-func get_events(song:String = ''):
+func get_events(song:String = '') -> Array[EventNote]:
 	var path_to_check = 'res://assets/songs/%s/events.json' % [song]
 	var events_found:Array = []
 	var events:Array[EventNote] = []

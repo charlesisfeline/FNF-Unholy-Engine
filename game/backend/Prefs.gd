@@ -41,7 +41,7 @@ func _ready():
 	check_prefs()
 	set_keybinds()
 
-func set_keybinds():
+func set_keybinds() -> void:
 	var key_names:Array[String] = ['note_left', 'note_down', 'note_up', 'note_right']
 	
 	for i in key_names.size():
@@ -59,14 +59,14 @@ func set_keybinds():
 
 	print('updated keybinds')
 	
-func get_list():
+func get_list() -> Array:
 	var list = get_script().get_script_property_list()
 	list.remove_at(0); list.remove_at(0)
 
 	#for i in list: print(i.name)
 	return list
 
-func save_prefs():
+func save_prefs() -> void:
 	if cfg_file == null: 
 		printerr('CONFIG FILE is NOT loaded, couldn\'t save')
 		return
@@ -78,7 +78,7 @@ func save_prefs():
 	#set_keybinds()
 	print('Saved Preferences')
 	
-func load_prefs():
+func load_prefs() -> ConfigFile:
 	var saved_cfg = ConfigFile.new()
 	saved_cfg.load('user://data.cfg')
 	if saved_cfg.has_section('Preferences'):
