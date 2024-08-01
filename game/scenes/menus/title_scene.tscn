@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://game/scenes/menus/Title_Scene.gd" id="1_xmlw1"]
 [ext_resource type="SpriteFrames" uid="uid://7cc4jxcfj2dm" path="res://assets/images/gf_title.res" id="2_k0u1o"]
 [ext_resource type="SpriteFrames" uid="uid://2j35us7p6y1g" path="res://assets/images/titleEnter.res" id="3_0e6jk"]
-[ext_resource type="Texture2D" uid="uid://dxi55f0mrelvk" path="res://assets/images/logoBumpin.png" id="3_ymdcd"]
+[ext_resource type="Texture2D" uid="uid://c8xk1o6y1w3dv" path="res://assets/images/logoBumpin.png" id="3_ymdcd"]
 [ext_resource type="Texture2D" uid="uid://yygmhnl3dpdd" path="res://Godot_logo.png" id="5_08u8s"]
 [ext_resource type="SpriteFrames" uid="uid://l7ix7jvj204r" path="res://assets/images/cow.res" id="5_h38ik"]
 

@@ -43,7 +43,7 @@ func note_miss(note:Note) -> void:
 	
 func strum_anim(dir:int = 0, player:bool = false) -> void:
 	var strum:Strum = get_strums()[dir]
-
+	
 	strum.play_anim('confirm', true)
 	strum.anim_timer = Conductor.step_crochet / 1000.0
 	

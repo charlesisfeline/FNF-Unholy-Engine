@@ -43,12 +43,12 @@ var type:String = "":
 			'alt animation', 'alt': alt = '-alt'
 			'no animation': no_anim = true
 			'gf sing': gf = true
-			'markov note': 
+			'hurt note', 'markov note': 
 				no_anim = true
 				should_hit = false
 				early_mod = 0.5
 				late_mod = 0.5
-				modulate = Color.DIM_GRAY
+				modulate = Color.BLACK
 		#if type.to_lower().contains('gf sing'): gf = true
 
 var should_hit:bool = true
@@ -144,8 +144,8 @@ func _process(delta):
 		if strum_time <= Conductor.song_pos:
 			can_hit = true #!dropped
 			#if dropped: return
-			
-			temp_len -= 1000 * delta
+			# strum_time <= Conductor.song_pos and strum_time + length > Conductor.song_pos:
+			temp_len -= 1000 * delta * Conductor.playback
 			#offset_y -= 1000 * delta
 			if !must_press: holding = true
 			
@@ -153,7 +153,7 @@ func _process(delta):
 				length = temp_len
 				resize_hold()
 				
-				if roundf(length) <= min_len:
+				if roundi(length) <= min_len:
 					was_good_hit = true
 	else:
 		if must_press:

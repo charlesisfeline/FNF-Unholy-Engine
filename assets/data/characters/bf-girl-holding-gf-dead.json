@@ -18,7 +18,7 @@
 			],
 			"indices": [],
 			"fps": 24,
-			"anim": "firstDeath",
+			"anim": "deathStart",
 			"loop": false,
 			"name": "BF Dies with GF"
 		},
@@ -37,8 +37,8 @@
 	"no_antialiasing": false,
 	"image": "characters/bf/trans/gf/dead",
 	"position": [
-		0,
-		350
+		-15,
+		-20
 	],
 	"healthicon": "bf-g",
 	"flip_x": true,

@@ -1,9 +1,12 @@
 class_name UI; extends CanvasLayer;
 
+signal countdown_start
+signal countdown_tick(tick:int) # 0 = 'three', 1 = 'two', 2 = 'one', 3 = 'go', 4 = song start
+signal song_start # technically countdown tick 4 is song start but why would you use that smh
+
 var SPLASH = preload('res://game/objects/note/note_splash.tscn')
 
 # probably gonna move some note shit in here
-@onready var cur_scene = get_tree().current_scene
 @onready var score_txt:Label = $Score_Txt
 @onready var time_bar:Control = $TimeBar
 @onready var health_bar:Control = $HealthBar
@@ -59,10 +62,6 @@ func _ready():
 	for i in strums: i.downscroll = downscroll
 	
 	if middscroll:
-		#player_group.position.x = (Game.screen[0] / 2) - 220
-		#opponent_group.modulate.a = 0.25
-		#opponent_group.z_index = -1
-		#opponent_group.position = Vector2((Game.screen[0] / 2) - 220, player_group.position.y)
 		time_bar.position.x -= 400
 		player_group.position.x = (Game.screen[0] / 2) - 220
 		opponent_group.modulate.a = 0.4
@@ -94,7 +93,7 @@ func _process(delta):
 	offset.y = (scale.y - 1.0) * -(Game.screen[1] * 0.5)
 	
 func update_score_txt() -> void:
-	var stuff = [cur_scene.score, get_acc(), cur_scene.misses]
+	var stuff = [Game.scene.score, get_acc(), Game.scene.misses]
 	score_txt.text = 'Score: %s - Accuracy: [%s] - Misses: %s' % stuff
 
 func get_acc() -> String:
@@ -153,21 +152,17 @@ var times_looped:int = -1
 
 func start_countdown(from_beginning:bool = false) -> void:
 	if from_beginning:
+		countdown_start.emit()
 		finished_countdown = false
-		Conductor.song_pos = -Conductor.crochet * 5
+		Conductor.song_pos = -Conductor.crochet * 5.0
 		count_down = Timer.new() # get_tree.create_timer starts automatically and isn't reusable
 		add_child(count_down)
 	
-	count_down.start(Conductor.crochet / 1000)
+	count_down.start(Conductor.crochet / 1000.0)
 	await count_down.timeout
 	times_looped += 1
-	
-	for i in characters:
-		if times_looped % i.dance_beat == 0 and !i.animation.begins_with('sing'):
-			i.dance()
-	icon_p1.bump()
-	icon_p2.bump()
-	
+	countdown_tick.emit(times_looped)
+
 	if times_looped < 4:
 		if times_looped > 0:
 			var spr = Sprite2D.new()
@@ -186,3 +181,4 @@ func start_countdown(from_beginning:bool = false) -> void:
 		remove_child(count_down)
 		count_down.queue_free()
 		times_looped = -1
+		song_start.emit()

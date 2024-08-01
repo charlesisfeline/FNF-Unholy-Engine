@@ -4,6 +4,7 @@ signal notes_loaded
 signal loaded
 
 var base_diffs:Array[String] = ['easy', 'normal', 'hard']
+var song_diffs:Array = []
 var get_diff:String
 
 var charted:bool = false
@@ -25,7 +26,7 @@ func parse_song(song:String, diff:String, auto_create:bool = false, type:String 
 		type = 'base'
 	
 	var parsed_song
-	get_diff = diff
+	get_diff = diff.to_lower()
 	match type:
 		'base'    : parsed_song = base(song)
 		'psych'   : parsed_song = psych(song)
@@ -49,19 +50,6 @@ func parse_song(song:String, diff:String, auto_create:bool = false, type:String 
 			_SONG.bpm = song_meta.timeChanges[0].bpm
 			
 	if auto_create:
-		#var total_chunks = roundi(_SONG.notes.size() / 4)
-
-		#var split_notes:Array = [[], [], [], []]
-
-		#var last_got:int = 0
-		#for i in range(1, 5):
-		#	for num in range(total_chunks, total_chunks * i):
-		#		pass
-		#	last_got
-				
-		#for i in 3:
-		#	var the = Thread.new()
-			
 		generate_chart(_SONG)
 		#var thread = Thread.new()
 		#thread.start(generate_chart.bind(_SONG))
@@ -102,33 +90,19 @@ func you_WILL_get_a_json(song:String) -> FileAccess:
 		
 	return FileAccess.open(returned, FileAccess.READ)
 
-func generate_chart(data) -> Array: # idea, split chart into parts, then load each seperately
+func generate_chart(data, keep_loaded:bool = true) -> Array: # idea, split chart into parts, then load each seperately
 	if data == null: 
 		return parse_song('tutorial', get_diff)
-	#var chart = Chart.new()
-	#chart.load_chart(_SONG)
+	
+	var chart = Chart.new()
 	# load events whenever chart is made
 	if parse_type != 'base':
 		song_events = get_events(Game.format_str(data.song))
 	
-	var _notes = Chart.load(data, parse_type, get_diff) # get diff here only matters for base game as of now
-	#for sec in data.notes:
-	#	for note in sec.sectionNotes:
-	#		var time:float = maxf(0, note[0])
-	#		if note[2] is String: continue
-	#		var sustain_length:float = maxf(0, note[2])
-	#		var is_sustain:bool = sustain_length > 0
-	#		var n_data:int = int(note[1])
-	#		var must_hit:bool = sec.mustHitSection if note[1] <= 3 else not sec.mustHitSection
-	#		var type:String = str(note[3]) if note.size() > 3 else ''
-	#		if type == 'true': type = 'alt'
-			
-	#		var to_add = [round(time), n_data, is_sustain, sustain_length, must_hit, type]
-	#		if !_notes.has(to_add): # skip adding a note that exists
-	#			_notes.append(to_add)
-	#		_notes.sort_custom(func(a, b): return a[0] < b[0])
-			
-	chart_notes = _notes
+	var _notes = chart.load_chart(data, parse_type, get_diff) # get diff here only matters for base game as of now
+	if keep_loaded:
+		chart_notes = _notes
+		
 	return _notes
 
 func get_events(song:String = '') -> Array[EventNote]:
@@ -141,7 +115,11 @@ func get_events(song:String = '') -> Array[EventNote]:
 	
 	if FileAccess.file_exists(path_to_check): # then check if there is a event json
 		print(path_to_check)
-		var json = JSON.parse_string(FileAccess.open(path_to_check, FileAccess.READ).get_as_text()).song
+		
+		var json = JSON.parse_string(FileAccess.open(path_to_check, FileAccess.READ).get_as_text())
+		if json.has('song'): json = json.song
+		if json.has('events'): return events #json = json.events
+		
 		if json.has('notes') and json.notes.size() > 0: # if events are a -1 note
 			for sec in json.notes:
 				for note in sec.sectionNotes:

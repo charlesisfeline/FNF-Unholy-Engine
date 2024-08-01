@@ -37,7 +37,7 @@ func make_rating(rate:String = 'sick') -> VelocitySprite:
 	var rating = VelocitySprite.new()
 	rating.position = rating_pos
 	rating.texture = style.rating_skin
-	rating.hframes = ratings_data.name.size()
+	rating.vframes = ratings_data.name.size()
 	rating.frame = ratings_data.name.find(rate.to_lower())
 	
 	rating.moving = true

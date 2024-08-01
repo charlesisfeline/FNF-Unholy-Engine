@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=3 uid="uid://1ug712tid640"]
 
 [ext_resource type="Script" path="res://game/scenes/menus/Freeplay.gd" id="1_xub5q"]
-[ext_resource type="Texture2D" uid="uid://bph4x7dl8bvv" path="res://assets/images/menuDesat.png" id="2_j3wpw"]
-[ext_resource type="FontFile" uid="uid://csunsdevou3rf" path="res://assets/fonts/vcr.ttf" id="3_vuq8a"]
+[ext_resource type="Texture2D" uid="uid://cpmw74f4madb6" path="res://assets/images/menuDesat.png" id="2_j3wpw"]
+[ext_resource type="FontFile" uid="uid://dnssbi7hjccim" path="res://assets/fonts/vcr.ttf" id="3_vuq8a"]
 
 [node name="Freeplay" type="Node2D"]
 script = ExtResource("1_xub5q")

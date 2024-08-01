@@ -60,8 +60,10 @@ func _ready():
 			SONG.player1 = 'bf-girl'
 
 	Conductor.load_song(SONG.song)
+	Conductor.bpm = SONG.bpm
 	Conductor.paused = false
 	cur_speed = SONG.speed
+	
 	if SONG.has('stage'):
 		cur_stage = SONG.stage.to_lower().replace(' ', '-')
 	else:
@@ -75,9 +77,7 @@ func _ready():
 			'senpai', 'roses': cur_stage = 'school'
 			'thorns': cur_stage = 'school-evil'
 			'ugh', 'guns', 'stress': cur_stage = 'tank'
-			
-	Conductor.bpm = SONG.bpm
-	
+
 	var to_load = 'stage'
 	if FileAccess.file_exists('res://game/scenes/stages/'+ cur_stage +'.tscn'):
 		to_load = cur_stage
@@ -106,8 +106,16 @@ func _ready():
 		SONG.gfVersion = SONG.players[2]
 		
 	var add:Callable = stage.get_node('CharGroup').add_child if stage.has_node('CharGroup') else add_child
+	#var spec = load('res://game/objects/show_spectrum.tscn').instantiate()
+	#add.call(spec)
+	
 	gf = Character.new(stage.gf_pos, gf_ver if gf_ver != null else 'gf')
 	add.call(gf)
+	
+	#spec.position = gf.position + Vector2(10, 0)
+	
+	if gf.cur_char.to_lower() == 'pico-speaker' and cur_stage.contains('tank'):
+		stage.init_tankmen()
 	
 	dad = Character.new(stage.dad_pos, SONG.player2)
 	add.call(dad)
@@ -122,7 +130,7 @@ func _ready():
 	ui.icon_p1.change_icon(boyfriend.icon, true)
 	ui.icon_p2.change_icon(dad.icon)
 	
-	ui.characters = [boyfriend, dad, gf]
+	characters = [boyfriend, dad, gf]
 	ui.player_group.singer = boyfriend
 	ui.opponent_group.singer = dad
 	
@@ -157,13 +165,26 @@ func _ready():
 		
 	start_time = chart_notes[0][0]
 	events = JsonHandler.song_events.duplicate()
-	print(events.size())
+	print('TOTAL EVENTS: '+ str(events.size()))
 	
 	#await thread.wait_to_finish()
+	ui.countdown_start.connect(countdown_start)
+	ui.countdown_tick.connect(countdown_tick)
+	ui.song_start.connect(song_start)
 	ui.start_countdown(true)
-
 	section_hit(0) #just for 1st section stuff
 
+func countdown_start():
+	print('start')
+func countdown_tick(tick) -> void:
+	for i in characters:
+		if tick % i.dance_beat == 0 and !i.animation.begins_with('sing'):
+			i.dance()
+	ui.icon_p1.bump()
+	ui.icon_p2.bump()
+	
+func song_start():
+	print('lets gettitt')
 var section_data
 var chunk:int = 0
 func _process(delta):
@@ -196,8 +217,7 @@ func _process(delta):
 			if chart_notes[chunk][0] - Conductor.song_pos > spawn_time / cur_speed:
 				break
 			
-			var note_info = NoteData.new(chart_notes[chunk])
-			var new_note:Note = Note.new(note_info)
+			var new_note:Note = Note.new(NoteData.new(chart_notes[chunk]))
 			new_note.speed = cur_speed
 			notes.append(new_note)
 
@@ -212,7 +232,7 @@ func _process(delta):
 			notes.sort_custom(func(a, b): return a.strum_time < b.strum_time)
 			chunk += 1
 
-	if notes.size() != 0:
+	if !notes.is_empty():
 		for note in notes:
 			if note.spawned:
 				note.follow_song_pos(ui.player_strums[note.dir] if note.must_press else ui.opponent_strums[note.dir])
@@ -235,7 +255,10 @@ func _process(delta):
 						if auto_play and note.strum_time <= Conductor.song_pos and note.should_hit:
 							good_note_hit(note)
 						if !auto_play and note.strum_time < Conductor.song_pos - (300 / note.speed) and !note.was_good_hit:
-							note_miss(note)
+							if note.should_hit:
+								note_miss(note)
+							else:
+								kill_note(note)
 					else:
 						if note.was_good_hit:
 							opponent_note_hit(note)
@@ -243,10 +266,10 @@ func _process(delta):
 		for event in events:
 			if event.strum_time <= Conductor.song_pos:
 				event_hit(event)
-				events.remove_at(0)
+				events.pop_front()
 
 func beat_hit(beat) -> void:
-	for i in ui.characters:
+	for i in characters:
 		if !i.animation.contains('sing') and beat % i.dance_beat == 0:
 			i.dance()
 		
@@ -390,7 +413,11 @@ func event_hit(event:EventNote) -> void:
 
 func good_note_hit(note:Note) -> void:
 	if note.type.length() > 0: print(note.type, ' bf')
-
+	if !note.should_hit:
+		note_miss(note)
+		return
+		
+	#Conductor.playback = 0.75
 	if Conductor.vocals.stream != null: 
 		Conductor.vocals.volume_db = linear_to_db(1)
 		
@@ -418,7 +445,6 @@ func good_note_hit(note:Note) -> void:
 	kill_note(note)
 	if Prefs.hitsound_volume != 0:
 		Audio.play_sound('hitsound', Prefs.hitsound_volume / 100.0)
-
 
 var time_dropped:float = 0
 func good_sustain_press(sustain:Note, delt:float = 0.0) -> void:
@@ -466,28 +492,29 @@ func opponent_sustain_press(sustain:Note) -> void:
 
 var grace:bool = true
 func note_miss(note:Note) -> void:
-	if note.should_hit:
-		ui.player_group.note_miss(note)
-		misses += 1
-		ui.hit_count['miss'] = misses
-		score -= floor(note.length * 2) if note.is_sustain else int(30 + (15 * floor(misses / 3)))
-		#print(int(30 + (15 * floor(misses / 3))))
-		ui.total_hit += 1
-		
-		var hp_diff = ((note.length / 30) if note.is_sustain else 4.7)
-		if note.is_sustain and grace and ui.hp - hp_diff <= 0: # big ass sustains wont kill you instantly
-			grace = false
-			hp_diff = ui.hp - 0.1
+	ui.player_group.note_miss(note)
+	Audio.play_sound('missnote'+ str(randi_range(1, 3)), 0.3)
+	
+	misses += 1
+	ui.hit_count['miss'] = misses
+	score -= floor(note.length * 2) if note.is_sustain else int(30 + (15 * floor(misses / 3)))
+	#print(int(30 + (15 * floor(misses / 3))))
+	ui.total_hit += 1
+	
+	var hp_diff = ((note.length / 30.0) if note.is_sustain else 4.7)
+	if note.is_sustain and grace and ui.hp - hp_diff <= 0: # big ass sustains wont kill you instantly
+		grace = false
+		hp_diff = ui.hp - 0.1
 			
-		ui.hp -= hp_diff 
+	ui.hp -= hp_diff 
 	
-		if combo >= 5: pop_up_combo('', '000', true)
+	if combo >= 5: pop_up_combo('', '000', true)
 		
-		combo = 0
+	combo = 0
 	
-		if Conductor.vocals != null:
-			Conductor.vocals.volume_db = linear_to_db(0)
-		ui.update_score_txt()
+	if Conductor.vocals != null:
+		Conductor.vocals.volume_db = linear_to_db(0)
+	ui.update_score_txt()
 	#if !note.sustain: 
 	kill_note(note)
 	
@@ -500,7 +527,7 @@ func pop_up_combo(rating:String = 'sick', combo = -1, is_miss:bool = false) -> v
 			var new_rating = Judge.make_rating(rating)
 			cam.call(new_rating)
 	
-			if new_rating != null: # opening chart editor at the wrong time would fuck it	
+			if new_rating != null: # opening chart editor at the wrong time would fuck it
 				var r_tween = create_tween()
 				r_tween.tween_property(new_rating, "modulate:a", 0, 0.2).set_delay(Conductor.crochet * 0.001)
 				r_tween.finished.connect(new_rating.queue_free)
@@ -516,7 +543,7 @@ func pop_up_combo(rating:String = 'sick', combo = -1, is_miss:bool = false) -> v
 					n_tween.finished.connect(num.queue_free)
 	
 func kill_note(note:Note) -> void:
-	if note != null:
+	if notes.find(note) != -1:
 		note.spawned = false
 		notes.remove_at(notes.find(note))
 		note.queue_free()

@@ -120,7 +120,9 @@ func finish_intro() -> void:
 		
 	if Audio.Player.stream == null: #or Audio.volume < 0.7:
 		Audio.play_music('freakyMenu', true, 0.7)
-		#Audio.Player.seek(10) # skip it to the good part,,,
+	elif Audio.volume < 0.7:
+		Audio.volume = 0.7
+	#Audio.Player.seek(10) # skip it to the good part,,,
 		
 	flash.color = Color.WHITE
 	create_tween().tween_property(flash, 'modulate:a', 0, 4)

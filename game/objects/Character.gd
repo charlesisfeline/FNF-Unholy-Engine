@@ -1,6 +1,10 @@
 class_name Character; extends AnimatedSprite2D;
 
 var json
+var chart:Array
+var anim_data:Dictionary = {
+	offsets = {}, frames = {}
+}
 var offsets:Dictionary = {}
 var focus_offsets:Vector2 = Vector2.ZERO # cam offset type shit
 var cur_char:String = ''
@@ -9,8 +13,9 @@ var death_char:String = 'bf-dead'
 
 var idle_suffix:String = ''
 var forced_suffix:String = '' # if set, every anim will use it
-var is_player:bool = false
 var can_dance:bool = true
+var is_player:bool = false
+var looping:bool = false
 var dance_idle:bool = false
 var danced:bool = false
 var dance_beat:int = 2 # dance every %dance_beat%
@@ -72,6 +77,7 @@ func load_char(new_char:String = 'bf') -> void:
 	offsets.clear()
 	for anim in json.animations:
 		offsets[anim.anim] = [-anim.offsets[0], -anim.offsets[1]]
+		
 	
 	icon = json.healthicon
 	scale = Vector2(json.scale, json.scale)
@@ -83,7 +89,14 @@ func load_char(new_char:String = 'bf') -> void:
 	
 	dance_idle = offsets.has('danceLeft') and offsets.has('danceRight')
 	if dance_idle: dance_beat = 1
-	if cur_char == 'senpai-angry': forced_suffix = '-alt' # boooo
+	match(cur_char):
+		'senpai-angry':
+			forced_suffix = '-alt' # boooo
+		'pico-speaker':
+			can_dance = false
+			sing_anims = ['shootLeft', 'shootLeft', 'shootRight', 'shootRight']
+			play_anim('shootRight1')
+			frame = sprite_frames.get_frame_count('shootRight1') - 4
 	
 	dance()
 	set_stuff()
@@ -95,8 +108,6 @@ func load_char(new_char:String = 'bf') -> void:
 		focus_offsets.x -= width / 2
 		if sing_anims[0] == 'singLEFT':
 			swap_sing('singLEFT', 'singRIGHT')
-	elif true:
-		pass 
 		
 	print('loaded '+ cur_char)
 	
@@ -122,9 +133,27 @@ func _process(delta):
 			hold_timer += delta
 			if hold_timer >= Conductor.step_crochet * (0.0011 * sing_duration) and can_dance:
 				dance()
+	
+	if offsets.has(animation +'-loop') and frame == sprite_frames.get_frame_count(animation) - 1:
+		frame = sprite_frames.get_frame_count(animation) - 4
+		looping = true
+			
+	if chart != null and !chart.is_empty():
+		for i in chart: # [0] = strum time, [1] = direction, [2] = is sustain, [3] = length
+			if i[2]:
+				if i[0] <= Conductor.song_pos and i[0] + i[3] > Conductor.song_pos:
+					sing(i[1], '', false)
+				if Conductor.song_pos > i[0] + i[3]: # sustain should be finished
+					chart.remove_at(chart.find(i))
+			else:
+				if i[0] <= Conductor.song_pos:
+					var suff:String = str(randi_range(1, 2))
+					sing(i[1], suff)
+					chart.remove_at(chart.find(i))
 
 func dance(forced:bool = false) -> void:
-	if special_anim: return
+	if special_anim or !can_dance: return
+	if looping: forced = true
 	var idle:String = 'idle'
 	if dance_idle:
 		danced = !danced
@@ -155,7 +184,8 @@ func play_anim(anim:String, forced:bool = false) -> void:
 	if !has_anim(anim): 
 		printerr(anim +' doesnt exist on '+ cur_char)
 		return
-		
+	
+	looping = false
 	special_anim = false
 	if forced: frame = 0
 	play(anim)

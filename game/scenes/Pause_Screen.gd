@@ -1,15 +1,17 @@
 extends Node2D
 
-@export var option_list:Array[String] = ['Resume', 'Restart Song', 'Options', 'Exit To Menu']
+var this = Game.scene
+@export var option_list:Array[String] = ['Resume', 'Restart Song', 'Change Difficulty', 'Options', 'Exit To Menu']
 var options = []
 var cur_option:int = 0
+var in_diff:bool = false
 
+var diffs = JsonHandler.song_diffs
 var break_text = [
 	'Havin a snack break', 'Stop fucking pinging me', 'Oop I fell down the stairs', 
 	'Damn, I can\'t funk like this', 'Time to touch some grass', 'Shittin rn keep it down'
 ]
 func _ready():
-	var this = Game.scene
 	Discord.change_presence('Paused '+ this.SONG.song.capitalize() +' - '+ JsonHandler.get_diff.to_upper(), break_text.pick_random())
 	Conductor.paused = true
 	
@@ -35,16 +37,13 @@ func _ready():
 	$BG.modulate.a = 0
 	var twen = create_tween()
 	twen.tween_property($BG, 'modulate:a', 0.6, 0.4).set_trans(Tween.TRANS_CIRC).set_ease(Tween.EASE_OUT)
+	if diffs.size() == 1: option_list.remove_at(2)
 	for i in option_list.size():
-		var option = Alphabet.new(option_list[i])
-		option.is_menu = true
-		option.target_y = i
-		options.append(option)
-		add_child(option)
+		make_option(option_list[i], i)
+		
 	#options = [$Option1, $Option2, $Option3]
 	change_selection()
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
 	if Input.is_action_just_pressed('menu_up'):
 		change_selection(-1)
@@ -52,22 +51,40 @@ func _process(_delta):
 		change_selection(1)
 		
 	if Input.is_action_just_pressed('accept'):
-		match option_list[cur_option]:
-			'Resume':
-				close()
-				Conductor.paused = false
-				get_tree().paused = false
-			'Restart Song':
-				close()
-				Conductor.reset()
-				Game.reset_scene()
-			'Exit To Menu':
-				close()
-				Conductor.reset()
-				Game.switch_scene('menus/freeplay')
-				Discord.change_presence('Maining some Menus', 'In Freeplay')
-			_: 
-				Audio.play_sound('cancelMenu')
+		if in_diff:
+			var choice = options[cur_option].text
+			if diffs.has(choice.to_lower()):
+				var path = 'res://assets/songs/'+ Game.format_str(this.SONG.song) +'/charts/' 
+				if FileAccess.open(path + choice +'.json', FileAccess.READ):
+					JsonHandler.parse_song(this.SONG.song, choice, true)
+					close()
+					Conductor.reset()
+					Game.reset_scene()
+				else:
+					Audio.play_sound('cancelMenu')
+			else:
+				in_diff = false
+				toggle_diff_select(false)
+		else:
+			match option_list[cur_option]:
+				'Resume':
+					close()
+					Conductor.paused = false
+					get_tree().paused = false
+				'Restart Song':
+					close()
+					Conductor.reset()
+					Game.reset_scene()
+				'Change Difficulty':
+					in_diff = true
+					toggle_diff_select(true)
+				'Exit To Menu':
+					close()
+					Conductor.reset()
+					Game.switch_scene('menus/freeplay')
+					Discord.change_presence('Maining some Menus', 'In Freeplay')
+				_: 
+					Audio.play_sound('cancelMenu')
 
 func change_selection(amount:int = 0) -> void:
 	Audio.play_sound('scrollMenu')
@@ -81,3 +98,34 @@ func close() -> void:
 	queue_free()
 	get_tree().paused = false
 
+var hold_this = []
+func toggle_diff_select(show:bool = true):
+	if diffs.size() == 1: return # this shouldnt happen
+	cur_option = 0 if show else 2
+	if show:
+		while options.size() != 0:
+			remove_child(options[0])
+			options[0].queue_free()
+			options.remove_at(0)
+		
+		for i in diffs.size():
+			make_option(diffs[i], i)
+		make_option('Back', options.size())
+	
+	else:
+		while options.size() != 0:
+			remove_child(options[0])
+			options[0].queue_free()
+			options.remove_at(0)
+			
+		for i in option_list.size():
+			make_option(option_list[i], i)
+		
+	change_selection()
+
+func make_option(text:String, t_y:int = -1):
+	var option = Alphabet.new(text)
+	option.is_menu = true
+	option.target_y = t_y
+	options.append(option)
+	add_child(option)

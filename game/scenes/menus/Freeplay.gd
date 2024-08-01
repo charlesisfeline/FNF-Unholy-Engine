@@ -142,6 +142,7 @@ func _unhandled_key_input(event):
 		Conductor.reset()
 		if last_loaded.song != songs[cur_song].text or last_loaded.diff != diff_str:
 			JsonHandler.parse_song(songs[cur_song].text, diff_str, true)
+		JsonHandler.song_diffs = songs[cur_song].diff_list
 		Game.switch_scene('play_scene')
 	
 func update_save() -> void: # update the file with any new songs/difficulties

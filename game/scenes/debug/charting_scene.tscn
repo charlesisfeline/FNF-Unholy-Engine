@@ -1,10 +1,10 @@
 [gd_scene load_steps=8 format=3 uid="uid://deksi37bicvb3"]
 
 [ext_resource type="Script" path="res://game/scenes/debug/Charting_Scene.gd" id="1_li1ut"]
-[ext_resource type="Texture2D" uid="uid://dgbcc7lfrqbk1" path="res://assets/images/menuDark.png" id="2_g7jes"]
+[ext_resource type="Texture2D" uid="uid://c2r5ulxx1lb0t" path="res://assets/images/menuDark.png" id="2_g7jes"]
 [ext_resource type="PackedScene" uid="uid://cj2ryjlbhxh8b" path="res://game/objects/ui/strum_line.tscn" id="3_0lda8"]
-[ext_resource type="Texture2D" uid="uid://byiwlygk8hm51" path="res://assets/images/icons/icon-face.png" id="4_eiw7n"]
-[ext_resource type="FontFile" uid="uid://csunsdevou3rf" path="res://assets/fonts/vcr.ttf" id="5_85d4d"]
+[ext_resource type="Texture2D" uid="uid://cu42tcwatrxkv" path="res://assets/images/icons/icon-face.png" id="4_eiw7n"]
+[ext_resource type="FontFile" uid="uid://dnssbi7hjccim" path="res://assets/fonts/vcr.ttf" id="5_85d4d"]
 [ext_resource type="Script" path="res://game/objects/ui/Icon.gd" id="5_hdump"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_omfdg"]

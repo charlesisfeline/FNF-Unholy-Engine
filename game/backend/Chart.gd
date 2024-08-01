@@ -1,16 +1,26 @@
 class_name Chart; extends Node2D;
-# makes a chart from a stated json, and sends it to JsonHandler chart_notes and song_events
+# makes a chart from a json
 
-static var _notes:Array = []
-static func load(data, chart_type:String = 'psych', diff:String = 'normal'):
+var return_notes:Array = []
+func load_chart(data, chart_type:String = 'psych', diff:String = 'normal'):
 	if data == null: return []
-	_notes.clear()
+	return_notes.clear()
 	match chart_type:
 		'old_base', 'psych': return load_common(data)
 		'base': return load_base(data, diff)
-
+		
+# for loading a chart that isnt named a difficulty
+# used for pico speaker
+func load_named_chart(song_name:String, chart_name:String = ''):
+	var path:String = 'res://assets/songs/%s/charts/%s' % [Game.format_str(song_name), chart_name]
+	print(path)
+	if FileAccess.file_exists(path +'.json'):
+		var json = JSON.parse_string(FileAccess.open(path +'.json', FileAccess.READ).get_as_text())
+		return load_chart(json.song)
+	return
+	
 # old base game/psych
-static func load_common(data) -> Array:
+func load_common(data) -> Array:
 	for sec in data.notes:
 		for note in sec.sectionNotes:
 			var time:float = maxf(0, note[0])
@@ -23,13 +33,14 @@ static func load_common(data) -> Array:
 			if type == 'true': type = 'alt'
 			
 			var to_add = [round(time), n_data, is_sustain, sustain_length, must_hit, type]
-			if !_notes.has(to_add): # skip adding a note that exists
-				_notes.append(to_add)
-			_notes.sort_custom(func(a, b): return a[0] < b[0])
+			if !return_notes.has(to_add): # skip adding a note that exists
+				return_notes.append(to_add)
+			return_notes.sort_custom(func(a, b): return a[0] < b[0])
 			
-	return _notes
+	return return_notes
 
-static func load_base(data, diff:String = 'normal') -> Array:
+# new base game
+func load_base(data, diff:String = 'normal') -> Array:
 	#print(data.notes['normal'])
 	for note in data.notes[diff]:
 		var time:float = maxf(0, note.t)
@@ -38,11 +49,11 @@ static func load_base(data, diff:String = 'normal') -> Array:
 		if type == 'true': type = 'alt'
 			
 		var to_add = [round(time), int(note.d), sustain_length > 0, sustain_length, note.d <= 3, type]
-		if !_notes.has(to_add): # skip adding a note that exists
-			_notes.append(to_add)
-		_notes.sort_custom(func(a, b): return a[0] < b[0])
+		if !return_notes.has(to_add): # skip adding a note that exists
+			return_notes.append(to_add)
+		return_notes.sort_custom(func(a, b): return a[0] < b[0])
 	
-	return _notes
+	return return_notes
 
 func get_events(song:String = '') -> Array[EventNote]:
 	var path_to_check = 'res://assets/songs/%s/events.json' % [song]

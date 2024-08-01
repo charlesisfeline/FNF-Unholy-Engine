@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://dxy77bbkqx0q7"]
 
 [ext_resource type="Script" path="res://game/scenes/Pause_Screen.gd" id="1_uqd13"]
-[ext_resource type="FontFile" uid="uid://csunsdevou3rf" path="res://assets/fonts/vcr.ttf" id="2_cv0fx"]
+[ext_resource type="FontFile" uid="uid://dnssbi7hjccim" path="res://assets/fonts/vcr.ttf" id="2_cv0fx"]
 
 [node name="Pause_Screen" type="Node2D"]
 process_mode = 3
@@ -25,7 +25,7 @@ text = "Tutorial"
 horizontal_alignment = 2
 
 [node name="Diff" type="Label" parent="."]
-offset_left = 1025.0
+offset_left = 972.0
 offset_top = 45.0
 offset_right = 1272.0
 offset_bottom = 74.0
@@ -35,7 +35,7 @@ text = "HARD"
 horizontal_alignment = 2
 
 [node name="Time" type="Label" parent="."]
-offset_left = 1063.0
+offset_left = 972.0
 offset_top = 77.0
 offset_right = 1272.0
 offset_bottom = 106.0
@@ -45,7 +45,7 @@ text = "0:00 / 1:00"
 horizontal_alignment = 2
 
 [node name="Balled" type="Label" parent="."]
-offset_left = 1025.0
+offset_left = 972.0
 offset_top = 108.0
 offset_right = 1272.0
 offset_bottom = 137.0

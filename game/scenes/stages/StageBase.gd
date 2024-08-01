@@ -4,6 +4,9 @@ class_name StageBase extends Node2D
 var default_zoom:float = 0.8
 var cam_speed:float = 4
 
+var SONG:
+	get: return Game.scene.SONG
+
 var beat:int:
 	get: return Conductor.cur_beat
 var step:int:
@@ -28,5 +31,3 @@ var gf_pos:Vector2 = Vector2(450, 70)
 var bf_cam_offset:Vector2 = Vector2(0, 0)
 var dad_cam_offset:Vector2 = Vector2(0, 0)
 var gf_cam_offset:Vector2 = Vector2(0, 0)
-
-func _ready(): pass

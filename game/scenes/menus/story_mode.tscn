@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://w7qtrprfa54m"]
 
 [ext_resource type="Script" path="res://game/scenes/menus/Story_Mode.gd" id="1_3ouuw"]
-[ext_resource type="FontFile" uid="uid://csunsdevou3rf" path="res://assets/fonts/vcr.ttf" id="1_bbas5"]
+[ext_resource type="FontFile" uid="uid://dnssbi7hjccim" path="res://assets/fonts/vcr.ttf" id="1_bbas5"]
 
 [node name="Story_Mode" type="Node2D"]
 script = ExtResource("1_3ouuw")

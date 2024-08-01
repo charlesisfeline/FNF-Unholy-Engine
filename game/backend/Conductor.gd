@@ -20,6 +20,10 @@ var song_pos:float = 0.0:
 			song_started = false
 			for_all_audio('stop')
 
+var playback:float = 1.0:
+	get: return AudioServer.playback_speed_scale
+	set(new): AudioServer.playback_speed_scale = new
+	
 #var offset:float = 0
 var safe_zone:float = 166.0
 var song_length:float = 5000.0
@@ -82,7 +86,7 @@ func load_song(song:String = '') -> void:
 func _process(delta):
 	if paused: return
 	if song_loaded:
-		song_pos += (1000 * delta)
+		song_pos += (1000 * delta) * playback #AudioServer.get_time_since_last_mix()
 	
 	if song_pos > 0:
 		if !song_started: 

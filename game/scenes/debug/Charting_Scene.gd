@@ -34,16 +34,15 @@ var next_notes:Array = []
 # TODO
 # add events
 
-var def_order = [ # fuck you!!
+var exist_chars = DirAccess.get_files_at('res://assets/data/characters')
+var char_list = [ # fuck you!!
 	'bf', 'bf-car', 'bf-christmas', 'bf-pixel', 'bf-holding-gf', 'bf-pixel-opponent', 
 	'bf-dead', 'bf-pixel-dead', 'bf-holding-gf-dead',
 	'gf', 'gf-car', 'gf-christmas', 'gf-pixel', 'gf-tankmen', 
-	'dad', 'spooky', 'monster', 'pico', 'mom', 'mom-car', 
+	'dad', 'spooky', 'monster', 'pico', 'mom', 'mom-car', 'darnell', 'nene',
 	'parents-christmas', 'monster-christmas', 
 	'senpai', 'senpai-angry', 'spirit', 'tankman', 'pico-speaker'
 ]
-
-var exist_chars = DirAccess.get_files_at('res://assets/data/characters')
 
 var SONG
 func _ready():
@@ -58,20 +57,16 @@ func _ready():
 	#JsonHandler.old_notes = JsonHandler.chart_notes.duplicate()
 	Conductor.load_song(SONG.song)
 	Conductor.bpm = SONG.bpm
+	Conductor.paused = true
 	
-	if Conductor.vocals_opp.stream == null:
-		tab('Chart', 'VoicesOpp').button_pressed = false
-		tab('Chart', 'VoicesOpp').disabled = true
-		tab('Chart', 'VoicesOpp/Vol').editable = false
-		tab('Chart', 'VoicesOpp').modulate = Color.DIM_GRAY
-		tab('Chart', 'VoicesOpp/Vol').modulate = Color.DIM_GRAY
-		
-	if Conductor.vocals.stream == null:
-		tab('Chart', 'Voices').button_pressed = false
-		tab('Chart', 'Voices').disabled = true
-		tab('Chart', 'Voices/Vol').editable = false
-		tab('Chart', 'Voices').modulate = Color.DIM_GRAY
-		tab('Chart', 'Voices/Vol').modulate = Color.DIM_GRAY
+	var voices = [Conductor.vocals, Conductor.vocals_opp, 'Voices', 'VoicesOpp']
+	for i in 2:
+		if voices[i].stream == null:
+			tab('Chart', voices[i + 2]).button_pressed = false
+			tab('Chart', voices[i + 2]).disabled = true
+			tab('Chart', voices[i + 2]).modulate = Color.DIM_GRAY
+			tab('Chart', voices[i + 2] +'/Vol').editable = false
+			tab('Chart', voices[i + 2] +'/Vol').modulate = Color.DIM_GRAY
 		
 	tab('Song', 'BPM').value = SONG.bpm
 	tab('Song', 'Song').text = SONG.song
@@ -88,24 +83,26 @@ func _ready():
 	$StrumLine/IconL.position.x = OFF + 135 #idk if this is centered but fuck you
 	$StrumLine/IconR.position.x = OFF + 290
 	
-	for char in def_order: 
-		tab('Song', 'Player1').add_item(char)
-		tab('Song', 'Player2').add_item(char)
-		tab('Song', 'GF').add_item(char)
+	exist_chars.push_back(SONG.player1)
+	exist_chars.push_back(SONG.player2)
+	
+	var realgf = 'gf'
+	if SONG.has('gfVersion') or SONG.has('player3'):
+		realgf = SONG.gfVersion if SONG.has('gfVersion') else SONG.player3
+		exist_chars.push_back(realgf)
 		
 	for char in exist_chars:
 		char = char.replace('.json', '')
-		if def_order.has(char): continue
-		def_order.insert(def_order.size() - 1, char)
+		if char_list.has(char): continue
+		char_list.push_back(char)
+	
+	for char in char_list:
 		tab('Song', 'Player1').add_item(char)
 		tab('Song', 'Player2').add_item(char)
 		tab('Song', 'GF').add_item(char)
 	
 	set_dropdown(tab('Song', 'Player1'), SONG.player1)
 	set_dropdown(tab('Song', 'Player2'), SONG.player2)
-	var realgf = 'gf'
-	if SONG.has('gfVersion') or SONG.has('player3'):
-		realgf = SONG.gfVersion if SONG.has('gfVersion') else SONG.player3
 	set_dropdown(tab('Song', 'GF'), realgf)
 	
 	var chars = [JsonHandler.get_character(SONG.player2), JsonHandler.get_character(SONG.player1)]
@@ -151,7 +148,7 @@ var holding_shift:bool = false
 var over_grid:bool = false
 
 func _process(delta):
-	$StrumLine/TimeTxt.text = str(floor(Conductor.song_pos))
+	$StrumLine/TimeTxt.text = str(floor(Conductor.song_pos)) +'\n('+ str(Game.to_time(Conductor.song_pos)) +')'
 	var strum_y = round(get_y_from_time(fmod(Conductor.song_pos - get_section_time(), Conductor.step_crochet * 16.0)))
 	$StrumLine.position.y = strum_y
 	
@@ -285,7 +282,7 @@ func load_section(section:int = 0, force_time:bool = false) -> void:
 	if sec.has('altAnim'):
 		tab('Section', 'AltAnim').button_pressed = sec.altAnim or false
 	if sec.has('changeBPM'):
-		tab('Section', 'ChangeBPM').button_pressed = sec.changeBPM
+		tab('Section', 'ChangeBPM').button_pressed = sec.changeBPM if sec.changeBPM != null else false
 		tab('Section', 'NewBPM').value = sec.bpm
 	else:
 		tab('Section', 'ChangeBPM').button_pressed = false
@@ -349,9 +346,13 @@ func _input(event): # this is better
 		if Input.is_key_pressed(KEY_ENTER):
 			Conductor.reset_beats()
 			Conductor.paused = true
-			SONG.player1 = def_order[wrap(tab('Song', 'Player1').selected, 0, def_order.size())]
-			SONG.player2 = def_order[wrap(tab('Song', 'Player2').selected, 0, def_order.size())]
-			SONG.gfVersion = def_order[wrap(tab('Song', 'GF').selected, 0, def_order.size())]
+			if char_list.size() - 1 >= tab('Song', 'Player1').selected:
+				SONG.player1 = char_list[tab('Song', 'Player1').selected]
+			if char_list.size() - 1 >= tab('Song', 'Player2').selected:
+				SONG.player2 = char_list[tab('Song', 'Player2').selected]
+			if char_list.size() - 1 >= tab('Song', 'GF').selected:
+				SONG.gfVersion = char_list[tab('Song', 'GF').selected]
+	
 			
 			SONG.bpm = tab('Song', 'BPM').value
 			SONG.speed = tab('Song', 'Speed').value

@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://btb8naqubifyk"]
 
-[ext_resource type="Texture2D" uid="uid://ro2akpnhksc5" path="res://assets/images/ui/healthBar.png" id="1_0xbv1"]
+[ext_resource type="Texture2D" uid="uid://bucpj5qhydegy" path="res://assets/images/ui/healthBar.png" id="1_0xbv1"]
 [ext_resource type="Script" path="res://game/objects/ui/Health_Bar.gd" id="1_5oe4u"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8eeax"]
