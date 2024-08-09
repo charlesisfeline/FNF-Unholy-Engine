@@ -4,7 +4,7 @@ extends Node2D
 
 var weeks:Array[Sprite2D] = []
 func _ready():
-	for i in order: weeks.append(i.strip_edges())
+	#for i in order: weeks.append(i.strip_edges())
 	
 	#for file in order: # base songs first~
 		#var week_file = JsonHandler.parse_week(file)

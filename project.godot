@@ -18,10 +18,10 @@ config/icon="res://icon.png"
 [autoload]
 
 Prefs="*res://game/backend/Prefs.gd"
+Audio="*res://game/backend/Audio.gd"
 Game="*res://game/Game.gd"
 Conductor="*res://game/backend/Conductor.gd"
 DebugInfo="*res://game/debug_info.tscn"
-Audio="*res://game/backend/Audio.gd"
 JsonHandler="*res://game/backend/JsonHandler.gd"
 Discord="*res://game/backend/Discord.gd"
 

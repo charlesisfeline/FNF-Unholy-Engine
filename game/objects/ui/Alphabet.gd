@@ -1,15 +1,15 @@
 class_name Alphabet; extends Control;
 
-var all_letters:Array = []
-var width:float = 0
-var height:float = 0
+var all_letters:Array[Letter] = []
+var width:float = 0.0
+var height:float = 0.0
 var spaces:int = 0
 var rows:int = 0
 
 var x_diff:int = 45
 var y_diff:int = 65
 @export var bold:bool = false
-var text:String = '':
+@export var text:String = '':
 	set(new_txt):
 		while all_letters.size() > 0:
 			all_letters[0].queue_free()
@@ -19,7 +19,7 @@ var text:String = '':
 		if bold: text = text.to_lower() #picky lil bitch
 		make_text(text)
 
-var is_menu:bool = false
+@export var is_menu:bool = false
 var lock = Vector2(-1, -1)
 var target_y:int = 0
 var spacing:int = 150

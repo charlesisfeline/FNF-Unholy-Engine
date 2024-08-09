@@ -1,9 +1,9 @@
 class_name Strum; extends AnimatedSprite2D;
 
-var style:String = 'default'
 const DIRECTION:Array[String] = ['left', 'down', 'up', 'right']
+@export var style:String = 'default'
 
-var dir:int = 0:
+@export var dir:int = 0:
 	set(new_dir): 
 		dir = new_dir
 		play_anim('static')

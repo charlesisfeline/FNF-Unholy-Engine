@@ -11,7 +11,7 @@ func _ready():
 func _process(delta):
 	pass
 
-func beat_hit():
+func beat_hit(beat:int):
 	for i in [$UpperBop/Sprite, $BottomBop, $Santa]:
 		i.play()
 		i.frame = 0

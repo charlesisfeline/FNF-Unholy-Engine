@@ -62,6 +62,7 @@ func _ready():
 	Conductor.load_song(SONG.song)
 	Conductor.bpm = SONG.bpm
 	Conductor.paused = false
+	Conductor.connect_signals()
 	cur_speed = SONG.speed
 	
 	if SONG.has('stage'):
@@ -171,20 +172,13 @@ func _ready():
 	ui.countdown_start.connect(countdown_start)
 	ui.countdown_tick.connect(countdown_tick)
 	ui.song_start.connect(song_start)
+	
+	Conductor.beat_hit.connect(stage.beat_hit)
+	
+	
 	ui.start_countdown(true)
 	section_hit(0) #just for 1st section stuff
-
-func countdown_start():
-	print('start')
-func countdown_tick(tick) -> void:
-	for i in characters:
-		if tick % i.dance_beat == 0 and !i.animation.begins_with('sing'):
-			i.dance()
-	ui.icon_p1.bump()
-	ui.icon_p2.bump()
 	
-func song_start():
-	print('lets gettitt')
 var section_data
 var chunk:int = 0
 func _process(delta):
@@ -268,6 +262,17 @@ func _process(delta):
 				event_hit(event)
 				events.pop_front()
 
+func countdown_start() -> void: pass
+
+func countdown_tick(tick) -> void:
+	for i in characters:
+		if tick % i.dance_beat == 0 and !i.animation.begins_with('sing'):
+			i.dance()
+	ui.icon_p1.bump()
+	ui.icon_p2.bump()
+	
+func song_start() -> void: pass
+
 func beat_hit(beat) -> void:
 	for i in characters:
 		if !i.animation.contains('sing') and beat % i.dance_beat == 0:
@@ -275,10 +280,8 @@ func beat_hit(beat) -> void:
 		
 	ui.icon_p1.bump()
 	ui.icon_p2.bump()
-	if stage.has_method('beat_hit'):
-		stage.call('beat_hit')
 
-func step_hit(_step) -> void: pass
+func step_hit(step) -> void: pass
 
 func section_hit(section) -> void:
 	ui.zoom += 0.04
@@ -321,6 +324,7 @@ func key_press(key:int = 0) -> void:
 					kill_note(funny)
 					
 		good_note_hit(note)
+		boyfriend.can_dance = false
 
 	var strum = ui.player_strums[key]
 	if !strum.animation.contains('confirm') and !strum.animation.contains('press'):
@@ -329,6 +333,8 @@ func key_press(key:int = 0) -> void:
 
 func key_release(key:int = 0) -> void:
 	ui.player_strums[key].play_anim('static')
+	boyfriend.can_dance = true
+	
 
 func try_death() -> void:
 	for item in ['combo', 'score', 'misses']: set(item, 0)

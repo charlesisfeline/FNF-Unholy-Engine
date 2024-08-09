@@ -153,13 +153,12 @@ class Option extends Alphabet:
 		
 	# update the preference and the option text
 	func update_option(diff:float = 0) -> void: # diff for arrays/nums
-		if type == 'int' or type == 'float':
-			if Input.is_key_pressed(KEY_SHIFT): diff *= 10
 		match type:
 			'array':
 				cur_op = wrapi(cur_op + round(diff), 0, choices.size())
 				Prefs.set(option, choices[cur_op])
 			'int', 'float':
+				if Input.is_key_pressed(KEY_SHIFT): diff *= 10
 				cur_val = clamp(cur_val + diff, min_val, max_val)
 				Prefs.set(option, cur_val)
 			'bool': 

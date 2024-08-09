@@ -3,41 +3,49 @@ extends CanvasLayer
 var time_existed:float = 0
 var vol_visible:bool = false
 var vol_tween:Tween
-var volume:float = 1:
+var max_tween:Tween
+var volume:float = 1.0:
 	set(vol):
 		if vol > volume: 
 			Audio.play_sound('vol/up')
 		elif vol < volume:
 			Audio.play_sound('vol/down')
 		else:
+			get_node('Volume/BarsBG/VolBar10').modulate = Color.RED
+			if max_tween: max_tween.kill()
+			max_tween = create_tween()
+			max_tween.tween_property(get_node('Volume/BarsBG/VolBar10'), 'modulate', Color.WHITE, 0.3)
 			Audio.play_sound('vol/max')
-		$VolumeBar.position.y = 0
+		$Volume.position.y = 0
 		vol_visible = true
 		time_existed = 0
 		AudioServer.set_bus_volume_db(0, linear_to_db(vol))
 		volume = vol
-var vol_lerp:float = 10
 
 @onready var fps_txt = $FPS
 func _ready():
 	fps_txt.position = Vector2(10, 10)
+	Game.center_obj($Volume, 'x')
+	$Volume.position.x -= ($Volume.size.x * $Volume.scale.x) / 2.0
 
 func _process(delta):
 	if vol_visible:
 		if vol_tween: vol_tween.kill()
-		vol_lerp = lerpf(vol_lerp, volume * 10, delta * 15)
-		$VolumeBar.value = vol_lerp
+
+		$Volume/Percent.text = str(floor(volume * 100)) +'%'
+		for i in 10:
+			var bar = get_node('Volume/BarsBG/VolBar'+ str(i + 1))
+			bar.scale.y = lerp(bar.scale.y, 0.0 if floor(volume * 10) <= i else 1.0, delta * 15)
+			
 		time_existed += delta
+		vol_visible = time_existed < 1
 		if time_existed >= 1:
-			vol_visible = false
-	
 			vol_tween = create_tween()
-			vol_tween.tween_property($VolumeBar, 'position:y', -50, 0.5)
-	
+			vol_tween.tween_property($Volume, 'position:y', -100, 0.35)
 	
 	var mem:String = String.humanize_size(OS.get_static_memory_usage())
 	var mem_peak:String = String.humanize_size(OS.get_static_memory_peak_usage())
-	fps_txt.text = 'FPS: ' + str(Engine.get_frames_per_second())+'\n' + 'Mem: ' + mem + ' / ' + mem_peak
+	fps_txt.text = 'FPS: '+ str(Engine.get_frames_per_second())+'\n' +'Mem: '+ mem +' / '+ mem_peak
 	
 	
 func _unhandled_key_input(_event):

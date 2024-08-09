@@ -13,11 +13,10 @@ func _ready():
 	add_child(train)
 	move_child(train, 4)
 
-
 func _process(delta):
 	$Windows/Sprite.self_modulate.a -= (Conductor.crochet / 1000) * delta * 1.5
 
-func beat_hit():
+func beat_hit(beat:int):
 	train.beat_hit(beat)
 	if beat % 4 == 0:
 		var cur_col = windows[randi_range(0, windows.size() - 1)]
@@ -60,7 +59,7 @@ class Train extends Sprite2D:
 					if position.x < -4000 && stopping:
 						restart()
 				
-	func beat_hit(beat):
+	func beat_hit(beat:int):
 		if !active:
 			cooldown += 1
 

@@ -19,7 +19,7 @@ func _ready():
 	bg_freaks.stop()
 	add_child(bg_freaks)
 
-func beat_hit():
+func beat_hit(beat:int):
 	bg_freaks.dance()
 
 class BGFreaks extends AnimatedSprite2D:
@@ -42,5 +42,3 @@ class BGFreaks extends AnimatedSprite2D:
 		
 		frame = 0 if frame_limit == 14 else 15
 		play('BG '+ ('girls group' if !swapped else 'fangirls dissuaded'))
-
-		

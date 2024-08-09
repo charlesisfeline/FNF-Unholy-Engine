@@ -3,8 +3,8 @@ extends Node2D
 # note to self, strech mode for canvas items isnt bad, but it makes the text butt ugly, maybe see if you cant fix that
 signal focus_change(is_focused) # when you click on/off the game window
 
-var TRANS = preload('res://game/objects/ui/transition.tscn') # always have it loaded for instantiating
-var cur_trans
+#var TRANS = preload('res://game/objects/ui/transition.tscn') # always have it loaded for instantiating
+#var cur_trans
 
 var scene = null:
 	get: return get_tree().current_scene
@@ -75,18 +75,18 @@ func switch_scene(new_scene, skip_trans:bool = true) -> void:
 		
 		if skip_trans:
 			get_tree().change_scene_to_file(path % new_scene)
-		else:
-			cur_trans = TRANS.instantiate()
-			add_child(cur_trans)
-			cur_trans.trans_out(0.7, true)
-			cur_trans.on_finish = func():
+		#else:
+		#	cur_trans = TRANS.instantiate()
+		#	add_child(cur_trans)
+		#	cur_trans.trans_out(0.7, true)
+		#	cur_trans.on_finish = func():
 				#Game.scene.paused = false
 				#Game.remove_child(cur_trans)
-				get_tree().change_scene_to_file(path % new_scene)
-				cur_trans.trans_in(1, true)
-				cur_trans.on_finish = func():
-					remove_child(cur_trans)
-					cur_trans.queue_free()
+		#		get_tree().change_scene_to_file(path % new_scene)
+		#		cur_trans.trans_in(1, true)
+		#		cur_trans.on_finish = func():
+		#			remove_child(cur_trans)
+		#			cur_trans.queue_free()
 
 	if new_scene is PackedScene:
 		get_tree().change_scene_to_packed(new_scene)
@@ -136,4 +136,4 @@ func to_time(secs:float, is_milli:bool = true, show_ms:bool = false) -> String:
 	
 		time_part1 += str(time_part2)
 	
-	return time_part1;
+	return time_part1

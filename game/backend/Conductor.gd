@@ -20,16 +20,12 @@ var song_pos:float = 0.0:
 			song_started = false
 			for_all_audio('stop')
 
-var playback:float = 1.0:
-	get: return AudioServer.playback_speed_scale
-	set(new): AudioServer.playback_speed_scale = new
-	
 #var offset:float = 0
 var safe_zone:float = 166.0
-var song_length:float = 5000.0
+var song_length:float = INF
 
-var beat_time:float = 0
-var step_time:float = 0
+var beat_time:float = 0.0
+var step_time:float = 0.0
 #var sec_time:float = 0
 
 var cur_beat:int = 0
@@ -59,34 +55,32 @@ func _ready():
 	add_child(vocals_opp)
 
 func load_song(song:String = '') -> void:
-	if song.length() < 1:
+	if song.is_empty():
 		printerr('Conductor.load_song: NO SONG ENTERED')
 		song = 'tutorial' #DirAccess.get_directories_at('res://assets/songs')[0]
 	
 	song = Game.format_str(song)
-	var split = song.split('-')
 	var path:String = 'res://assets/songs/'+ song +'/audio/%s.ogg' # myehh
 
 	var suffix:String = '-'+ JsonHandler._SONG.variant if JsonHandler._SONG.has('variant') else ''
 
-	#print(path % ['Inst'+ suffix])
 	if FileAccess.file_exists(path % ['Inst'+ suffix]):
 		inst.stream = load(path % ['Inst'+ suffix])
 		song_length = inst.stream.get_length() * 1000.0
-	if FileAccess.file_exists(path % ['Voices'+ suffix]):
+	if FileAccess.file_exists(path % ['Voices-player'+ suffix]):
+		mult_vocals = true
+		vocals.stream = load(path % ['Voices-player'+ suffix])
+		vocals_opp.stream = load(path % ['Voices-opponent'+ suffix])
+	elif FileAccess.file_exists(path % ['Voices'+ suffix]):
 		mult_vocals = false
 		vocals.stream = load(path % ['Voices'+ suffix])
-	elif FileAccess.file_exists(path % ['Voices-play'+ suffix]):
-		mult_vocals = true
-		vocals.stream = load(path % ['Voices-play'+ suffix])
-		vocals_opp.stream = load(path % ['Voices-opp'+ suffix])
 	
 	song_loaded = true
 	
 func _process(delta):
 	if paused: return
 	if song_loaded:
-		song_pos += (1000 * delta) * playback #AudioServer.get_time_since_last_mix()
+		song_pos += (1000 * delta) #AudioServer.get_time_since_last_mix()
 	
 	if song_pos > 0:
 		if !song_started: 
@@ -97,28 +91,32 @@ func _process(delta):
 			beat_time += crochet
 			cur_beat += 1
 			beat_hit.emit(cur_beat)
-			Game.call_func('beat_hit', [cur_beat])
+			#Game.call_func('beat_hit', [cur_beat])
 			if cur_beat % 4 == 0:
 				cur_section += 1
 				section_hit.emit(cur_section)
-				Game.call_func('section_hit', [cur_section])
 			
 		if song_pos > step_time + step_crochet:
 			step_time += step_crochet
 			cur_step += 1
 			step_hit.emit(cur_step)
-			Game.call_func('step_hit', [cur_step])
 			
 		if song_pos >= song_length and song_loaded:
 			print('Song Finished')
 			
-			Game.call_func('song_end')
+			song_end.emit()
 		
 		for audio in [inst, vocals, vocals_opp]:
 			if audio.stream != null and audio.playing:
 				if absf(audio.get_playback_position() * 1000 - song_pos) > 20: 
 					resync_audio()
 				
+func connect_signals() -> void: # connect all signals
+	if Game.scene.has_method('beat_hit'): beat_hit.connect(Game.scene.beat_hit)
+	if Game.scene.has_method('step_hit'): step_hit.connect(Game.scene.step_hit)
+	if Game.scene.has_method('section_hit'): section_hit.connect(Game.scene.section_hit)
+	if Game.scene.has_method('song_end'): song_end.connect(Game.scene.song_end)
+	
 func check_resync(sound:AudioStreamPlayer) -> void: # ill keep this here for now
 	if absf(sound.get_playback_position() * 1000 - song_pos) > 20:
 		sound.seek(song_pos / 1000)

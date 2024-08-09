@@ -28,6 +28,7 @@ func _ready():
 	$GodotLogo.position.y += 75
 	Audio.volume = 0
 	Conductor.bpm = 102
+	Conductor.beat_hit.connect(beat_hit)
 	Conductor.song_started = true
 	#Conductor.inst = Audio.Player
 

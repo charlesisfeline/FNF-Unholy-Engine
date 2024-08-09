@@ -71,7 +71,7 @@ func psych(song:String) -> Dictionary:
 #func osu(song:String): pass
 
 func you_WILL_get_a_json(song:String) -> FileAccess:
-	var path:String = 'res://assets/songs/%s/charts/' % [song]
+	var path:String = 'res://assets/songs/%s/charts/' % song
 	var returned:String
 	
 	if parse_type == 'base':
@@ -95,18 +95,18 @@ func generate_chart(data, keep_loaded:bool = true) -> Array: # idea, split chart
 		return parse_song('tutorial', get_diff)
 	
 	var chart = Chart.new()
-	# load events whenever chart is made
+
 	if parse_type != 'base':
-		song_events = get_events(Game.format_str(data.song))
+		song_events = get_events(Game.format_str(data.song)) # load events whenever chart is made
 	
-	var _notes = chart.load_chart(data, parse_type, get_diff) # get diff here only matters for base game as of now
+	var _notes := chart.load_chart(data, parse_type, get_diff) # get diff here only matters for base game as of now
 	if keep_loaded:
-		chart_notes = _notes
+		chart_notes = _notes.duplicate()
 		
 	return _notes
 
 func get_events(song:String = '') -> Array[EventNote]:
-	var path_to_check = 'res://assets/songs/%s/events.json' % [song]
+	var path_to_check = 'res://assets/songs/%s/events.json' % song
 	#if parse_type == 'base': path_to_check.replace('events', 'charts/chart')
 	var events_found:Array = []
 	var events:Array[EventNote] = []
@@ -118,7 +118,7 @@ func get_events(song:String = '') -> Array[EventNote]:
 		
 		var json = JSON.parse_string(FileAccess.open(path_to_check, FileAccess.READ).get_as_text())
 		if json.has('song'): json = json.song
-		if json.has('events'): return events #json = json.events
+		#if json.has('events'): json = json.events
 		
 		if json.has('notes') and json.notes.size() > 0: # if events are a -1 note
 			for sec in json.notes:
@@ -139,14 +139,14 @@ func get_events(song:String = '') -> Array[EventNote]:
 	return events
 
 func get_character(character:String = 'bf'):
-	var json_path = 'res://assets/data/characters/%s.json' % [character]
+	var json_path = 'res://assets/data/characters/%s.json' % character
 	if !FileAccess.file_exists(json_path):
-		printerr('JSON: get_character | [%s.json] COULD NOT BE FOUND' % [character]);
+		printerr('JSON: get_character | [%s.json] COULD NOT BE FOUND' % character);
 		return null
 	var file = FileAccess.open(json_path, FileAccess.READ)
 	return JSON.parse_string(file.get_as_text())
 
-func parse_week(week:String = 'week1'): # in week folder
+func parse_week(week:String = 'week1') -> Dictionary: # in week folder
 	week = week.replace('.json', '')
 	var week_json = FileAccess.open('res://assets/data/weeks/'+ week.strip_edges() +'.json', FileAccess.READ)
 	var json = JSON.parse_string(week_json.get_as_text())

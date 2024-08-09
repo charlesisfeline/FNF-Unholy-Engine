@@ -15,15 +15,44 @@ var total_grids = []
 var note_snap:int = 16
 var cur_quant:int = 3:
 	set(new_quant):
-		cur_quant = wrap(new_quant, 0, quant_list.size() - 1)
+		cur_quant = wrap(new_quant, 0, quant_list.size())
 		note_snap = quant_list[cur_quant]
+		$StrumLine/Line/Square.modulate = quant_colors[cur_quant]
 		update_text()
-		
+
 var quant_list:Array[int] = [
 	4, 8, 12, 16, 
 	20, 24, 32, 48,
-	64, 96, 192
+	64, 96, 128
 ]
+
+var quant_colors = [
+	Color(1.00, 0.00, 0.00),# 4
+	Color(0.00, 0.00, 1.00),# 8
+	Color(0.40, 0.17, 0.56),# 12
+	Color(1.00, 1.00, 0.00),# 16
+	Color(1.00, 1.00, 1.00),# 20
+	Color(1.00, 0.00, 1.00),# 24
+	Color(0.96, 0.58, 0.11),# 32
+	Color(0.00, 1.00, 1.00),# 48
+	Color(0.00, 0.77, 0.00),# 64
+	Color(1.00, 0.60, 0.60),# 96
+	Color(0.60, 0.60, 1.00) # 128
+]
+
+#var quant_colors = [
+#	Color(0.87, 0.00, 0.00),#DF0000, 4
+#	Color(0.25, 0.25, 0.81),#4040CF, 8
+#	Color(0.68, 0.00, 0.68),#AF00AF, 12
+#	Color(1.00, 0.68, 0.00),#FFAF00, 16
+#	Color(1.00, 1.00, 1.00),#FFFFFF, 20
+#	Color(1.00, 0.62, 1.00),#FFA0FF, 24
+#	Color(1.00, 0.37, 0.18),#FF6030, 32
+#	Color(0.00, 0.81, 0.81),#00CFCF, 48
+#	Color(0.00, 0.81, 0.00),#00CF00, 64
+#	Color(0.62, 0.62, 0.62),#9F9F9F, 96
+#	Color(0.24, 0.24, 0.24) #3F3F3F, 128
+#]
 
 var selected:ColorRect
 var this_note:Array = []
@@ -53,9 +82,9 @@ func _ready():
 	
 	Discord.change_presence('Charting '+ SONG.song.capitalize(), 'One must imagine a charter happy')
 	
-
 	#JsonHandler.old_notes = JsonHandler.chart_notes.duplicate()
 	Conductor.load_song(SONG.song)
+	Conductor.connect_signals()
 	Conductor.bpm = SONG.bpm
 	Conductor.paused = true
 	
@@ -80,7 +109,7 @@ func _ready():
 	$StrumLine/IconL.default_scale = 0.5
 	$StrumLine/IconR.default_scale = 0.5
 	
-	$StrumLine/IconL.position.x = OFF + 135 #idk if this is centered but fuck you
+	$StrumLine/IconL.position.x = OFF + 130 #idk if this is centered but fuck you
 	$StrumLine/IconR.position.x = OFF + 290
 	
 	exist_chars.push_back(SONG.player1)
@@ -136,6 +165,7 @@ func _ready():
 	$Notes.add_child(selected)
 	$Notes.move_child(selected, 0)
 
+	$StrumLine/Line/Square.modulate = quant_colors[cur_quant]
 	tab('Chart', 'ToggleGrid').button_pressed = Prefs.chart_grid
 	_toggle_grid(tab('Chart', 'ToggleGrid').button_pressed) # update the visibility before we get goin
 	#update_grids()
@@ -149,13 +179,11 @@ var over_grid:bool = false
 
 func _process(delta):
 	$StrumLine/TimeTxt.text = str(floor(Conductor.song_pos)) +'\n('+ str(Game.to_time(Conductor.song_pos)) +')'
-	var strum_y = round(get_y_from_time(fmod(Conductor.song_pos - get_section_time(), Conductor.step_crochet * 16.0)))
-	$StrumLine.position.y = strum_y
+	#var strum_y = round(get_y_from_time(fmod(Conductor.song_pos - get_section_time(), Conductor.step_crochet * 16.0)))
+	$StrumLine.position.y = round(get_y_from_time(fmod(Conductor.song_pos - get_section_time(), Conductor.step_crochet * 16.0)))
 	
-	if strum_y >= grid.height - 3:
-		#load_section(cur_section + 1)
-		print('new section '+ str(cur_section))
-
+	$ChartUI/SongProgress.value = abs(Conductor.song_pos / Conductor.song_length) * 100.0
+	
 	$Cam.position = $StrumLine.position + Vector2(520, 50) # grid.position + Vector2(grid.width, grid.height / 2)
 	$BG.position = $Cam.position
 	
@@ -201,9 +229,12 @@ func _process(delta):
 				elif note.modulate != Color.GRAY:
 					note.modulate = Color.GRAY
 
-					if (tab('Chart', 'HitsoundsP').button_pressed and note.must_press)\
-					 or(tab('Chart', 'HitsoundsO').button_pressed and !note.must_press):
-						Audio.play_sound('hitsound', 0.3)
+					if (tab('Chart', 'HitsoundsL').button_pressed and !note.must_press):
+						Audio.play_sound('hitsound', tab('Chart', 'HitsoundsL/Vol').value)
+						
+					if (tab('Chart', 'HitsoundsR').button_pressed and note.must_press):
+						Audio.play_sound('hitsound', tab('Chart', 'HitsoundsR/Vol').value)
+					
 				
 					strums[wrap(note.visual_dir, 0, 8)].play_anim('confirm', true)
 					strums[wrap(note.visual_dir, 0, 8)].reset_timer = 0.15
@@ -243,6 +274,7 @@ func beat_hit(beat:int) -> void:
 
 func step_hit(step:int) -> void:
 	update_text()
+	
 
 func toggle_play() -> void:
 	Conductor.paused = !Conductor.paused

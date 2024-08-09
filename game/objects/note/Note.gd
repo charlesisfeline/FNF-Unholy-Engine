@@ -145,7 +145,7 @@ func _process(delta):
 			can_hit = true #!dropped
 			#if dropped: return
 			# strum_time <= Conductor.song_pos and strum_time + length > Conductor.song_pos:
-			temp_len -= 1000 * delta * Conductor.playback
+			temp_len -= 1000 * delta
 			#offset_y -= 1000 * delta
 			if !must_press: holding = true
 			

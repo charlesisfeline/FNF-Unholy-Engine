@@ -29,7 +29,7 @@ func init_tankmen():
 			runnin_boys.append(tankyboy)
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func beat_hit():
+func beat_hit(beat:int):
 	for tank in $Forground.get_children():
 		#tank.get_node('Sprite').frame = 0
 		tank.get_node('Sprite').play('idle')

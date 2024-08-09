@@ -1,13 +1,11 @@
 class_name Character; extends AnimatedSprite2D;
 
 var json
-var chart:Array
-var anim_data:Dictionary = {
-	offsets = {}, frames = {}
-}
+var chart:Array = []
+
 var offsets:Dictionary = {}
 var focus_offsets:Vector2 = Vector2.ZERO # cam offset type shit
-var cur_char:String = ''
+@export var cur_char:String = ''
 var icon:String = 'bf'
 var death_char:String = 'bf-dead'
 
@@ -20,9 +18,9 @@ var dance_idle:bool = false
 var danced:bool = false
 var dance_beat:int = 2 # dance every %dance_beat%
 
-var hold_timer:float = 0
-var sing_duration:float = 4
-var sing_timer:float = 0
+var hold_timer:float = 0.0
+var sing_duration:float = 4.0
+var sing_timer:float = 0.0
 
 var special_anim:bool = false
 var last_anim:StringName = ''
@@ -33,9 +31,9 @@ var anim_timer:float = 0: # play an anim for a certain amount of time
 			special_anim = true
 			last_anim = animation
 
-var width:float = 0:
+var width:float = 0.0:
 	get: return width * abs(scale.x)
-var height:float = 0:
+var height:float = 0.0:
 	get: return height * abs(scale.y)
 
 var antialiasing:bool = true:
@@ -78,7 +76,6 @@ func load_char(new_char:String = 'bf') -> void:
 	for anim in json.animations:
 		offsets[anim.anim] = [-anim.offsets[0], -anim.offsets[1]]
 		
-	
 	icon = json.healthicon
 	scale = Vector2(json.scale, json.scale)
 	antialiasing = !json.no_antialiasing #probably gonna make my own char json format eventually
@@ -110,8 +107,6 @@ func load_char(new_char:String = 'bf') -> void:
 			swap_sing('singLEFT', 'singRIGHT')
 		
 	print('loaded '+ cur_char)
-	
-#func _ready(): load_char(cur_char)
 
 func _process(delta):
 	#if !is_player:
@@ -134,11 +129,11 @@ func _process(delta):
 			if hold_timer >= Conductor.step_crochet * (0.0011 * sing_duration) and can_dance:
 				dance()
 	
-	if offsets.has(animation +'-loop') and frame == sprite_frames.get_frame_count(animation) - 1:
-		frame = sprite_frames.get_frame_count(animation) - 4
-		looping = true
+	#if offsets.has(animation +'-loop') and frame == sprite_frames.get_frame_count(animation) - 1:
+	#	frame = sprite_frames.get_frame_count(animation) - 4
+	#	looping = true
 			
-	if chart != null and !chart.is_empty():
+	if !chart.is_empty():
 		for i in chart: # [0] = strum time, [1] = direction, [2] = is sustain, [3] = length
 			if i[2]:
 				if i[0] <= Conductor.song_pos and i[0] + i[3] > Conductor.song_pos:

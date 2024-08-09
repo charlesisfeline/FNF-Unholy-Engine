@@ -1,7 +1,7 @@
 extends Node2D
 
 var sec_title:Alphabet
-var notif
+var notif:Alphabet = Alphabet.new('Press a key for: ')
 var is_changing:bool = false
 var selected_bind:String
 var alt:int = 0 # for getting the first or second bind of a key
@@ -17,7 +17,6 @@ func _ready():
 	sec_title.position = Vector2(450, 110)
 	add_child(sec_title)
 	
-	notif = Alphabet.new('Press a key for: ')
 	notif.scale = Vector2(0.7, 0.7)
 	notif.position = Vector2(200, 200)
 	swap_menu('note')

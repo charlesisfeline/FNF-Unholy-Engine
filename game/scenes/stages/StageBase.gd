@@ -7,11 +7,11 @@ var cam_speed:float = 4
 var SONG:
 	get: return Game.scene.SONG
 
-var beat:int:
+var cur_beat:int:
 	get: return Conductor.cur_beat
-var step:int:
+var cur_step:int:
 	get: return Conductor.cur_step
-var section:int:
+var cur_section:int:
 	get: return Conductor.cur_section
 
 var boyfriend:Character:
@@ -31,3 +31,14 @@ var gf_pos:Vector2 = Vector2(450, 70)
 var bf_cam_offset:Vector2 = Vector2(0, 0)
 var dad_cam_offset:Vector2 = Vector2(0, 0)
 var gf_cam_offset:Vector2 = Vector2(0, 0)
+
+# song functions for signals
+func countdown_start() -> void: pass
+func countdown_tick(tick:int) -> void: pass
+func start_song() -> void: pass
+func song_end() -> void: pass
+
+func beat_hit(beat:int) -> void: pass
+func step_hit(step:int) -> void: pass
+func section_hit(section:int) -> void: pass
+

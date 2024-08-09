@@ -2,28 +2,28 @@ extends Node2D
 # for menus n shit i guess
 
 var exclude:Array = ['Play_Scene', 'Charting_Scene'] # scenes to not auto start music on
-var Player = AudioStreamPlayer.new()
+var Player := AudioStreamPlayer.new()
 var volume:float = 1:
 	set(vol): 
 		volume = vol
 		if Player.stream != null:
 			Player.volume_db = linear_to_db(volume)
 		
-var pos:float = 0 # in case you need the position for something or whatever
+var pos:float = 0.0 # in case you need the position for something or whatever
 
 var loop_music:bool = true
 var music:String = "" #"freakyMenu" # current music being played
 var sound_list:Array[AudioStreamPlayer] = [] # currently playing sounds
 
 func _ready():
-	process_mode = Node.PROCESS_MODE_ALWAYS # note to self, figure out a better way for autopause instead of muting
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	add_child(Player)
 	Player.finished.connect(finished)
 	if music.length() == 0 and !exclude.has(Game.scene.name):
 		play_music('freakyMenu')
 
 func _process(delta):
-	if Player.stream != null:
+	if Player.stream != null and Player.playing:
 		pos += delta * 1000
 
 func set_music(new_music:String, vol:float = 1, looped:bool = true): # set the music without auto playing it
@@ -57,7 +57,7 @@ func stop_music(clear:bool = true) -> void: # stop and clear the stream if neede
 		Player.stream = null
 
 func finished():
-	print('blopr')
+	print('Music Finished')
 	if loop_music: play_music()
 	Game.call_func('on_music_finish')
 	

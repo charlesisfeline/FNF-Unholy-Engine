@@ -105,7 +105,6 @@ func update_list(amount:int = 0) -> void:
 	if amount != 0: Audio.play_sound('scrollMenu')
 	cur_song = wrapi(cur_song + amount, 0, songs.size())
 	
-	var col = songs[cur_song].bg_color
 	if col_tween: col_tween.kill()
 	col_tween = create_tween()
 	col_tween.tween_property($MenuBG, 'modulate', songs[cur_song].bg_color, 0.3)

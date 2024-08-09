@@ -2,12 +2,13 @@ class_name Chart; extends Node2D;
 # makes a chart from a json
 
 var return_notes:Array = []
-func load_chart(data, chart_type:String = 'psych', diff:String = 'normal'):
+func load_chart(data, chart_type:String = 'psych', diff:String = 'normal') -> Array:
 	if data == null: return []
 	return_notes.clear()
 	match chart_type:
 		'old_base', 'psych': return load_common(data)
 		'base': return load_base(data, diff)
+		_: return []
 		
 # for loading a chart that isnt named a difficulty
 # used for pico speaker
@@ -44,7 +45,7 @@ func load_base(data, diff:String = 'normal') -> Array:
 	#print(data.notes['normal'])
 	for note in data.notes[diff]:
 		var time:float = maxf(0, note.t)
-		var sustain_length:float = maxf(0, note.l) if note.has('l') else 0
+		var sustain_length:float = maxf(0.0, note.l) if note.has('l') else 0.0
 		var type:String = str(note.k) if note.has('k') else ''
 		if type == 'true': type = 'alt'
 			
@@ -56,7 +57,7 @@ func load_base(data, diff:String = 'normal') -> Array:
 	return return_notes
 
 func get_events(song:String = '') -> Array[EventNote]:
-	var path_to_check = 'res://assets/songs/%s/events.json' % [song]
+	var path_to_check = 'res://assets/songs/%s/events.json' % [Game.format_str(song)]
 	var events_found:Array = []
 	var events:Array[EventNote] = []
 	if JsonHandler._SONG.has('events'): # check current song json for any events
