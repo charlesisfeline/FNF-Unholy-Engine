@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://btlf5h440hcdu"
-path="res://.godot/imported/bfPortrait.png-8651ee15cfe3b4a39e700963bec378ec.ctex"
+uid="uid://dpqjnrdoh6sxd"
+path="res://.godot/imported/dialogueBox-senpaiMad.png-e446e7788f159e20d11220e24f583ef9.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/images/ui/dialogue/pixel/bfPortrait.png"
-dest_files=["res://.godot/imported/bfPortrait.png-8651ee15cfe3b4a39e700963bec378ec.ctex"]
+source_file="res://assets/images/ui/styles/pixel/dialogue/dialogueBox-senpaiMad.png"
+dest_files=["res://.godot/imported/dialogueBox-senpaiMad.png-e446e7788f159e20d11220e24f583ef9.ctex"]
 
 [params]
 

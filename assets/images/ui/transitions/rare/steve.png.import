@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://8tr5ue3k1f3j"
-path="res://.godot/imported/spiritFaceForward.png-fc84be3cc6452cda655ccc71ead211a1.ctex"
+uid="uid://cpg5ns1luv81l"
+path="res://.godot/imported/steve.png-aacb9bd9fdd3f03698ad0e402965d4ea.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/images/ui/dialogue/pixel/spiritFaceForward.png"
-dest_files=["res://.godot/imported/spiritFaceForward.png-fc84be3cc6452cda655ccc71ead211a1.ctex"]
+source_file="res://assets/images/ui/transitions/rare/steve.png"
+dest_files=["res://.godot/imported/steve.png-aacb9bd9fdd3f03698ad0e402965d4ea.ctex"]
 
 [params]
 

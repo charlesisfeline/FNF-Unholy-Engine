@@ -1,18 +1,20 @@
 class_name Icon; extends Sprite2D;
 
+@export var image:String = 'face'
+@export var is_player:bool = false
 var is_menu:bool = false
 var follow_spr = null
-var image:String = 'face'
-var is_player:bool = false
+
+@export var default_scale:float = 1.0
+@export var icon_speed:float = 15.0  
+const MIN_WIDTH:int = 150 # if icon width is less or equal, theres no lose anim
+var has_lose:bool = false
+
 var antialiasing:bool = true:
 	get: return texture_filter == CanvasItem.TEXTURE_FILTER_LINEAR
 	set(anti):
 		var filter = CanvasItem.TEXTURE_FILTER_LINEAR if anti else CanvasItem.TEXTURE_FILTER_NEAREST
 		texture_filter = filter
-
-const min_width:int = 150 # if icon width is less or equal, theres no lose anim
-var has_lose:bool = false
-var default_scale:float = 1.0
 
 func change_icon(new_image:String = 'face', player:bool = false) -> void:
 	if new_image.begins_with('icon-'): new_image.replace('icon-', '')
@@ -23,7 +25,7 @@ func change_icon(new_image:String = 'face', player:bool = false) -> void:
 	texture = load(icon_path % image)
 	
 	if image.ends_with('-pixel'): antialiasing = false
-	has_lose = texture.get_width() > min_width
+	has_lose = texture.get_width() > MIN_WIDTH
 	hframes = 2 if has_lose else 1
 	if is_player: flip_h = true
 	
@@ -34,8 +36,8 @@ func bump(to_scale:float = 1.2) -> void:
 	scale = Vector2(to_scale, to_scale)
 	
 func _process(delta):
-	scale.x = lerpf(default_scale, scale.x, exp(-delta * 15))
-	scale.y = lerpf(default_scale, scale.y, exp(-delta * 15))
+	scale.x = lerpf(default_scale, scale.x, exp(-delta * icon_speed))
+	scale.y = lerpf(default_scale, scale.y, exp(-delta * icon_speed))
 	
 	if follow_spr != null:
 		if follow_spr is HealthBar: # is healthbar or something

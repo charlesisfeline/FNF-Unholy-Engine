@@ -56,10 +56,10 @@ func load_base(data, diff:String = 'normal') -> Array:
 	
 	return return_notes
 
-func get_events(song:String = '') -> Array[EventNote]:
+func get_events(song:String = '') -> Array[EventData]:
 	var path_to_check = 'res://assets/songs/%s/events.json' % [Game.format_str(song)]
 	var events_found:Array = []
-	var events:Array[EventNote] = []
+	var events:Array[EventData] = []
 	if JsonHandler._SONG.has('events'): # check current song json for any events
 		events_found.append_array(JsonHandler._SONG.events)
 	
@@ -77,7 +77,7 @@ func get_events(song:String = '') -> Array[EventNote]:
 	for event in events_found:
 		var time = event[0]
 		for i in event[1]:
-			var new_event = EventNote.new([time, i])
+			var new_event = EventData.new([time, i])
 			events.append(new_event)
 			#print([time, i])
 	

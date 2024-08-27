@@ -6,7 +6,7 @@ class_name Strum_Line; extends Node2D;
 		is_cpu = cpu
 		for i in get_strums(): i.is_player = !cpu
 	
-@onready var spacing:float = 110:
+@export var spacing:float = 110.0:
 	set(new_space):
 		spacing = new_space
 		for i in get_strums():
@@ -20,10 +20,10 @@ func _ready():
 		cur_strum.dir = (i % 4)
 		cur_strum.downscroll = Prefs.downscroll
 		cur_strum.is_player = !is_cpu
-		#if !is_cpu: cur_strum.rotation = 11 # 8.2?
+		cur_strum.position.x = spacing * (i % 4)
 
 func get_strums() -> Array[Strum]:
-	return [$Strums/Left, $Strums/Down, $Strums/Up, $Strums/Right]
+	return [$Left, $Down, $Up, $Right]
 	
 func note_hit(note:Note) -> void:
 	if !note.is_sustain or (note.is_sustain and get_strums()[note.dir].anim_timer <= 0):
@@ -35,7 +35,8 @@ func note_hit(note:Note) -> void:
 			singer.play_anim('hey', true)
 			singer.anim_timer = 0.6
 		else:
-			singer.sing(note.dir, note.alt, !note.is_sustain)
+			if !note.is_sustain or (note.is_sustain and singer.sing_timer <= 0):
+				singer.sing(note.dir, note.alt, !note.is_sustain)
 
 func note_miss(note:Note) -> void:
 	if singer != null:

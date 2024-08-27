@@ -9,22 +9,24 @@ var focus_offsets:Vector2 = Vector2.ZERO # cam offset type shit
 var icon:String = 'bf'
 var death_char:String = 'bf-dead'
 
+var is_player:bool = false
+
 var idle_suffix:String = ''
 var forced_suffix:String = '' # if set, every anim will use it
 var can_dance:bool = true
-var is_player:bool = false
 var looping:bool = false
+
 var dance_idle:bool = false
 var danced:bool = false
 var dance_beat:int = 2 # dance every %dance_beat%
 
 var hold_timer:float = 0.0
 var sing_duration:float = 4.0
-var sing_timer:float = 0.0
+var sing_timer:float = 0.0 # for anim looping with sustains
 
 var special_anim:bool = false
 var last_anim:StringName = ''
-var anim_timer:float = 0: # play an anim for a certain amount of time
+var anim_timer:float = 0.0: # play an anim for a certain amount of time
 	set(time):
 		anim_timer = time
 		if !special_anim and time > 0:
@@ -98,13 +100,9 @@ func load_char(new_char:String = 'bf') -> void:
 	dance()
 	set_stuff()
 	
-	if cur_char.contains('monster'): swap_sing('singUP', 'singDOWN')
+	if cur_char.contains('monster'): swap_sing('singLEFT', 'singRIGHT')
 	if (!is_player and json.flip_x) or (is_player and !json.flip_x):
-		scale.x *= -1
-		position.x += width
-		focus_offsets.x -= width / 2
-		if sing_anims[0] == 'singLEFT':
-			swap_sing('singLEFT', 'singRIGHT')
+		flip_char()
 		
 	print('loaded '+ cur_char)
 
@@ -126,7 +124,12 @@ func _process(delta):
 		if animation.begins_with('sing'):
 			sing_timer = max(sing_timer - delta, 0)
 			hold_timer += delta
-			if hold_timer >= Conductor.step_crochet * (0.0011 * sing_duration) and can_dance:
+			
+			var holding = false #Input.is_action_pressed('note_left') or Input.is_action_pressed('note_down')\
+			#	or Input.is_action_pressed('note_up') or Input.is_action_pressed('note_right')
+			
+			var boogie = (!is_player or (is_player and !holding)) and can_dance 
+			if hold_timer >= Conductor.step_crochet * (0.0011 * sing_duration) and boogie:
 				dance()
 	
 	#if offsets.has(animation +'-loop') and frame == sprite_frames.get_frame_count(animation) - 1:
@@ -160,13 +163,17 @@ func dance(forced:bool = false) -> void:
 
 func sing(dir:int = 0, suffix:String = '', reset:bool = true) -> void:
 	hold_timer = 0
-	if reset:
-		sing_timer = 0
-	
+
 	if sing_timer == 0:
-		if !reset: sing_timer = Conductor.step_crochet * 0.001
+		sing_timer = 0 if reset else Conductor.step_crochet * 0.001
 		play_anim(sing_anims[dir] + suffix, true)
-	
+
+func flip_char() -> void:
+	scale.x *= -1
+	position.x += width
+	focus_offsets.x -= width / 2
+	swap_sing('singLEFT', 'singRIGHT')
+
 func swap_sing(anim1:String, anim2:String) -> void:
 	var index1 = sing_anims.find(anim1)
 	var index2 = sing_anims.find(anim2)

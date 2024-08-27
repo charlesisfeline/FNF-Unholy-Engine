@@ -3,6 +3,7 @@ extends Node2D
 var cfg_file:ConfigFile = ConfigFile.new()
 ## GAMEPLAY ##
 var auto_play:bool = false
+var ghost_tapping:bool = true
 var downscroll:bool = false
 var middlescroll:bool = false
 
@@ -16,6 +17,9 @@ var bad_window:int = 135
 ## VISUALS ##
 var fps:int = 60:
 	set(new): fps = new; Engine.max_fps = fps
+var vsync:bool = false:
+	set(v):
+		Engine
 var auto_pause:bool = true
 var chart_player:bool = false
 var allow_rpc:bool = true:

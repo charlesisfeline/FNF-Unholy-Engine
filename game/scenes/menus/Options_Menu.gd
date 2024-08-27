@@ -7,6 +7,7 @@ var catagories = ['Gameplay', 'Visuals', 'Controls']
 # pref name, type, if type is int/float [min_num, max_num], if type is array ['list', 'of', 'choices']
 var gameplay = [ 
 	['auto_play',        'bool'],
+	['ghost_tapping',    'bool'],
 	['downscroll',       'bool'], 
 	['middlescroll',     'bool'], 
 	['hitsound_volume',   'int', [0, 100]],

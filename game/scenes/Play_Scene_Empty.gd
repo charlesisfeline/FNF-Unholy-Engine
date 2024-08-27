@@ -19,7 +19,7 @@ var cur_speed:float = 1:
 
 var chart_notes
 var notes:Array[Note] = []
-var events:Array[EventNote] = []
+var events:Array[EventData] = []
 var start_time:float = 0 # when the first note is actually loaded
 var spawn_time:int = 2000
 
@@ -70,8 +70,10 @@ func _ready():
 	
 	if !JsonHandler.chart_notes.is_empty():
 		chart_notes = JsonHandler.chart_notes.duplicate()
+		print('already loaded')
 	else:
 		chart_notes = JsonHandler.generate_chart(SONG)
+		print('made chart')
 		
 	start_time = chart_notes[0][0]
 	events = JsonHandler.song_events.duplicate()
@@ -245,7 +247,7 @@ func refresh(restart:bool = true) -> void: # start song from beginning with no r
 		Conductor.start(0)
 	section_hit(0)
 
-func event_hit(event:EventNote) -> void:
+func event_hit(event:EventData) -> void:
 	print(event.event, event.values)
 	match event.event:
 		'Change Scroll Speed': 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cc5i7skqot6gw"
-path="res://.godot/imported/dialogueBox-evil.png-5de94f93a623850f1fc3f4b7fdb0cc44.ctex"
+uid="uid://d4kcvd6ioaljh"
+path="res://.godot/imported/bowser.png-7699a67aee085204e5f87427efebc9e4.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/images/ui/dialogue/pixel/dialogueBox-evil.png"
-dest_files=["res://.godot/imported/dialogueBox-evil.png-5de94f93a623850f1fc3f4b7fdb0cc44.ctex"]
+source_file="res://assets/images/ui/transitions/rare/bowser.png"
+dest_files=["res://.godot/imported/bowser.png-7699a67aee085204e5f87427efebc9e4.ctex"]
 
 [params]
 

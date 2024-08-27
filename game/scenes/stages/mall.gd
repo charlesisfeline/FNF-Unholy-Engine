@@ -7,10 +7,6 @@ func _ready():
 	
 	bf_cam_offset = Vector2(-50, -100)
 	
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	pass
-
 func beat_hit(beat:int):
 	for i in [$UpperBop/Sprite, $BottomBop, $Santa]:
 		i.play()

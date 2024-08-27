@@ -31,9 +31,9 @@ func init_tankmen():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func beat_hit(beat:int):
 	for tank in $Forground.get_children():
-		#tank.get_node('Sprite').frame = 0
+		tank.get_node('Sprite').frame = 0
 		tank.get_node('Sprite').play('idle')
-	#$Watchtower/Sprite.frame = 0
+	$Watchtower/Sprite.frame = 0
 	$Watchtower/Sprite.play('idle')
 
 class TankBG extends AnimatedSprite2D:

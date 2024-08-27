@@ -1,4 +1,4 @@
-class_name EventNote; extends Resource;
+class_name EventData; extends Resource;
 
 var strum_time:float = 0.0
 var event:String = ''

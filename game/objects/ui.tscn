@@ -25,16 +25,16 @@ script = ExtResource("8_ojola")
 script = ExtResource("8_ojola")
 
 [node name="TimeBar" parent="." instance=ExtResource("7_e1wxe")]
-offset_left = 915.8
+offset_left = 914.8
 offset_top = 119.36
-offset_right = 414.2
+offset_right = 413.2
 offset_bottom = 100.64
 scale = Vector2(0.37, 0.6)
 
 [node name="Text" type="Label" parent="."]
-offset_left = 590.0
+offset_left = 589.0
 offset_top = 80.0
-offset_right = 637.0
+offset_right = 636.0
 offset_bottom = 103.0
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 4
@@ -47,10 +47,10 @@ vertical_alignment = 1
 [node name="Strum_Group" type="CanvasGroup" parent="."]
 
 [node name="Opponent" parent="Strum_Group" instance=ExtResource("2_fxgad")]
-position = Vector2(55, 55)
+position = Vector2(95, 55)
 
 [node name="Player" parent="Strum_Group" instance=ExtResource("2_fxgad")]
-position = Vector2(730, 55)
+position = Vector2(795, 55)
 is_cpu = false
 
 [node name="Score_Txt" type="Label" parent="."]

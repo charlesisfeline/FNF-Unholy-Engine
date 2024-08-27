@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://wknbf1df4ykg"
-path="res://.godot/imported/senpaiPortrait.png-ad60f39ea34e5abba67da392957ca72d.ctex"
+uid="uid://btlf5h440hcdu"
+path="res://.godot/imported/bfPortrait.png-06ff8a3ed72dfff05bae0141dd84bd5b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/images/ui/dialogue/pixel/senpaiPortrait.png"
-dest_files=["res://.godot/imported/senpaiPortrait.png-ad60f39ea34e5abba67da392957ca72d.ctex"]
+source_file="res://assets/images/ui/styles/pixel/dialogue/bfPortrait.png"
+dest_files=["res://.godot/imported/bfPortrait.png-06ff8a3ed72dfff05bae0141dd84bd5b.ctex"]
 
 [params]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://byrv37ffnvtgp"
-path="res://.godot/imported/dialogueBox-pixel.png-28543afeefb778191bfd1ca72f7c5fbd.ctex"
+uid="uid://bxan25xx1r40p"
+path="res://.godot/imported/scrunkly.png-f5f65562f0d47a7b8be92c6a104ab6ba.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/images/ui/dialogue/pixel/dialogueBox-pixel.png"
-dest_files=["res://.godot/imported/dialogueBox-pixel.png-28543afeefb778191bfd1ca72f7c5fbd.ctex"]
+source_file="res://assets/images/ui/transitions/rare/scrunkly.png"
+dest_files=["res://.godot/imported/scrunkly.png-f5f65562f0d47a7b8be92c6a104ab6ba.ctex"]
 
 [params]
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://deksi37bicvb3"]
+[gd_scene load_steps=12 format=3 uid="uid://deksi37bicvb3"]
 
 [ext_resource type="Script" path="res://game/scenes/debug/Charting_Scene.gd" id="1_li1ut"]
 [ext_resource type="Texture2D" uid="uid://c2r5ulxx1lb0t" path="res://assets/images/menuDark.png" id="2_g7jes"]
@@ -6,6 +6,8 @@
 [ext_resource type="Texture2D" uid="uid://cu42tcwatrxkv" path="res://assets/images/icons/icon-face.png" id="4_eiw7n"]
 [ext_resource type="FontFile" uid="uid://dnssbi7hjccim" path="res://assets/fonts/vcr.ttf" id="5_85d4d"]
 [ext_resource type="Script" path="res://game/objects/ui/Icon.gd" id="5_hdump"]
+[ext_resource type="SpriteFrames" uid="uid://ci217b3da2a6l" path="res://assets/images/ui/eventStrum.res" id="6_023jv"]
+[ext_resource type="Script" path="res://game/objects/note/Strum.gd" id="7_fy88j"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jwrmc"]
 bg_color = Color(0, 0, 0, 0)
@@ -77,6 +79,7 @@ scale = Vector2(0.5, 0.5)
 texture = ExtResource("4_eiw7n")
 hframes = 2
 script = ExtResource("5_hdump")
+default_scale = 0.5
 
 [node name="IconR" type="Sprite2D" parent="StrumLine"]
 position = Vector2(455, -40)
@@ -85,14 +88,26 @@ texture = ExtResource("4_eiw7n")
 flip_h = true
 hframes = 2
 script = ExtResource("5_hdump")
+default_scale = 0.5
+
+[node name="EventStrum" type="AnimatedSprite2D" parent="StrumLine"]
+position = Vector2(120, 8)
+scale = Vector2(0.3, 0.3)
+sprite_frames = ExtResource("6_023jv")
+animation = &"confirm"
+autoplay = "static"
+script = ExtResource("7_fy88j")
+is_event = true
 
 [node name="Left" parent="StrumLine" instance=ExtResource("3_0lda8")]
 position = Vector2(170, -10)
 scale = Vector2(0.37, 0.37)
+spacing = 108.0
 
 [node name="Right" parent="StrumLine" instance=ExtResource("3_0lda8")]
 position = Vector2(330, -10)
 scale = Vector2(0.37, 0.37)
+spacing = 108.0
 
 [node name="Cam" type="Camera2D" parent="."]
 position = Vector2(639, 360)
@@ -123,6 +138,29 @@ step = 0.0
 value = 50.0
 show_percentage = false
 
+[node name="Time" type="Label" parent="ChartUI/SongProgress"]
+layout_mode = 0
+offset_left = 5.0
+offset_top = -24.0
+offset_right = 120.0
+offset_bottom = 1.0
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = ExtResource("5_85d4d")
+theme_override_font_sizes/font_size = 25
+text = "0:00"
+
+[node name="Length" type="Label" parent="ChartUI/SongProgress"]
+layout_mode = 0
+offset_left = 1160.0
+offset_top = -24.0
+offset_right = 1275.0
+offset_bottom = 1.0
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = ExtResource("5_85d4d")
+theme_override_font_sizes/font_size = 25
+text = "0:00"
+horizontal_alignment = 2
+
 [node name="Tabs" type="TabContainer" parent="ChartUI"]
 offset_left = 850.0
 offset_top = 180.0
@@ -130,10 +168,12 @@ offset_right = 1230.0
 offset_bottom = 650.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_omfdg")
 tab_alignment = 1
+current_tab = 0
 tab_focus_mode = 0
 
 [node name="Chart" type="Control" parent="ChartUI/Tabs"]
 layout_mode = 2
+metadata/_tab_index = 0
 
 [node name="ToggleGrid" type="CheckBox" parent="ChartUI/Tabs/Chart"]
 layout_mode = 0
@@ -162,7 +202,7 @@ offset_top = 50.0
 offset_right = 181.0
 offset_bottom = 81.0
 focus_mode = 0
-text = "Hitsound Vol. (Left)"
+text = "Hitsound (Left) Vol."
 
 [node name="Vol" type="SpinBox" parent="ChartUI/Tabs/Chart/HitsoundsL"]
 layout_mode = 0
@@ -183,7 +223,7 @@ offset_top = 85.0
 offset_right = 180.0
 offset_bottom = 116.0
 focus_mode = 0
-text = "Hitsound Vol. (Right)"
+text = "Hitsound (Right) Vol."
 
 [node name="Vol" type="SpinBox" parent="ChartUI/Tabs/Chart/HitsoundsR"]
 layout_mode = 0
@@ -275,6 +315,7 @@ horizontal_alignment = 1
 [node name="Events" type="Control" parent="ChartUI/Tabs"]
 visible = false
 layout_mode = 2
+metadata/_tab_index = 1
 
 [node name="Label" type="Label" parent="ChartUI/Tabs/Events"]
 layout_mode = 0
@@ -290,6 +331,7 @@ vertical_alignment = 1
 [node name="Section" type="Control" parent="ChartUI/Tabs"]
 visible = false
 layout_mode = 2
+metadata/_tab_index = 2
 
 [node name="MustHit" type="CheckBox" parent="ChartUI/Tabs/Section"]
 layout_mode = 0
@@ -323,7 +365,6 @@ offset_right = 141.0
 offset_bottom = 332.0
 item_count = 4
 popup/item_0/text = "default"
-popup/item_0/id = 0
 popup/item_1/text = "Alt"
 popup/item_1/id = 1
 popup/item_2/text = "Gf"
@@ -337,10 +378,9 @@ offset_left = 64.0
 offset_top = -40.0
 offset_right = 190.0
 offset_bottom = -9.0
-item_count = 2
 selected = 0
+item_count = 2
 popup/item_0/text = "Player"
-popup/item_0/id = 0
 popup/item_1/text = "Opponent"
 popup/item_1/id = 1
 
@@ -403,6 +443,7 @@ max_value = 500.0
 [node name="Notes" type="Control" parent="ChartUI/Tabs"]
 visible = false
 layout_mode = 2
+metadata/_tab_index = 3
 
 [node name="Label" type="Label" parent="ChartUI/Tabs/Notes"]
 layout_mode = 0
@@ -436,7 +477,6 @@ offset_right = 136.0
 offset_bottom = 187.0
 item_count = 4
 popup/item_0/text = "default"
-popup/item_0/id = 0
 popup/item_1/text = "Alt"
 popup/item_1/id = 1
 popup/item_2/text = "Gf"
@@ -470,6 +510,7 @@ color = Color(0, 0, 0, 1)
 [node name="Song" type="Control" parent="ChartUI/Tabs"]
 visible = false
 layout_mode = 2
+metadata/_tab_index = 4
 
 [node name="Song" type="LineEdit" parent="ChartUI/Tabs/Song"]
 layout_mode = 0

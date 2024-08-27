@@ -7,6 +7,7 @@ signal song_start # technically countdown tick 4 is song start but why would you
 var SPLASH = preload('res://game/objects/note/note_splash.tscn')
 
 # probably gonna move some note shit in here
+@onready var mark:Sprite2D = $Mark
 @onready var score_txt:Label = $Score_Txt
 @onready var time_bar:Control = $TimeBar
 @onready var health_bar:Control = $HealthBar
@@ -79,6 +80,11 @@ func _ready():
 	score_txt.position.x = (Game.screen[0] / 2) - (score_txt.size[0] / 2)
 	if downscroll:
 		score_txt.position.y = 130
+		
+	mark.texture = load('res://assets/images/ui/styles/'+ cur_style +'/auto.png')
+	mark.scale = STYLE.strum_scale
+	mark.position = health_bar.position + Vector2(330, -5)
+	mark.z_index = -1
 
 var hp:float = 50:
 	set(val): hp = clampf(val, 0, 100)
@@ -87,14 +93,19 @@ func _process(delta):
 	if finished_countdown:
 		time_bar.value = (abs(Conductor.song_pos / Conductor.song_length) * 100.0)
 		$Text.text = str(Game.to_time(abs(Conductor.song_length - Conductor.song_pos)))
-	health_bar.value = lerpf(health_bar.value, hp, delta * 8)
 	$Text.position = time_bar.position - Vector2(20, 30)
+		
+	health_bar.value = lerpf(health_bar.value, hp, delta * 8)
+
+	mark.scale = lerp(mark.scale, STYLE.strum_scale, delta * 10)
+	
 	offset.x = (scale.x - 1.0) * -(Game.screen[0] * 0.5)
 	offset.y = (scale.y - 1.0) * -(Game.screen[1] * 0.5)
 	
 func update_score_txt() -> void:
-	var stuff = [Game.scene.score, get_acc(), Game.scene.misses]
-	score_txt.text = 'Score: %s - Accuracy: [%s] - Misses: %s' % stuff
+	if Game.scene.get('score') != null:
+		var stuff = [Game.scene.score, get_acc(), Game.scene.misses]
+		score_txt.text = 'Score: %s - Accuracy: [%s] - Misses: %s' % stuff
 
 func get_acc() -> String:
 	var new_acc = clampf(note_percent / total_hit, 0, 1)
@@ -113,7 +124,7 @@ func get_fc() -> String:
 		return 'SDCB'
 	return 'Clear'
 	
-func reset_count() -> void:
+func reset_stats() -> void:
 	fc = 'N/A'
 	total_hit = 0
 	note_percent = 0

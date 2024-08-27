@@ -1,13 +1,13 @@
 class_name NoteData; extends Resource;
 
-var strum_time:float
-var must_press:bool
-var dir:int
+var strum_time:float = 0.0
+var must_press:bool = false
+var dir:int = 0
 
-var speed:float
-var type:String
+var speed:float = 1.0
+var type:String = ""
 
-var length:float
+var length:float = 0.0
 
 func _init(data):
 	if data != null and data is Array:

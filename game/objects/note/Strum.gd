@@ -3,14 +3,20 @@ class_name Strum; extends AnimatedSprite2D;
 const DIRECTION:Array[String] = ['left', 'down', 'up', 'right']
 @export var style:String = 'default'
 
+@export var is_event:bool = false:
+	set(ev):
+		is_event = ev
+		if ev: sprite_frames = load('res://assets/images/ui/eventStrum.res')
+		else: load_skin(style)
+@export var is_player:bool = false
+@export var downscroll:bool = false
 @export var dir:int = 0:
 	set(new_dir): 
 		dir = new_dir
 		play_anim('static')
-var is_player:bool = false
-var downscroll:bool = false
-var anim_timer:float = 0
-var reset_timer:float = 0
+		
+var anim_timer:float = 0.0 # used for confirm anim looping on sustains
+var reset_timer:float = 0.0
 var antialiasing:bool = true:
 	get: return texture_filter == CanvasItem.TEXTURE_FILTER_LINEAR
 	set(alias):
@@ -18,7 +24,8 @@ var antialiasing:bool = true:
 		texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR if alias else CanvasItem.TEXTURE_FILTER_NEAREST 
 
 func _ready():
-	scale = Vector2(0.7, 0.7)
+	if !is_event:
+		scale = Vector2(0.7, 0.7)
 	play_anim('static')
 
 func _process(delta):
@@ -54,7 +61,7 @@ func load_skin(new_skin = 'default'):
 func play_anim(anim:String, forced:bool = false):
 	if anim == 'static':
 		reset_timer = 0
-	if !anim.contains(DIRECTION[dir]):
+	if !anim.contains(DIRECTION[dir]) and !is_event:
 		anim = DIRECTION[dir] +'_'+ anim
 
 	if forced: frame = 0

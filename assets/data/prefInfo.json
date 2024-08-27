@@ -1,5 +1,6 @@
 {
     "auto_play"       : "Play the chart automatically\n(DEBUG: can toggle midsong by pressing back [ESC or Backspace by default])",
+    "ghost_tapping"   : "Does pressing a key with no hittable notes cause a miss?",
     "downscroll"      : "Make notes fall down instead of rising up",
     "middlescroll"    : "Centers player strums",
     "hitsound_volume" : "How loud should the hitsounds be?\n(0 to disable)",

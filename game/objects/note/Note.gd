@@ -20,7 +20,7 @@ var height:float = 0:
 			return sustain.texture.get_height() * abs(hold_group.scale.y)
 		return note.texture.get_height() * abs(scale.y)
 	
-const col_array:Array[String] = ['purple', 'blue', 'green', 'red']
+const COLORS:Array[String] = ['purple', 'blue', 'green', 'red']
 
 var chart_note:bool = false
 var spawned:bool = false
@@ -28,7 +28,7 @@ var strum_time:float
 var dir:int = 0
 
 var must_press:bool = false
-var speed:float = 1:
+var speed:float = 1.0:
 	set(new_speed): 
 		speed = new_speed
 		if is_sustain: resize_hold()
@@ -38,18 +38,25 @@ var gf:bool = false
 var no_anim:bool = false
 var type:String = "":
 	set(new_type):
-		type = new_type
-		match type.to_lower():
-			'alt animation', 'alt': alt = '-alt'
-			'no animation': no_anim = true
-			'gf sing': gf = true
-			'hurt note', 'markov note': 
+		if new_type.is_empty(): return
+		match new_type.to_lower():
+			'alt animation', 'alt', 'true': 
+				type = 'Alt'
+				alt = '-alt'
+			'no animation':
+				type = 'No Anim'
 				no_anim = true
+			'gf sing':
+				type = 'GF'
+				gf = true
+			'hurt note', 'markov note':
+				type = 'Hurt'
 				should_hit = false
 				early_mod = 0.5
 				late_mod = 0.5
 				modulate = Color.BLACK
-		#if type.to_lower().contains('gf sing'): gf = true
+			_:
+				type = new_type
 
 var should_hit:bool = true
 var can_hit:bool = false#:
@@ -57,19 +64,19 @@ var can_hit:bool = false#:
 #	and strum_time <= Conductor.song_pos + (Conductor.safe_zone * 1))
 
 var early_mod:float = 0.8
-var late_mod:float = 1
+var late_mod:float = 1.0
 var was_good_hit:bool = false#:
 #	get: return not must_press and strum_time <= Conductor.song_pos
 var too_late:bool = false
 
 var is_sustain:bool = false
-var length:float = 0
-var temp_len:float = 0 #if you dont immediately hold
-var offset_y:float = 0
+var length:float = 0.0
+var temp_len:float = 0.0 #if you dont immediately hold
+var offset_y:float = 0.0
 var parent:Note
 
 var holding:bool = false
-var min_len:float = 25 # before a sustain is counted as "hit"
+var min_len:float = 25.0 # before a sustain is counted as "hit"
 var dropped:bool = false:
 	set(drop): 
 		dropped = drop
@@ -81,7 +88,7 @@ var sustain:TextureRect
 var end:TextureRect
 var hold_group:Control
 
-var alpha:float = 1:
+var alpha:float = 1.0:
 	get: return modulate.a
 	set(alpha): modulate.a = alpha
 
@@ -111,14 +118,14 @@ func _ready():
 		move_child(hold_group, 0)
 		
 		end = TextureRect.new()
-		end.texture = load(tex_path + col_array[dir] +'_end.png')
+		end.texture = load(tex_path + COLORS[dir] +'_end.png')
 		if !chart_note: end.stretch_mode = TextureRect.STRETCH_TILE
 		end.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
 		end.grow_horizontal = Control.GROW_DIRECTION_BOTH
 		end.grow_vertical = Control.GROW_DIRECTION_BEGIN
 		
 		sustain = TextureRect.new()
-		sustain.texture = load(tex_path + col_array[dir] +'_hold.png')
+		sustain.texture = load(tex_path + COLORS[dir] +'_hold.png')
 		if !chart_note: sustain.stretch_mode = TextureRect.STRETCH_TILE # hmm
 		sustain.set_anchors_preset(Control.PRESET_FULL_RECT)
 		sustain.set_anchor_and_offset(SIDE_BOTTOM, 1.0, -end.texture.get_height())
@@ -134,7 +141,7 @@ func _ready():
 			if Prefs.behind_strums: hold_group.z_index = -1
 	else:
 		note = Sprite2D.new()
-		note.texture = load(tex_path + col_array[dir] +'.png')
+		note.texture = load(tex_path + COLORS[dir] +'.png')
 		add_child(note)
 
 func _process(delta):
@@ -180,7 +187,7 @@ func follow_song_pos(strum:Strum) -> void:
 		rotation = strum.rotation
 
 func load_skin(skin) -> void:
-	tex_path = 'res://assets/images/ui/styles/'+ skin.style +'/notes/'+ col_array[dir]
+	tex_path = 'res://assets/images/ui/styles/'+ skin.style +'/notes/'+ COLORS[dir]
 	antialiasing = skin.antialiased
 	scale = skin.note_scale
 

@@ -44,19 +44,8 @@ func _ready():
 		add_song(FreeplaySong.new([song, 'bf', [100, 100, 100]]))
 	
 	update_save() # you should only need to update it once me
-	#if !FileAccess.file_exists('user://highscores.cfg'):
-	#	for song in songs:
-	#		var da_diffs:Dictionary = {}
-	#		for dif in song.diff_list: da_diffs[dif] = [0, 0, 'N/A']
-	#		best_scores.set_value('Song Scores', Game.format_str(song.song), da_diffs) # score, accuracy, fc
-	#	best_scores.save('user://highscores.cfg')
 	
-	#best_scores.load('user://highscores.cfg')
 	if JsonHandler._SONG != null:
-		if JsonHandler.charted and !JsonHandler.old_notes.is_empty():
-			JsonHandler.chart_notes = JsonHandler.old_notes.duplicate()
-			JsonHandler.song_events = JsonHandler.old_events.duplicate()
-			
 		last_loaded.song = JsonHandler._SONG.song.to_lower().replace(' ', '-')
 		last_loaded.diff = JsonHandler.get_diff
 		cur_song = added_songs.find(last_loaded.song)
@@ -127,10 +116,14 @@ func change_diff(amount:int = 0) -> void:
 	$SongInfo/Difficulty.text = text
 
 func _unhandled_key_input(event):
-	if Input.is_action_just_pressed('menu_down') : update_list(1)
-	if Input.is_action_just_pressed('menu_up')   : update_list(-1)
-	if Input.is_action_just_pressed('menu_left') : change_diff(-1)
-	if Input.is_action_just_pressed('menu_right'): change_diff(1)
+	var diff:int = 4 if Input.is_key_pressed(KEY_SHIFT) else 1
+	var is_pressed:Callable = func(action): 
+		return Input.is_action_just_pressed(action) or Input.is_action_pressed(action)
+		
+	if is_pressed.call('menu_down') : update_list(diff)
+	if is_pressed.call('menu_up')   : update_list(-diff)
+	if is_pressed.call('menu_left') : change_diff(-1)
+	if is_pressed.call('menu_right'): change_diff(1)
 	
 	if Input.is_action_just_pressed('back'):
 		Audio.play_sound('cancelMenu')

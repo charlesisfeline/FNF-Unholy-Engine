@@ -15,6 +15,7 @@ gradient = SubResource("Gradient_maa3h")
 blend_mode = 2
 
 [node name="Transition" type="CanvasLayer"]
+process_mode = 3
 layer = 120
 script = ExtResource("1_d20kq")
 

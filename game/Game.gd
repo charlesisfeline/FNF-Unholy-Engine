@@ -1,11 +1,11 @@
 extends Node2D
 
-# note to self, strech mode for canvas items isnt bad, but it makes the text butt ugly, maybe see if you cant fix that
 signal focus_change(is_focused) # when you click on/off the game window
 
-#var TRANS = preload('res://game/objects/ui/transition.tscn') # always have it loaded for instantiating
-#var cur_trans
+var TRANS = preload('res://game/objects/ui/transition.tscn') # always have it loaded for instantiating
+var cur_trans
 
+var persist_vars = {} # var values to remember
 var scene = null:
 	get: return get_tree().current_scene
 	
@@ -14,7 +14,6 @@ var screen = [
 	ProjectSettings.get_setting("display/window/size/viewport_height")
 ]
 
-# make it so the global player runs always UNLESS you dont have focus
 # fix pause screen because it sets the paused of the tree as well
 func _ready():
 	focus_change.connect(focus_changed)
@@ -67,7 +66,7 @@ func center_obj(obj = null, axis:String = 'xy') -> void:
 func reset_scene(_skip_trans:bool = false) -> void:
 	get_tree().reload_current_scene()
 
-func switch_scene(new_scene, skip_trans:bool = true) -> void:
+func switch_scene(new_scene, skip_trans:bool = false) -> void:
 	if new_scene is String:
 		new_scene = new_scene.to_lower()
 		if new_scene == 'play_scene' and Prefs.chart_player: new_scene += '_empty'
@@ -75,18 +74,22 @@ func switch_scene(new_scene, skip_trans:bool = true) -> void:
 		
 		if skip_trans:
 			get_tree().change_scene_to_file(path % new_scene)
-		#else:
-		#	cur_trans = TRANS.instantiate()
-		#	add_child(cur_trans)
-		#	cur_trans.trans_out(0.7, true)
-		#	cur_trans.on_finish = func():
-				#Game.scene.paused = false
-				#Game.remove_child(cur_trans)
-		#		get_tree().change_scene_to_file(path % new_scene)
-		#		cur_trans.trans_in(1, true)
-		#		cur_trans.on_finish = func():
-		#			remove_child(cur_trans)
-		#			cur_trans.queue_free()
+		else:
+			if cur_trans != null and cur_trans.in_progress:
+				cur_trans.cancel()
+				remove_child(cur_trans)
+				get_tree().paused = false
+				
+			get_tree().paused = true
+			cur_trans = TRANS.instantiate()
+			add_child(cur_trans)
+			await cur_trans.trans_out(0.7)
+			get_tree().change_scene_to_file(path % new_scene)
+			get_tree().paused = false
+			cur_trans.trans_in(1, true)
+			cur_trans.on_finish = func():
+				remove_child(cur_trans)
+				cur_trans.queue_free()
 
 	if new_scene is PackedScene:
 		get_tree().change_scene_to_packed(new_scene)

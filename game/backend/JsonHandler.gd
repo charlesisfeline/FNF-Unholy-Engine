@@ -11,9 +11,9 @@ var charted:bool = false
 var _SONG = null
 
 var chart_notes:Array = [] # keep loaded chart and events for restarting songs
-var song_events:Array[EventNote] = []
+var song_events:Array[EventData] = []
 var old_notes:Array = []
-var old_events:Array[EventNote] = []
+var old_events:Array[EventData] = []
 
 var song_meta = null
 var parse_type:String = ''
@@ -105,11 +105,11 @@ func generate_chart(data, keep_loaded:bool = true) -> Array: # idea, split chart
 		
 	return _notes
 
-func get_events(song:String = '') -> Array[EventNote]:
+func get_events(song:String = '') -> Array[EventData]:
 	var path_to_check = 'res://assets/songs/%s/events.json' % song
 	#if parse_type == 'base': path_to_check.replace('events', 'charts/chart')
 	var events_found:Array = []
-	var events:Array[EventNote] = []
+	var events:Array[EventData] = []
 	if _SONG.has('events'): # check current song json for any events
 		events_found.append_array(_SONG.events)
 	
@@ -131,7 +131,7 @@ func get_events(song:String = '') -> Array[EventNote]:
 	for event in events_found:
 		var time = event[0]
 		for i in event[1]:
-			var new_event = EventNote.new([time, i])
+			var new_event = EventData.new([time, i])
 			events.append(new_event)
 			#print([time, i])
 	
