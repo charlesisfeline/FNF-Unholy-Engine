@@ -1,5 +1,16 @@
 class_name Alphabet; extends Control;
 
+enum Scroll {
+	Left_To_Right = 1,
+	Center = 0,
+	Right_To_Left = -1
+}
+enum Alignment {
+	LEFT,
+	CENTER,
+	RIGHT
+}
+
 var all_letters:Array[Letter] = []
 var width:float = 0.0
 var height:float = 0.0
@@ -57,7 +68,7 @@ func make_text(tx:String) -> void:
 		var letter = Letter.new(offsets, i, cur_loop, rows)
 		if anim != '' and is_instance_valid(sheet):
 			var e:= sheet.get_frame_texture(anim, 0)
-			var let:String = anim if e != null else "?"
+			var let:String = anim if e != null else "question"
 			
 			letter.char = anim # just in case
 			letter.sprite_frames = sheet
@@ -82,7 +93,7 @@ func _process(delta):
 	if is_menu:
 		var remap_y:float = remap(target_y, 0, 1, 0, 1.1)
 		var scroll:Vector2 = Vector2(
-			lock.x if lock.x != -1 else lerpf(position.x, (target_y * 35) + 150, (delta / 0.16)),
+			lock.x if lock.x != -1 else lerpf(position.x, (target_y * 35) + 100, (delta / 0.16)),
 			lock.y if lock.y != -1 else lerpf(position.y, (remap_y * spacing) +
 			 (Game.screen[0] * 0.28), (delta / 0.16))
 		)
@@ -98,6 +109,7 @@ func get_anim(item) -> String:
 		"&": return "amp"
 		"!": return "exclamation"
 		"'": return "apostrophe"
+		"?": return "question"
 		_:
 			if item == null or item == "" or item == "\n": return ""
 			if !bold:

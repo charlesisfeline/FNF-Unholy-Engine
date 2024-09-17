@@ -4,8 +4,6 @@ signal countdown_start
 signal countdown_tick(tick:int) # 0 = 'three', 1 = 'two', 2 = 'one', 3 = 'go', 4 = song start
 signal song_start # technically countdown tick 4 is song start but why would you use that smh
 
-var SPLASH = preload('res://game/objects/note/note_splash.tscn')
-
 # probably gonna move some note shit in here
 @onready var mark:Sprite2D = $Mark
 @onready var score_txt:Label = $Score_Txt
@@ -40,6 +38,7 @@ var accuracy:float = -1
 var hit_count:Dictionary = {'sick': 0, 'good': 0, 'bad': 0, 'shit': 0, 'miss': 0}
 var fc:String = 'N/A'
 
+var def_mark_scale:Vector2 = Vector2(0.7, 0.7)
 var zoom:float = 1:
 	set(new_zoom):
 		zoom = new_zoom
@@ -84,7 +83,7 @@ func _ready():
 	mark.texture = load('res://assets/images/ui/styles/'+ cur_style +'/auto.png')
 	mark.scale = STYLE.strum_scale
 	mark.position = health_bar.position + Vector2(330, -5)
-	mark.z_index = -1
+	mark.z_index = -2
 
 var hp:float = 50:
 	set(val): hp = clampf(val, 0, 100)
@@ -92,12 +91,12 @@ var hp:float = 50:
 func _process(delta):
 	if finished_countdown:
 		time_bar.value = (abs(Conductor.song_pos / Conductor.song_length) * 100.0)
-		$Text.text = str(Game.to_time(abs(Conductor.song_length - Conductor.song_pos)))
+		$Text.text = str(Game.to_time(abs((Conductor.song_length - Conductor.song_pos) / Conductor.playback_rate)))
 	$Text.position = time_bar.position - Vector2(20, 30)
 		
 	health_bar.value = lerpf(health_bar.value, hp, delta * 8)
 
-	mark.scale = lerp(mark.scale, STYLE.strum_scale, delta * 10)
+	mark.scale = lerp(mark.scale, def_mark_scale, delta * 10)
 	
 	offset.x = (scale.x - 1.0) * -(Game.screen[0] * 0.5)
 	offset.y = (scale.y - 1.0) * -(Game.screen[1] * 0.5)
@@ -133,16 +132,8 @@ func reset_stats() -> void:
 		hit_count[i] = 0
 	
 	update_score_txt()
-	
-func spawn_splash(strum:Strum) -> void:
-	var new_splash = SPLASH.instantiate()
-	new_splash.strum = strum
-	add_to_strum_group(new_splash, true)
-	await new_splash.animation_finished
-	$Strum_Group/Player.remove_child(new_splash)
-	new_splash.queue_free()
-	
-func add_to_strum_group(item = null, to_player:bool = true) -> void:
+
+func add_to_strum_group(item:Variant, to_player:bool = true) -> void:
 	if item == null: return
 	var group = $'Strum_Group/Player' if to_player else $'Strum_Group/Opponent'
 	group.add_child(item)
@@ -152,11 +143,15 @@ func add_behind(item) -> void:
 	item.z_index = -1
 	#move_child(item, 0) #layering would get fucked
 
-func change_style(new_style:String) -> void: # change style of whole hud, instead of one by one
+func change_style(new_style:String = 'default') -> void: # change style of whole hud, instead of one by one
 	cur_style = new_style
 	STYLE.load_style(new_style)
 	for strum in strums: strum.load_skin(STYLE)
 	for note in Game.scene.notes: note.load_skin(STYLE)
+	mark.texture = load('res://assets/images/ui/styles/'+ cur_style +'/auto.png')
+	mark.texture_filter = Game.get_alias(STYLE.antialiased)
+	def_mark_scale = (STYLE.strum_scale if STYLE.strum_scale.x <= 0.7 else STYLE.strum_scale / 1.5)
+	mark.scale = def_mark_scale
 
 var count_down:Timer
 var times_looped:int = -1
@@ -165,11 +160,11 @@ func start_countdown(from_beginning:bool = false) -> void:
 	if from_beginning:
 		countdown_start.emit()
 		finished_countdown = false
-		Conductor.song_pos = -Conductor.crochet * 5.0
+		Conductor.song_pos = -(Conductor.crochet * 5.0)
 		count_down = Timer.new() # get_tree.create_timer starts automatically and isn't reusable
 		add_child(count_down)
 	
-	count_down.start(Conductor.crochet / 1000.0)
+	count_down.start((Conductor.crochet / 1000.0) / Conductor.playback_rate)
 	await count_down.timeout
 	times_looped += 1
 	countdown_tick.emit(times_looped)

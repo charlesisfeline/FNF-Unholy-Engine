@@ -8,11 +8,14 @@ signal song_end
 var bpm:float = 100.0:
 	set(new_bpm):
 		bpm = new_bpm
-		crochet = ((60.0 / bpm) * 1000.0)
-		step_crochet = crochet / 4.0
+		#crochet = ((60.0 / bpm) * 1000.0)
+		#step_crochet = crochet / 4.0
 
-var crochet:float = ((60.0 / bpm) * 1000.0)
-var step_crochet:float = crochet / 4.0
+var crochet:float:
+	get: return ((60.0 / bpm) * 1000.0)
+var step_crochet:float:
+	get: return crochet / 4.0
+	
 var song_pos:float = 0.0:
 	set(new_pos): 
 		song_pos = new_pos
@@ -20,6 +23,13 @@ var song_pos:float = 0.0:
 			song_started = false
 			for_all_audio('stop')
 
+var playback_rate:float = 1.0:
+	get: return AudioServer.playback_speed_scale
+	set(rate): 
+		playback_rate = rate
+		AudioServer.playback_speed_scale = rate
+		#Engine.time_scale = 1
+		
 #var offset:float = 0
 var safe_zone:float = 166.0
 var song_length:float = INF
@@ -76,11 +86,12 @@ func load_song(song:String = '') -> void:
 		vocals.stream = load(path % ['Voices'+ suffix])
 	
 	song_loaded = true
-	
+
 func _process(delta):
 	if paused: return
+
 	if song_loaded:
-		song_pos += (1000 * delta) #AudioServer.get_time_since_last_mix()
+		song_pos += (1000 * delta) * playback_rate #AudioServer.get_time_since_last_mix()
 	
 	if song_pos > 0:
 		if !song_started: 

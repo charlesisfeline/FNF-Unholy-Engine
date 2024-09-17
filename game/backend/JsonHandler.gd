@@ -23,23 +23,23 @@ func parse_song(song:String, diff:String, auto_create:bool = false, type:String 
 	song = Game.format_str(song)
 	if FileAccess.file_exists('res://assets/songs/'+ song +'/charts/chart.json'):#\
 		#FileAccess.file_exists('res://assets/songs/'+ song +'/metadata.json')
-		type = 'base'
+		type = 'v_slice'
 	
 	var parsed_song
 	get_diff = diff.to_lower()
 	match type:
-		'base'    : parsed_song = base(song)
+		'v_slice' : parsed_song = v_slice(song)
 		'psych'   : parsed_song = psych(song)
 		#'fps_plus': parsed_song = fps_plus(song)
 		#'maru'    : parsed_song = maru(song)
 		#'osu'     : parsed_song = osu(song)
-		#'': parsed_song = psych(song)
+		#_: parsed_song = psych(song)
 	_SONG = parsed_song
 	
 	if FileAccess.file_exists('res://assets/songs/'+ song +'/metadata.json'):
 		song_meta = JSON.parse_string(FileAccess.open('res://assets/songs/'+ song +'/metadata.json', FileAccess.READ).get_as_text())
 		print(song_meta)
-		if type == 'base':
+		if type == 'v_slice':
 			_SONG.speed = _SONG.scrollSpeed[diff] if _SONG.scrollSpeed.has(diff) else _SONG.scrollSpeed.default
 			var play = song_meta.playData
 			_SONG.player1 = play['characters'].player
@@ -55,8 +55,8 @@ func parse_song(song:String, diff:String, auto_create:bool = false, type:String 
 		#thread.start(generate_chart.bind(_SONG))
 		#await thread.wait_to_finish()
 
-func base(song:String) -> Dictionary:
-	parse_type = 'base'
+func v_slice(song:String) -> Dictionary:
+	parse_type = 'v_slice'
 	var json = you_WILL_get_a_json(song) #FileAccess.open('res://assets/songs/'+ song +'/charts/chart.json', FileAccess.READ).get_as_text()
 	return JSON.parse_string(json.get_as_text())
 	
@@ -74,7 +74,7 @@ func you_WILL_get_a_json(song:String) -> FileAccess:
 	var path:String = 'res://assets/songs/%s/charts/' % song
 	var returned:String
 	
-	if parse_type == 'base':
+	if parse_type == 'v_slice':
 		returned = path + 'chart.json'
 	else:
 		if !FileAccess.file_exists(path + get_diff +'.json'):
@@ -87,7 +87,7 @@ func you_WILL_get_a_json(song:String) -> FileAccess:
 	#if dir_files.has(get_diff):
 	#else:
 	#	printerr('COULD NOT FIND JSON: "' + song + '/' + get_diff + '.json"')
-		
+	print(returned)
 	return FileAccess.open(returned, FileAccess.READ)
 
 func generate_chart(data, keep_loaded:bool = true) -> Array: # idea, split chart into parts, then load each seperately
@@ -96,8 +96,8 @@ func generate_chart(data, keep_loaded:bool = true) -> Array: # idea, split chart
 	
 	var chart = Chart.new()
 
-	if parse_type != 'base':
-		song_events = get_events(Game.format_str(data.song)) # load events whenever chart is made
+	#if parse_type != 'v_slice':
+	song_events = get_events(Game.format_str(data.song)) # load events whenever chart is made
 	
 	var _notes := chart.load_chart(data, parse_type, get_diff) # get diff here only matters for base game as of now
 	if keep_loaded:
@@ -107,13 +107,13 @@ func generate_chart(data, keep_loaded:bool = true) -> Array: # idea, split chart
 
 func get_events(song:String = '') -> Array[EventData]:
 	var path_to_check = 'res://assets/songs/%s/events.json' % song
-	#if parse_type == 'base': path_to_check.replace('events', 'charts/chart')
+	#if parse_type == 'v_slice': path_to_check.replace('events', 'charts/chart')
 	var events_found:Array = []
 	var events:Array[EventData] = []
 	if _SONG.has('events'): # check current song json for any events
 		events_found.append_array(_SONG.events)
 	
-	if FileAccess.file_exists(path_to_check): # then check if there is a event json
+	if parse_type != 'v_slice' and FileAccess.file_exists(path_to_check): # then check if there is a event json
 		print(path_to_check)
 		
 		var json = JSON.parse_string(FileAccess.open(path_to_check, FileAccess.READ).get_as_text())
@@ -129,11 +129,11 @@ func get_events(song:String = '') -> Array[EventData]:
 			events_found.append_array(json.events)
 	
 	for event in events_found:
-		var time = event[0]
-		for i in event[1]:
-			var new_event = EventData.new([time, i])
-			events.append(new_event)
-			#print([time, i])
+		if parse_type != 'v_slice':
+			for i in event[1]:
+				events.append(EventData.new([event[0], i]))
+		else:
+			events.append(EventData.new(event, 'v_slice'))
 	
 	events.sort_custom(func(a, b): return a.strum_time < b.strum_time)
 	return events

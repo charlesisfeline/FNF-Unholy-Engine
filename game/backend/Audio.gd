@@ -60,8 +60,13 @@ func finished():
 	print('Music Finished')
 	if loop_music: play_music()
 	Game.call_func('on_music_finish')
-	
-func play_sound(sound:String, vol:float = 1, use_skin:bool = false) -> void:
+
+func return_sound(sound:String, use_skin:bool = false) -> AutoSound:
+	if use_skin and !sound.begins_with('skins/'): 
+		sound = 'skins/'+ Game.scene.cur_style +'/'+ sound
+	return AutoSound.new('res://assets/audio/%s.ogg' % sound)
+
+func play_sound(sound:String, vol:float = 1, use_skin:bool = false, auto_clear:bool = true) -> void:
 	if use_skin and !sound.begins_with('skins/'): 
 		sound = 'skins/'+ Game.scene.cur_style +'/'+ sound
 
@@ -69,22 +74,23 @@ func play_sound(sound:String, vol:float = 1, use_skin:bool = false) -> void:
 	var new_sound := AutoSound.new(path, vol)
 	add_child(new_sound)
 	new_sound.play()
-	sound_list.append(new_sound)
 
 func stop_all_sounds() -> void:
 	for sound in sound_list:
 		if sound != null and sound.stream != null and sound.playing:
 			sound.stop()
 			sound.stream = null
-			remove_child(sound)
-			sound_list.remove_at(sound_list.find(sound))
+			sound.finish()
+			#sound_list.remove_at(sound_list.find(sound))
 
 class AutoSound extends AudioStreamPlayer:
 	func _init(sound_path:String = '', vol:float = 1):
+		Audio.sound_list.append(self)
 		stream = load(sound_path)
 		volume_db = linear_to_db(vol)
 		finished.connect(finish)
 		
 	func finish():
 		Audio.sound_list.remove_at(Audio.sound_list.find(self))
+		Audio.remove_child(self)
 		queue_free()

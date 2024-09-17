@@ -1,6 +1,9 @@
 class_name Strum_Line; extends Node2D;
-
 # DO NOT ADD AS AN OBJECT TO SCENE, NEEDS TO BE INSTANTIATED
+
+var SPLASH = preload('res://game/objects/note/note_splash.tscn')
+var SPARK = preload('res://game/objects/note/holdnote_splash.tscn')
+
 @export var is_cpu:bool = true:
 	set(cpu): 
 		is_cpu = cpu
@@ -13,6 +16,7 @@ class_name Strum_Line; extends Node2D;
 			i.position.x = spacing * i.dir
 			
 var singer:Character = null
+var notes:Array[Note] = []
 
 func _ready():
 	for i in 4: # i can NOT be bothered to position these mfs manually
@@ -26,27 +30,40 @@ func get_strums() -> Array[Strum]:
 	return [$Left, $Down, $Up, $Right]
 	
 func note_hit(note:Note) -> void:
-	if !note.is_sustain or (note.is_sustain and get_strums()[note.dir].anim_timer <= 0):
-		strum_anim(note.dir, !is_cpu)
+	strum_anim(note.dir, !is_cpu, !note.is_sustain)
 	
 	if singer == null: return
 	if !note.no_anim:
-		if note.type == 'Hey!':
+		if note.type == 'Hey':
 			singer.play_anim('hey', true)
 			singer.anim_timer = 0.6
 		else:
-			if !note.is_sustain or (note.is_sustain and singer.sing_timer <= 0):
-				singer.sing(note.dir, note.alt, !note.is_sustain)
+			singer.sing(note.dir, note.alt, !note.is_sustain)
+			
+	if Prefs.note_splashes == 'all' or (Prefs.note_splashes == 'sicks' and note.rating == 'sick'):
+		spawn_splash(get_strums()[note.dir])
 
 func note_miss(note:Note) -> void:
 	if singer != null:
 		singer.sing(note.dir, 'miss')
+		
+func spawn_splash(strum:Strum) -> void:
+	var new_splash = SPLASH.instantiate()
+	new_splash.strum = strum
+	add_child(new_splash)
+	new_splash.on_anim_finish = func():
+		remove_child(new_splash)
+		new_splash.queue_free()
 	
-func strum_anim(dir:int = 0, player:bool = false) -> void:
+func spawn_hold_splash(strum:Strum) -> void:
+	pass
+
+func strum_anim(dir:int = 0, player:bool = false, force:bool = true) -> void:
 	var strum:Strum = get_strums()[dir]
 	
-	strum.play_anim('confirm', true)
-	strum.anim_timer = Conductor.step_crochet / 1000.0
+	if force or strum.anim_timer <= 0:
+		strum.play_anim('confirm', true)
+		strum.anim_timer = Conductor.step_crochet / 1200.0
 	
 	if !player:
 		strum.reset_timer = Conductor.step_crochet * 1.25 / 1000.0 #0.15

@@ -13,7 +13,7 @@ func _init(data):
 	if data != null and data is Array:
 		strum_time = floor(data[0])
 		dir = int(data[1]) % 4
-		if !(data[3] is float): data[3] = 0
+		if data[3] is not float: data[3] = 0.0
 		length = data[3]
 		must_press = data[4]
 		type = data[5]

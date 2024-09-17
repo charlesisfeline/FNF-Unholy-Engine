@@ -12,10 +12,12 @@ var cur_style:String = 'default': # yes
 	set(new_style): 
 		ui.cur_style = new_style
 		cur_style = ui.cur_style
+		
 var cur_speed:float = 1:
 	set(new_speed):
 		cur_speed = new_speed
 		for note in notes: note.speed = cur_speed
+		
 var cur_stage:String = 'stage'
 var stage:StageBase
 
@@ -166,7 +168,7 @@ func _ready():
 		chart_notes = JsonHandler.generate_chart(SONG)
 		print('made chart')
 		
-	start_time = chart_notes[0][0]
+	#start_time = chart_notes[0][0]
 	events = JsonHandler.song_events.duplicate()
 	print('TOTAL EVENTS: '+ str(events.size()))
 	
@@ -179,15 +181,19 @@ func _ready():
 	
 	
 	ui.start_countdown(true)
+	
+	if JsonHandler.parse_type == 'v_slice': event_hit(EventData.new(
+		{t = 0, e = 'FocusCamera', v = {char = 1}}, 'v_slice')
+	)
 	section_hit(0) #just for 1st section stuff
 	
 var section_data
 var chunk:int = 0
 func _process(delta):
 	if Input.is_key_pressed(KEY_R): ui.hp = 0
-	if ui.hp <= 0:
-		print('die')
-		try_death()
+	#if ui.hp <= 0:
+		#print('die')
+		#try_death()
 		
 	if Input.is_action_just_pressed("debug_1"):
 		await RenderingServer.frame_post_draw
@@ -288,9 +294,9 @@ func step_hit(step) -> void: pass
 func section_hit(section) -> void:
 	ui.zoom += 0.04
 	cam.zoom += Vector2(0.08, 0.08)
-	ui.mark.scale = ui.STYLE.strum_scale + (ui.STYLE.strum_scale / 5)
-	
-	if JsonHandler.parse_type != 'base' and SONG.notes.size() > section:
+	ui.mark.scale = ui.def_mark_scale + (ui.def_mark_scale / 5)
+
+	if JsonHandler.parse_type != 'v_slice' and SONG.notes.size() > section:
 		section_data = SONG.notes[section]
 
 		move_cam(section_data.mustHitSection)
@@ -406,8 +412,9 @@ func event_hit(event:EventData) -> void:
 			else:
 				cur_speed = new_speed
 		'Add Camera Zoom':
-			ui.zoom += 0.02
-			cam.zoom += Vector2(0.04, 0.04)
+			pass
+			#ui.zoom += 0.02
+			#cam.zoom += Vector2(0.04, 0.04)
 		'Change Character': 
 			var char = "boyfriend"
 			var new_char:Character
@@ -419,6 +426,9 @@ func event_hit(event:EventData) -> void:
 			if JsonHandler.get_character(event.values[1]) != null:
 				get(char).load_char(event.values[1])
 				get(char).position = last_pos
+		'FocusCamera':
+			move_cam(event.values[0].char == 0)
+			pass
 			#new_char = Character.new(char.position, event.values[1], char == boyfriend)
 			#remove_child(char)
 			#char.queue_free()
@@ -436,29 +446,27 @@ func good_note_hit(note:Note) -> void:
 	if Conductor.vocals.stream != null: 
 		Conductor.vocals.volume_db = linear_to_db(1)
 		
+	var time = Conductor.song_pos - note.strum_time if !auto_play else 0
+	note.rating = Judge.get_rating(time)
+	var judge_info = Judge.get_score(note.rating)
+		
 	ui.player_group.singer = gf if note.gf else boyfriend 
 	ui.player_group.note_hit(note)
 
 	grace = true
 	combo += 1
-	
-	var time = Conductor.song_pos - note.strum_time if !auto_play else 0
-	var hit_rating = Judge.get_rating(time)
-	var judge_info = Judge.get_score(hit_rating)
-	pop_up_combo(hit_rating, combo)
+
+	pop_up_combo(note.rating, combo)
 	score += int(300 * (((1.0 + exp(-0.08 * (abs(time) - 40))) + 54.99)) / (55 / judge_info[2])) # good enough im happy
 	#print(int(300 * (((1.0 + exp(-0.08 * (abs(time) - 40))) + 54.99)) / (55 / judge_info[2])))
 	ui.note_percent += judge_info[1]
 	ui.total_hit += 1
-	ui.hit_count[hit_rating] += 1
+	ui.hit_count[note.rating] += 1
 	ui.hp += 2.0
 	
-	if Prefs.note_splashes != 'none':
-		if Prefs.note_splashes == 'all' or (Prefs.note_splashes == 'sicks' and hit_rating == 'sick'):
-			ui.spawn_splash(ui.player_strums[note.dir])
-			
 	ui.update_score_txt()
 	kill_note(note)
+
 	if Prefs.hitsound_volume != 0:
 		Audio.play_sound('hitsound', Prefs.hitsound_volume / 100.0)
 

@@ -13,8 +13,7 @@ var has_lose:bool = false
 var antialiasing:bool = true:
 	get: return texture_filter == CanvasItem.TEXTURE_FILTER_LINEAR
 	set(anti):
-		var filter = CanvasItem.TEXTURE_FILTER_LINEAR if anti else CanvasItem.TEXTURE_FILTER_NEAREST
-		texture_filter = filter
+		texture_filter = Game.get_alias(anti)
 
 func change_icon(new_image:String = 'face', player:bool = false) -> void:
 	if new_image.begins_with('icon-'): new_image.replace('icon-', '')

@@ -20,7 +20,7 @@ expand_margin_right = 5.0
 expand_margin_bottom = 5.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_x1b8t"]
-bg_color = Color(0, 1, 0, 1)
+bg_color = Color(0.4, 1, 0.2, 1)
 
 [node name="HealthBar" type="Control"]
 layout_mode = 3

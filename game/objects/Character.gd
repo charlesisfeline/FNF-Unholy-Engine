@@ -107,7 +107,7 @@ func load_char(new_char:String = 'bf') -> void:
 	print('loaded '+ cur_char)
 
 func _process(delta):
-	#if !is_player:
+	sing_timer = max(sing_timer - delta, 0)
 	if special_anim:
 		if anim_timer <= 0:
 			await animation_finished
@@ -122,11 +122,10 @@ func _process(delta):
 					dance()
 	else:
 		if animation.begins_with('sing'):
-			sing_timer = max(sing_timer - delta, 0)
 			hold_timer += delta
 			
-			var holding = false #Input.is_action_pressed('note_left') or Input.is_action_pressed('note_down')\
-			#	or Input.is_action_pressed('note_up') or Input.is_action_pressed('note_right')
+			var holding = Input.is_action_pressed('note_left') or Input.is_action_pressed('note_down')\
+				or Input.is_action_pressed('note_up') or Input.is_action_pressed('note_right')
 			
 			var boogie = (!is_player or (is_player and !holding)) and can_dance 
 			if hold_timer >= Conductor.step_crochet * (0.0011 * sing_duration) and boogie:
@@ -165,7 +164,7 @@ func sing(dir:int = 0, suffix:String = '', reset:bool = true) -> void:
 	hold_timer = 0
 
 	if sing_timer == 0:
-		sing_timer = 0 if reset else Conductor.step_crochet * 0.001
+		sing_timer = 0 if reset else Conductor.step_crochet / 1200.0
 		play_anim(sing_anims[dir] + suffix, true)
 
 func flip_char() -> void:
@@ -189,8 +188,8 @@ func play_anim(anim:String, forced:bool = false) -> void:
 	
 	looping = false
 	special_anim = false
-	if forced: frame = 0
 	play(anim)
+	if forced: frame = 0
 
 	if offsets.has(anim):
 		var anim_offset = offsets[anim]

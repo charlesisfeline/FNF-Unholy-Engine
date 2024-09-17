@@ -26,6 +26,9 @@ var global_delta:float
 func _process(delta):
 	global_delta = delta
 	if Input.is_key_pressed(KEY_F5):
+		reset_scene()
+		
+	if Input.is_key_pressed(KEY_F6):
 		if !just_pressed:
 			var window_mode = DisplayServer.WINDOW_MODE_FULLSCREEN if !is_full else DisplayServer.WINDOW_MODE_WINDOWED
 			DisplayServer.window_set_mode(window_mode)
@@ -123,6 +126,9 @@ func remove_all(array:Array[Array], node = null) -> void:
 				arr[0].queue_free()
 				arr.remove_at(0)
 
+func get_alias(antialiased:bool = true) -> CanvasItem.TextureFilter:
+	return CanvasItem.TEXTURE_FILTER_LINEAR if antialiased else CanvasItem.TEXTURE_FILTER_NEAREST
+	
 func to_time(secs:float, is_milli:bool = true, show_ms:bool = false) -> String:
 	if is_milli: secs = secs / 1000
 	var time_part1:String = str(int(secs / 60)) + ":"

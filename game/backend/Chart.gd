@@ -1,13 +1,22 @@
 class_name Chart; extends Node2D;
 # makes a chart from a json
 
+enum CHART_TYPE {
+	LEGACY, # old base game, old psych
+	V_SLICE,
+	PSYCH_V1,
+	FPS_PLUS,
+	MARU
+}
+var type:CHART_TYPE
+
 var return_notes:Array = []
 func load_chart(data, chart_type:String = 'psych', diff:String = 'normal') -> Array:
 	if data == null: return []
 	return_notes.clear()
 	match chart_type:
 		'old_base', 'psych': return load_common(data)
-		'base': return load_base(data, diff)
+		'v_slice': return load_base(data, diff)
 		_: return []
 		
 # for loading a chart that isnt named a difficulty
@@ -31,7 +40,7 @@ func load_common(data) -> Array:
 			var n_data:int = int(note[1])
 			var must_hit:bool = sec.mustHitSection if note[1] <= 3 else not sec.mustHitSection
 			var type:String = str(note[3]) if note.size() > 3 else ''
-			if type == 'true': type = 'alt'
+			if type == 'true': type = 'Alt'
 			
 			var to_add = [round(time), n_data, is_sustain, sustain_length, must_hit, type]
 			if !return_notes.has(to_add): # skip adding a note that exists

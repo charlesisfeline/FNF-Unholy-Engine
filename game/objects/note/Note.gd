@@ -36,27 +36,33 @@ var speed:float = 1.0:
 var alt:String = ""
 var gf:bool = false
 var no_anim:bool = false
+var unknown:bool = false
 var type:String = "":
 	set(new_type):
-		if new_type.is_empty(): return
-		match new_type.to_lower():
-			'alt animation', 'alt', 'true': 
-				type = 'Alt'
-				alt = '-alt'
-			'no animation':
-				type = 'No Anim'
-				no_anim = true
-			'gf sing':
-				type = 'GF'
-				gf = true
-			'hurt note', 'markov note':
-				type = 'Hurt'
+		if (new_type.is_empty() or new_type == '0') and type.is_empty(): return
+		match new_type.to_lower().strip_edges():
+			'alt animation', 'true': new_type = 'Alt'
+			'no animation': new_type = 'No Anim'
+			'gf sing': new_type = 'GF'
+			'hurt note', 'markov note': new_type = 'Hurt'
+			'hey!': new_type = 'Hey'
+	
+		type = new_type
+		match new_type:
+			'Hey': pass
+			'Alt': alt = '-alt'
+			'No Anim': no_anim = true
+			'GF': gf = true
+			'Hurt':
 				should_hit = false
 				early_mod = 0.5
 				late_mod = 0.5
 				modulate = Color.BLACK
 			_:
-				type = new_type
+				unknown = true
+				modulate = Color.GRAY
+
+
 
 var should_hit:bool = true
 var can_hit:bool = false#:
@@ -65,6 +71,7 @@ var can_hit:bool = false#:
 
 var early_mod:float = 0.8
 var late_mod:float = 1.0
+var rating:String = ''
 var was_good_hit:bool = false#:
 #	get: return not must_press and strum_time <= Conductor.song_pos
 var too_late:bool = false
@@ -83,7 +90,7 @@ var dropped:bool = false:
 		if dropped: 
 			modulate = Color(0.75, 0.75, 0.75, 0.4)
 
-var note
+var note:Sprite2D
 var sustain:TextureRect
 var end:TextureRect
 var hold_group:Control
@@ -128,7 +135,7 @@ func _ready():
 		sustain.texture = load(tex_path + COLORS[dir] +'_hold.png')
 		if !chart_note: sustain.stretch_mode = TextureRect.STRETCH_TILE # hmm
 		sustain.set_anchors_preset(Control.PRESET_FULL_RECT)
-		sustain.set_anchor_and_offset(SIDE_BOTTOM, 1.0, -end.texture.get_height())
+		sustain.set_anchor_and_offset(SIDE_BOTTOM, 1.0, -end.texture.get_height() + 1.0)
 		sustain.grow_horizontal = Control.GROW_DIRECTION_BOTH
 		sustain.grow_vertical = Control.GROW_DIRECTION_BOTH
 		
@@ -143,6 +150,14 @@ func _ready():
 		note = Sprite2D.new()
 		note.texture = load(tex_path + COLORS[dir] +'.png')
 		add_child(note)
+		
+		if unknown:
+			var lol = Alphabet.new('?')
+			lol.position.x -= 22
+			lol.position.y -= 30
+			add_child(lol)
+			lol.z_index = 3
+		
 
 func _process(delta):
 	var safe_zone:float = Conductor.safe_zone
@@ -152,7 +167,7 @@ func _process(delta):
 			can_hit = true #!dropped
 			#if dropped: return
 			# strum_time <= Conductor.song_pos and strum_time + length > Conductor.song_pos:
-			temp_len -= 1000 * delta
+			temp_len -= (1000 * delta) * Conductor.playback_rate
 			#offset_y -= 1000 * delta
 			if !must_press: holding = true
 			
@@ -178,7 +193,7 @@ func follow_song_pos(strum:Strum) -> void:
 		position.y = strum.position.y
 		return
 		
-	var pos:float = (0.45 * (Conductor.song_pos - strum_time) * speed)# + offset_y
+	var pos:float = (0.45 * (Conductor.song_pos - strum_time) * speed) #/ Conductor.playback_rate# + offset_y
 	if !strum.downscroll: pos *= -1
 	
 	position.x = strum.position.x
@@ -207,7 +222,7 @@ func resize_hold(update_control:bool = false) -> void:
 		hold_group.size.y /= (rounded_scale + (rounded_scale / 2))
 	
 	if update_control:
-		sustain.set_anchor_and_offset(SIDE_BOTTOM, 1.0, -end.texture.get_height())
+		sustain.set_anchor_and_offset(SIDE_BOTTOM, 1.0, -end.texture.get_height() + 1.0)
 		hold_group.size.x = maxf(end.texture.get_width(), sustain.texture.get_width())
 		hold_group.position.x = 0 - hold_group.size.x * 0.5
 
@@ -217,5 +232,10 @@ func copy_from(item) -> void:
 		dir = item.dir
 		length = item.length
 		must_press = item.must_press
-		
 		type = item.type
+
+class Event extends Note:
+	func _init():
+		note = Sprite2D.new()
+		note.texture = load('res://assets/images/ui/event.png')
+		add_child(note)

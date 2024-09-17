@@ -3,11 +3,14 @@ extends AnimatedSprite2D
 var strum
 const col = ['purple', 'blue', 'green', 'red']
 
+var on_anim_finish:Callable = func(): queue_free()
+
 var _info:Dictionary = {
 	'base'    = ['note',    [1, 2], 0.8],
 	'haxe'    = ['haxe',    [],     0.8],
 	'forever' = ['forever', [1, 2],   1]
 }
+
 func _ready():
 	var spl = Prefs.splash_sprite
 	scale = Vector2(_info[spl][2], _info[spl][2]) # 0.95, 0.95
@@ -20,6 +23,4 @@ func _ready():
 	if Prefs.daniel: anim_ = ['forever', str(randi_range(1, 2)) +' ']
 	play('%s impact %s' % anim_ + col[strum.dir])
 	position = strum.position
-
-func _on_animation_finished():
-	queue_free()
+	animation_finished.connect(on_anim_finish)

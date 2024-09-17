@@ -9,8 +9,8 @@ var antialiasing:bool = true:
 	get: return texture_filter == CanvasItem.TEXTURE_FILTER_LINEAR
 	set(alias):
 		antialiasing = alias
-		texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR if alias else CanvasItem.TEXTURE_FILTER_NEAREST
-
+		texture_filter = Game.get_alias(alias)
+		
 var width:float = 0.0:
 	get:
 		if is_sustain:
@@ -23,8 +23,18 @@ var height:float = 0.0:
 		return note.texture.get_height() * abs(scale.y)
 	
 var spawned:bool = false
-var strum_time:float
-var dir:int
+var strum_time:float = INF
+var dir:int:
+	set(new_dir):
+		dir = new_dir
+		if spawned:
+			if is_sustain:
+				sustain.texture = load(tex_path + COLORS[dir] +'_hold.png')
+				end.texture = load(tex_path + COLORS[dir] +'_end.png')
+			else:
+				note.texture = load(tex_path + COLORS[dir] +'.png')
+			
+			
 var visual_dir:int # for keeping player notes on right and opp on left
 var true_dir:int   # the actual direction the note is
 
@@ -55,7 +65,7 @@ var type:String = "":
 
 var note
 var sustain:TextureRect
-var end:TextureRect = TextureRect.new()
+var end:TextureRect
 var hold_group:Control = Control.new()
 
 var parent:BasicNote
@@ -164,5 +174,12 @@ func copy_from(item) -> void:
 		dir = item.dir
 		length = item.length
 		must_press = item.must_press
-		
 		type = item.type
+
+func reset_data():
+	modulate = Color.WHITE
+	strum_time = INF
+	dir = 0
+	length = 0
+	must_press = false
+	type = ''
