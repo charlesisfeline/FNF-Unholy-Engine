@@ -46,6 +46,8 @@ func note_hit(note:Note) -> void:
 func note_miss(note:Note) -> void:
 	if singer != null:
 		singer.sing(note.dir, 'miss')
+		if note.length > 0:
+			singer.anim_timer = note.length / Conductor.step_crochet * 0.16
 		
 func spawn_splash(strum:Strum) -> void:
 	var new_splash = SPLASH.instantiate()

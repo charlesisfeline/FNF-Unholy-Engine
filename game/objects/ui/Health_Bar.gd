@@ -9,7 +9,7 @@ var width:float:
 var height:float:
 	get: return $Bar.get_size()[1]
 	
-var value:float = 50:
+var value:float = 50.0:
 	set(new_val):
 		value = new_val
 		$Bar.value = value
@@ -28,7 +28,7 @@ func _ready():
 	if $Sprite == null:
 		var new = Sprite2D.new()
 		new.name = 'Sprite'
-		new.texture = load('res://assets/images/ui/healthBar.png')
+		#new.texture = load('res://assets/images/ui/healthBar.png')
 		add_child(new)
 	if $Bar == null:
 		var new = ProgressBar.new()
@@ -37,5 +37,3 @@ func _ready():
 	
 	style_box.background = $Bar.get_theme_stylebox('background').duplicate()
 	style_box.fill = $Bar.get_theme_stylebox('fill').duplicate()
-#func _process(delta):
-#	pass

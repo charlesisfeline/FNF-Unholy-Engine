@@ -73,7 +73,6 @@ var events:Array[EventData] = []
 var exist_chars = DirAccess.get_files_at('res://assets/data/characters')
 var char_list = [ # fuck you!!
 	'bf', 'bf-car', 'bf-christmas', 'bf-pixel', 'bf-holding-gf', 'bf-pixel-opponent', 
-	'bf-dead', 'bf-pixel-dead', 'bf-holding-gf-dead',
 	'gf', 'gf-car', 'gf-christmas', 'gf-pixel', 'gf-tankmen', 
 	'dad', 'spooky', 'monster', 'pico', 'mom', 'mom-car', 'darnell', 'nene',
 	'parents-christmas', 'monster-christmas', 
@@ -96,14 +95,14 @@ func _ready():
 	Conductor.bpm = SONG.bpm
 	Conductor.paused = true
 	
-	for i in ['bf', 'bf-pixel-opponent']:
+	for i in ['bf-pixel-opponent', 'bf-pixel-opponent']:
 		var new_boy = Character.new(Vector2.ZERO, i)
 		new_boy.scale *= 0.3
 		$ChartUI.add_child(new_boy)
 		funky_boys.append(new_boy)
 		
 	funky_boys[0].flip_char()
-	funky_boys[0].position = Vector2(700, 525)
+	funky_boys[0].position = Vector2(700, 500)
 	funky_boys[1].position = Vector2(300, 500)
 	
 	var voices = [Conductor.vocals, Conductor.vocals_opp, 'Voices', 'VoicesOpp']
@@ -443,7 +442,7 @@ func load_section(section:int = 0, force_time:bool = false) -> void:
 		Conductor.step_time = temp.step_t
 		
 		Conductor.song_pos = get_section_time(section)
-		Conductor.resync_audio()
+		#Conductor.resync_audio()
 		update_text()
 		
 	update_grids(remake_notes)
@@ -575,11 +574,6 @@ func save_song():
 var last_updated_sec:int = -1
 func update_grids(skip_remake:bool = false, only_current:bool = false) -> void:
 	Game.remove_all([prev_notes, cur_notes, next_notes, cur_events], $Notes)
-	#Game.remove_all([cur_events], $Notes)
-	
-	#for n in total_notes:
-	#	clear_cached_note(n)
-	#used_notes = 0
 	
 	$StrumLine/Highlight.position = ($StrumLine/IconR.position if SONG.notes[cur_section].mustHitSection else $StrumLine/IconL.position) - Vector2(37.5, 37.5)
 	if SONG.notes[cur_section].has('changeBPM') and SONG.notes[cur_section].changeBPM:
@@ -603,7 +597,7 @@ func update_grids(skip_remake:bool = false, only_current:bool = false) -> void:
 
 	if cur_section > 0 and prev_grid.visible:
 		var last_sec = SONG.notes[cur_section - 1]
-		#make_notes.call(last_sec, prev_grid, -1, prev_notes)
+		make_notes.call(last_sec, prev_grid, -1, prev_notes)
 			
 	var ev_times = {'start': get_section_time(cur_section), 'end': get_section_time(cur_section + 1)}
 	var tot:int = 0
@@ -623,51 +617,12 @@ func update_grids(skip_remake:bool = false, only_current:bool = false) -> void:
 	
 	if cur_section <= SONG.notes.size() - 1 and next_grid.visible:
 		var next_sec = SONG.notes[cur_section + 1]
-		#make_notes.call(next_sec, next_grid, 1, next_notes)
+		make_notes.call(next_sec, next_grid, 1, next_notes)
 	
-func reuse_note(data) -> BasicNote:
-	var this:BasicNote
-	if used_notes < cached_notes.size():
-		print('reusing note '+ str(used_notes))
-		if data is Array: data = NoteData.new(data)
-		cached_notes[used_notes].copy_from(data)
-		print(cached_notes[used_notes].strum_time)
-		cached_notes[used_notes].visible = true
-		this = cached_notes[used_notes]
-		used_notes += 1
-	else:
-		print('making new note')
-		var temp_note = BasicNote.new()
-		$Notes.add_child(temp_note)
-		temp_note.copy_from(data)
-		extra_notes.append(temp_note)
-		this = temp_note
-
-	total_notes.append(this)
-	return this
-
-func clear_cached_note(note:BasicNote):
-	var can_clear:bool = false
-	if cached_notes.has(note):
-		cached_notes[cached_notes.find(note)].reset_data()
-		cached_notes[cached_notes.find(note)].position = Vector2(-INF, -INF)#visible = false
-	elif extra_notes.has(note):
-		can_clear = true
-		var n_id = extra_notes.find(note)
-		$Notes.remove_child(extra_notes[n_id])
-		extra_notes[n_id].queue_free()
-		extra_notes.remove_at(n_id)
-	
-	var n_id = total_notes.find(note)
-	total_notes.remove_at(n_id)
-	if can_clear:
-		$Notes.remove_child(total_notes[n_id])
-		total_notes[n_id].queue_free()
-
 func make_notes(sec_info:Dictionary, for_grid:NoteGrid, id:int, note_array:Array):
 	for info:Array in sec_info.sectionNotes:
 		if info.is_empty() or info[1] == -1: continue
-		if !(info[2] is float): info[2] = 0
+		if info[2] is not float: info[2] = 0
 			
 		var must_press:bool = (sec_info.mustHitSection and info[1] <= 3) or (!sec_info.mustHitSection and info[1] > 3)
 		var type:String = (str(info[3]) if info.size() > 3 else '')
@@ -701,43 +656,6 @@ func make_notes(sec_info:Dictionary, for_grid:NoteGrid, id:int, note_array:Array
 			sustain.alpha = 0.6
 				
 			note_array.append(sustain)
-
-func make_note(note_info:Array, for_grid:NoteGrid, id:int, note_array:Array):
-	if note_info.is_empty() or note_info[1] == -1: return
-	if note_info[2] is not float or note_info[2] is not int: note_info[2] = 0.0
-			
-	var must_press:bool = (SONG.notes[cur_section + id].mustHitSection and note_info[1] <= 3) or (!SONG.notes[cur_section + id].mustHitSection and note_info[1] > 3)
-	var type:String = (str(note_info[3]) if note_info.size() > 3 else '')
-	var new_note:BasicNote = BasicNote.new([note_info[0], note_info[1], null, note_info[2], must_press, type], false) #reuse_note([note_info[0], note_info[1], null, note_info[2], must_press, type])
-	$Notes.add_child(new_note)
-			
-	var fake_dir:int = note_info[1]
-	if SONG.notes[cur_section + id].mustHitSection:
-		fake_dir += 4 if must_press else -4
-		
-	do_note_shit(new_note, fake_dir)
-		
-	new_note.position.y = floori(get_y_from_time(fmod(floor(note_info[0]) - get_section_time(cur_section + id), Conductor.step_crochet * 16))) + (grid.height * id)
-	new_note.modulate = for_grid.modulate
-	if for_grid == grid:
-		if floor(new_note.strum_time) < floor(Conductor.song_pos) - 10: # slight offset so the first note of a section can always get hit
-			new_note.modulate = Color.GRAY
-	note_array.append(new_note)
-		
-	if note_info[2] > 0:
-		var sustain:BasicNote = BasicNote.new(new_note, true)
-		$Notes.add_child(sustain)
-		$Notes.move_child(sustain, 1)
-		do_note_shit(sustain, new_note.visual_dir)
-			
-		sustain.hold_group.size.x = 50 # close enough for now
-		sustain.hold_group.size.y = floori(remap(note_info[2], 0, Conductor.step_crochet * 16.0, 0, grid.height * 3.87))
-			
-		sustain.position = new_note.position + Vector2(-7, 40)
-		sustain.modulate = for_grid.modulate
-		sustain.alpha = 0.6
-				
-		note_array.append(sustain)
 
 func do_note_shit(note, dir:int = 0) -> void:
 	note.scale = Vector2(0.26, 0.26)
@@ -834,8 +752,10 @@ class EventNote extends Note:
 	var ev_name:String = 'Nothing!'
 	var ev_extra:String = '' 
 	
-	var label:Label = Label.new()
+	var label:Label
 	func _init(event:EventData):
+		is_sustain = false # just in case
+		label = Label.new()
 		label.add_theme_font_override('font', load('res://assets/fonts/vcr.ttf'))
 		label.add_theme_font_size_override('font_size', 15)
 		label.add_theme_constant_override('outline_size', 5)

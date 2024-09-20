@@ -15,11 +15,12 @@ var antialiasing:bool = true:
 	set(anti):
 		texture_filter = Game.get_alias(anti)
 
-func change_icon(new_image:String = 'face', player:bool = false) -> void:
+func change_icon(new_image:String = 'face', player:bool = false, credit:bool = false) -> void:
 	if new_image.begins_with('icon-'): new_image.replace('icon-', '')
 	is_player = player
 	image = new_image
 	var icon_path = 'res://assets/images/icons/icon-%s.png'
+	if credit: icon_path = icon_path.replace('icons/', 'credits/').replace('icon-', '')
 	if !FileAccess.file_exists(icon_path % image): image = 'face'
 	texture = load(icon_path % image)
 	
@@ -28,8 +29,8 @@ func change_icon(new_image:String = 'face', player:bool = false) -> void:
 	hframes = 2 if has_lose else 1
 	if is_player: flip_h = true
 	
-func _ready():
-	change_icon(image)
+#func _ready():
+	#change_icon(image)
 
 func bump(to_scale:float = 1.2) -> void:
 	scale = Vector2(to_scale, to_scale)

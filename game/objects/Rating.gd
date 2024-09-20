@@ -1,4 +1,4 @@
-class_name Rating; extends Node2D;
+class_name Rating; extends Resource;
 
 var style:StyleInfo = Game.scene.ui.STYLE
 var path:String = 'res://assets/images/ui/styles/'+ ''

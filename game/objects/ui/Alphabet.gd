@@ -1,10 +1,12 @@
 class_name Alphabet; extends Control;
 
+## The way the text visually scrolls (If Alignment is CENTER, Scroll changes nothing)
 enum Scroll {
-	Left_To_Right = 1,
-	Center = 0,
-	Right_To_Left = -1
+	LEFT_TO_RIGHT = 1,
+	CENTER = 0,
+	RIGHT_TO_LEFT = -1
 }
+## The way the text lines up
 enum Alignment {
 	LEFT,
 	CENTER,
@@ -12,6 +14,13 @@ enum Alignment {
 }
 
 var all_letters:Array[Letter] = []
+var color:Color = Color(0, 0, 0, 0):
+	set(new):
+		if all_letters.is_empty(): return
+		for i in all_letters:
+			i.modulate = new
+		color = new
+		
 var width:float = 0.0
 var height:float = 0.0
 var spaces:int = 0
@@ -31,14 +40,21 @@ var y_diff:int = 65
 		make_text(text)
 
 @export var is_menu:bool = false
-var lock = Vector2(-1, -1)
+@export var scroll_dir:Scroll = Scroll.LEFT_TO_RIGHT
+#@export var alignment:Alignment = Alignment.LEFT
+var lock:Vector2 = Vector2.INF
 var target_y:int = 0
-var spacing:int = 150
+var screen_offset:int = 100
+var spacing:Vector2 = Vector2(35, 150)
 
 func _init(init_text:String = '', is_bold:bool = true):
 	bold = is_bold
 	if init_text.length() > 0:
 		text = init_text
+		
+#var first_snap:bool = false
+#func _ready() -> void:
+	#position = Vector2((target_y * 35) + 100, (remap(target_y, 0, 1, 0, 1.1) * spacing) + (Game.screen[0] * 0.28))
 	
 func make_text(tx:String) -> void:
 	all_letters.clear()
@@ -75,29 +91,35 @@ func make_text(tx:String) -> void:
 			letter.centered = false
 			letter.play(let)
 			letter.offset = offset_letter(i) #Vector2.ZERO #true_offsets
-			letter.modulate = Color.BLACK if !bold else Color.WHITE
 			if !bold: letter.offset.y -= letter._height / 1.05
 			offsets.x += letter._width
 			
 		letters_made.append(letter)
 		cur_loop += 1
-		
+	
+	name = 'Alphabet:'+ text
 	for i in letters_made:
 		if i.char != '': width += i._width
 		add_child(i)
 		all_letters.append(i)
 	height = letters_made.back()._height
 	letters_made.clear()
+	color = Color.BLACK if !bold else Color.WHITE
 
 func _process(delta):
 	if is_menu:
 		var remap_y:float = remap(target_y, 0, 1, 0, 1.1)
+		#var x_pos:float = Game.screen[0] / 2.0 - width / 2.0
+		#Vector2(((target_y * 35 * (remap_y * 5)) * scroll_dir) + 100,\
+		var would_be = Vector2((target_y * spacing.x * scroll_dir) + screen_offset, (remap_y * spacing.y) + (Game.screen[0] * 0.28))
 		var scroll:Vector2 = Vector2(
-			lock.x if lock.x != -1 else lerpf(position.x, (target_y * 35) + 100, (delta / 0.16)),
-			lock.y if lock.y != -1 else lerpf(position.y, (remap_y * spacing) +
-			 (Game.screen[0] * 0.28), (delta / 0.16))
+			lock.x if lock.x != INF else lerpf(position.x, would_be.x, (delta / 0.16)),
+			lock.y if lock.y != INF else lerpf(position.y, would_be.y, (delta / 0.16))
 		)
+		#if first_snap:
 		position = scroll
+		#else:
+		#	first_snap = true
 
 func get_anim(item) -> String:
 	item = item.dedent()

@@ -1,4 +1,4 @@
-class_name Chart; extends Node2D;
+class_name Chart; extends Resource;
 # makes a chart from a json
 
 enum CHART_TYPE {

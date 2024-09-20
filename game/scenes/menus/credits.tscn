@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://dpdpq5qvi21gx"]
+[gd_scene load_steps=4 format=3 uid="uid://dpdpq5qvi21gx"]
 
-[ext_resource type="Texture2D" uid="uid://bph4x7dl8bvv" path="res://assets/images/menuDesat.png" id="1_40jmt"]
+[ext_resource type="Texture2D" uid="uid://cpmw74f4madb6" path="res://assets/images/menuDesat.png" id="1_40jmt"]
 [ext_resource type="Script" path="res://game/scenes/menus/Credits.gd" id="1_xumlj"]
+[ext_resource type="Texture2D" uid="uid://c2r5ulxx1lb0t" path="res://assets/images/menuDark.png" id="3_dk6m8"]
 
 [node name="Credits" type="Node2D"]
 script = ExtResource("1_xumlj")
@@ -9,3 +10,12 @@ script = ExtResource("1_xumlj")
 [node name="BG" type="Sprite2D" parent="."]
 position = Vector2(640, 360)
 texture = ExtResource("1_40jmt")
+
+[node name="BG2" type="Polygon2D" parent="."]
+position = Vector2(-2, -5)
+texture = ExtResource("3_dk6m8")
+polygon = PackedVector2Array(845, -2, 456, 737, 887, 737, 1284, 736, 1285, 372, 1285, -2)
+
+[node name="CreditImage" type="Sprite2D" parent="."]
+position = Vector2(985, 365)
+scale = Vector2(0.6, 0.6)

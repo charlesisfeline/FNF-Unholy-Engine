@@ -69,4 +69,3 @@ func cancel() -> void:
 	
 	black.scale = Vector2.ZERO
 	hole.scale = Vector2.ZERO
-	

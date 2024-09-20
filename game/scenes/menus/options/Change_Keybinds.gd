@@ -19,6 +19,8 @@ func _ready():
 	
 	notif.scale = Vector2(0.7, 0.7)
 	notif.position = Vector2(200, 200)
+	add_child(notif)
+	notif.visible = false
 	swap_menu('note')
 	$SelectBox.scale = Vector2(3, 1.2)
 	update_selection()
@@ -51,7 +53,7 @@ func _process(delta):
 				Game.switch_scene('menus/options_menu')
 
 func _unhandled_key_input(event):
-	if !is_changing or selected_bind.length() < 1 or event.pressed: return
+	if !is_changing or selected_bind.length() < 1 or event.pressed or event.is_released() or event is InputEventMouseButton: return
 	var old_key = key_binds[cur_bind].text
 	var key_name = OS.get_keycode_string(event.keycode)
 	var to_replace = InputMap.action_get_events(selected_bind)[alt]
@@ -72,7 +74,7 @@ func _unhandled_key_input(event):
 	await get_tree().create_timer(0.2).timeout
 	selected_bind = ''
 	is_changing = false
-	remove_child(notif)
+	notif.visible = false
 	
 func update_selection(amount:int = 0) -> void:
 	cur_bind = wrapi(cur_bind + amount, 0, key_binds.size())
@@ -80,7 +82,7 @@ func update_selection(amount:int = 0) -> void:
 	
 func start_change(bind:String) -> void:
 	notif.text = 'Press a key for: '+ bind.replace('_', ' ')
-	add_child(notif)
+	notif.visible = true
 	await get_tree().create_timer(0.15).timeout #wait a sec so it doesnt auto set it to enter or something
 	selected_bind = bind
 	is_changing = true

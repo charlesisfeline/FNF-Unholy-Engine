@@ -52,7 +52,7 @@ func beat_hit(beat) -> void:
 				$GodotLogo.visible = true
 			9: 
 				remove_funny()
-				remove_child($GodotLogo)
+				$GodotLogo.visible = false
 			10: 
 				if show_cow:
 					$cow.visible = true
@@ -118,7 +118,7 @@ func finish_intro() -> void:
 	
 	if show_cow: 
 		$cow.visible = false
-		
+	
 	if Audio.Player.stream == null: #or Audio.volume < 0.7:
 		Audio.play_music('freakyMenu', true, 0.7)
 	elif Audio.volume < 0.7:

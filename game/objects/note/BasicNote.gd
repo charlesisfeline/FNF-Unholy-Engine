@@ -66,7 +66,7 @@ var type:String = "":
 var note
 var sustain:TextureRect
 var end:TextureRect
-var hold_group:Control = Control.new()
+var hold_group:Control
 
 var parent:BasicNote
 
@@ -74,7 +74,7 @@ var alpha:float = 1:
 	get: return modulate.a
 	set(alpha): modulate.a = alpha
 
-var label:Label = Label.new()
+var label:Label
 var text:String:
 	get: return label.text
 	set(txt): label.text = txt
@@ -86,14 +86,6 @@ func _init(data = null, sustain:bool = false, in_chart:bool = false):
 		if sustain:
 			is_sustain = true
 			parent = data
-		else:
-			label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		
-			label.add_theme_font_override('font', load('res://assets/fonts/vcr.ttf'))
-			label.add_theme_font_size_override('font_size', 20)
-			label.add_theme_constant_override('outline_size', 5)
-			label.scale *= 5
 
 func _ready():
 	spawned = true
@@ -103,6 +95,7 @@ func _ready():
 	
 	if is_sustain:
 		alpha = 0.6
+		hold_group = Control.new()
 		# stole from fnf raven because i didnt know how "Control"s worked
 		hold_group.clip_contents = true
 
@@ -132,8 +125,18 @@ func _ready():
 
 		add_child(note)
 		
+		label = Label.new()
+
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	
+		label.add_theme_font_override('font', load('res://assets/fonts/vcr.ttf'))
+		label.add_theme_font_size_override('font_size', 20)
+		label.add_theme_constant_override('outline_size', 5)
+		label.scale *= 5
 		add_child(label)
-		text = type.replace('Note', '')
+	
+		text = type.replace('Note', '') # purely visual
 		label.position -= Vector2(label.size.x * (30 * label.get_total_character_count()), -label.size.y * 1.5)
 		
 func _process(delta):

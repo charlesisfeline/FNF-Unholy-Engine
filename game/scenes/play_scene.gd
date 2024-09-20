@@ -338,7 +338,7 @@ func key_press(key:int = 0) -> void:
 		good_note_hit(note)
 	
 	var strum = ui.player_strums[key]
-	if !strum.animation.contains('confirm') and !strum.animation.contains('press'):
+	if !strum.animation.contains('confirm'):
 		strum.play_anim('press')
 		strum.reset_timer = 0
 
@@ -417,15 +417,18 @@ func event_hit(event:EventData) -> void:
 			#cam.zoom += Vector2(0.04, 0.04)
 		'Change Character': 
 			var char = "boyfriend"
-			var new_char:Character
+			var new_char = Character.get_closest(event.values[1])
 			match event.values[0].to_lower():
 				'2', 'gf', 'girlfriend': char = "gf"
 				'1', 'dad', 'opponent': char = "dad"
 			
 			var last_pos = get(char).position
-			if JsonHandler.get_character(event.values[1]) != null:
+			if JsonHandler.get_character(new_char) != null and new_char != get(char).cur_char:
 				get(char).load_char(event.values[1])
 				get(char).position = last_pos
+				if char == 'boyfriend': ui.icon_p1.change_icon(get(char).icon, true)
+				if char == 'dad': ui.icon_p2.change_icon(get(char).icon)
+			
 		'FocusCamera':
 			move_cam(event.values[0].char == 0)
 			pass
@@ -442,7 +445,7 @@ func good_note_hit(note:Note) -> void:
 		note_miss(note)
 		return
 		
-	#Conductor.playback = 0.75
+	#Conductor.playback_rate = 1
 	if Conductor.vocals.stream != null: 
 		Conductor.vocals.volume_db = linear_to_db(1)
 		
@@ -453,9 +456,8 @@ func good_note_hit(note:Note) -> void:
 	ui.player_group.singer = gf if note.gf else boyfriend 
 	ui.player_group.note_hit(note)
 
-	grace = true
 	combo += 1
-
+	grace = combo > 10
 	pop_up_combo(note.rating, combo)
 	score += int(300 * (((1.0 + exp(-0.08 * (abs(time) - 40))) + 54.99)) / (55 / judge_info[2])) # good enough im happy
 	#print(int(300 * (((1.0 + exp(-0.08 * (abs(time) - 40))) + 54.99)) / (55 / judge_info[2])))

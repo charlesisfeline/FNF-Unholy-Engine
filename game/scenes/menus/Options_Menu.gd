@@ -17,9 +17,10 @@ var gameplay = [
 	['bad_window' ,       'int', [15, 135]]
 ]
 var visuals = [
-	['fps',             'int', [0, 240]], 
+	['fps',             'int', [0, 240]],
+	['vsync',         'array', ['Disabled', 'Enabled', 'Adaptive', 'Mailbox']],
 	['allow_rpc',      'bool'],
-	['chart_player',   'bool'],
+	['basic_play',     'bool'],
 	['note_splashes', 'array', ['sicks', 'all', 'none']],
 	['splash_sprite', 'array', ['base', 'haxe', 'forever']],
 	['behind_strums',  'bool'],
@@ -100,7 +101,6 @@ func show_catagory(catagory:String) -> void:
 			var new_pref = Option.new(pref, desc)
 			new_pref.is_menu = true
 			new_pref.target_y = loops
-			new_pref.lock.x = 1300
 			var twen = create_tween()\
 			.tween_property(new_pref, 'lock:x', 550, 0.3).set_trans(Tween.TRANS_CIRC).set_ease(Tween.EASE_OUT)
 			
@@ -138,6 +138,7 @@ class Option extends Alphabet:
 		description = info
 		type = option_array[1]
 		text = option.capitalize() +' '+ (str(Prefs.get(option)) if type != 'bool' else '')
+		lock.x = 1300
 		
 		if type == 'array':
 			choices = option_array[2]

@@ -26,6 +26,10 @@ DebugInfo="*res://game/debug_info.tscn"
 JsonHandler="*res://game/backend/JsonHandler.gd"
 Discord="*res://game/backend/Discord.gd"
 
+[debug]
+
+settings/stdout/verbose_stdout=true
+
 [display]
 
 window/size/viewport_width=1280

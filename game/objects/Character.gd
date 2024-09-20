@@ -62,7 +62,7 @@ func load_char(new_char:String = 'bf') -> void:
 	cur_char = new_char
 	if !FileAccess.file_exists('res://assets/data/characters/%s.json' % cur_char):
 		printerr('CHARACTER '+ cur_char +' does NOT have a json')
-		print(get_closest(cur_char))
+		print_rich('[color=red]'+ cur_char +' [color=yellow]-> [color=green]'+ get_closest(cur_char) +'[/color]')
 		cur_char = get_closest(cur_char)
 	
 	json = JsonHandler.get_character(cur_char) # get offsets and anim names...
@@ -218,10 +218,12 @@ func copy_char(char:Character) -> Character:
 	self.position = char.position
 	return Character.new(self.position, self.cur_char, self.is_player)
 
-func get_closest(char:String = 'bf') -> String: # if theres no character named "pico-but-devil" itll just use "pico"
-	for file in DirAccess.get_files_at('res://assets/data/characters'):
-		file = file.replace('.json', '')
-		if char.to_lower().contains(file): return file
+static func get_closest(char:String = 'bf') -> String: # if theres no character named "pico-but-devil" itll just use "pico"
+	var check = char.split('-')
+	for i in check:
+		for file in DirAccess.get_files_at('res://assets/data/characters'):
+			file = file.replace('.json', '')
+			if i.to_lower().contains(file): return file
 	return 'bf'
 
 #func get_anim(anim:String): # get the animation from the json file

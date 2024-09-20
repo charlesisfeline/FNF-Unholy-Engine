@@ -40,12 +40,7 @@ var unknown:bool = false
 var type:String = "":
 	set(new_type):
 		if (new_type.is_empty() or new_type == '0') and type.is_empty(): return
-		match new_type.to_lower().strip_edges():
-			'alt animation', 'true': new_type = 'Alt'
-			'no animation': new_type = 'No Anim'
-			'gf sing': new_type = 'GF'
-			'hurt note', 'markov note': new_type = 'Hurt'
-			'hey!': new_type = 'Hey'
+		convert_type(new_type)
 	
 		type = new_type
 		match new_type:
@@ -61,8 +56,6 @@ var type:String = "":
 			_:
 				unknown = true
 				modulate = Color.GRAY
-
-
 
 var should_hit:bool = true
 var can_hit:bool = false#:
@@ -233,6 +226,15 @@ func copy_from(item) -> void:
 		length = item.length
 		must_press = item.must_press
 		type = item.type
+
+func convert_type(t:String) -> String:
+	match t.to_lower().strip_edges():
+		'alt animation', 'true': return 'Alt'
+		'no animation': return 'No Anim'
+		'gf sing': return 'GF'
+		'hurt note', 'markov note': return 'Hurt'
+		'hey!': return 'Hey'
+		_: return t
 
 class Event extends Note:
 	func _init():

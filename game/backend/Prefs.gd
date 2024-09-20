@@ -17,11 +17,13 @@ var bad_window:int = 135
 ## VISUALS ##
 var fps:int = 60:
 	set(new): fps = new; Engine.max_fps = fps
-var vsync:bool = false:
+var vsync:String = 'disabled':
 	set(v):
-		Engine
+		vsync = v.to_lower()
+		DisplayServer.window_set_vsync_mode(get_vsync_from_string(vsync))
+
 var auto_pause:bool = true
-var chart_player:bool = false
+var basic_play:bool = false
 var allow_rpc:bool = true:
 	set(allow): 
 		allow_rpc = allow
@@ -77,6 +79,13 @@ func get_list() -> Array:
 
 	#for i in list: print(i.name)
 	return list
+	
+func get_vsync_from_string(vsync:String = 'disabled') -> DisplayServer.VSyncMode:
+	match vsync: # hell if i know what all the v syncs do and look like
+		'enabled': return DisplayServer.VSYNC_ENABLED
+		'adapt': return DisplayServer.VSYNC_ADAPTIVE
+		'mailbox': return DisplayServer.VSYNC_MAILBOX
+		_: return DisplayServer.VSYNC_DISABLED
 
 func save_prefs() -> void:
 	if cfg_file == null: 

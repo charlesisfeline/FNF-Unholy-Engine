@@ -28,6 +28,9 @@ var playback_rate:float = 1.0:
 	set(rate): 
 		playback_rate = rate
 		AudioServer.playback_speed_scale = rate
+		for i in Game.scene.get_child_count():
+			if Game.scene.get_child(i) is AnimatedSprite2D:
+				Game.scene.get_child(i).speed_scale = rate
 		#Engine.time_scale = 1
 		
 #var offset:float = 0
@@ -129,8 +132,8 @@ func connect_signals() -> void: # connect all signals
 	if Game.scene.has_method('song_end'): song_end.connect(Game.scene.song_end)
 	
 func check_resync(sound:AudioStreamPlayer) -> void: # ill keep this here for now
-	if absf(sound.get_playback_position() * 1000 - song_pos) > 20:
-		sound.seek(song_pos / 1000)
+	if absf(sound.get_playback_position() * 1000.0 - song_pos) > 20:
+		sound.seek(song_pos / 1000.0)
 		print('resynced')
 
 func resync_audio() -> void:

@@ -1,8 +1,5 @@
 extends Node2D;
 
-signal notes_loaded
-signal loaded
-
 var base_diffs:Array[String] = ['easy', 'normal', 'hard']
 var song_diffs:Array = []
 var get_diff:String
@@ -90,19 +87,18 @@ func you_WILL_get_a_json(song:String) -> FileAccess:
 	print(returned)
 	return FileAccess.open(returned, FileAccess.READ)
 
-func generate_chart(data, keep_loaded:bool = true) -> Array: # idea, split chart into parts, then load each seperately
+func generate_chart(data, keep_loaded:bool = true) -> Array:
 	if data == null: 
 		return parse_song('tutorial', get_diff)
 	
-	var chart = Chart.new()
-
-	#if parse_type != 'v_slice':
 	song_events = get_events(Game.format_str(data.song)) # load events whenever chart is made
+	
+	var chart = Chart.new()
 	
 	var _notes := chart.load_chart(data, parse_type, get_diff) # get diff here only matters for base game as of now
 	if keep_loaded:
 		chart_notes = _notes.duplicate()
-		
+	
 	return _notes
 
 func get_events(song:String = '') -> Array[EventData]:

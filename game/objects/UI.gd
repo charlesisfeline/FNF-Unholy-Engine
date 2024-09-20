@@ -175,7 +175,7 @@ func start_countdown(from_beginning:bool = false) -> void:
 			spr.texture = load('res://assets/images/ui/styles/'+ cur_style +'/'+ countdown_spr[times_looped - 1] +'.png')
 			add_child(spr)
 			spr.scale = STYLE.countdown_scale
-			spr.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR if STYLE.antialiased else CanvasItem.TEXTURE_FILTER_NEAREST
+			spr.texture_filter = Game.get_alias(STYLE.antialiased)
 			Game.center_obj(spr)
 			
 			var tween = create_tween().tween_property(spr, 'modulate:a', 0, Conductor.crochet / 1000)

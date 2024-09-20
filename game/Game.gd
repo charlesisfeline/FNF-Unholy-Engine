@@ -6,7 +6,7 @@ var TRANS = preload('res://game/objects/ui/transition.tscn') # always have it lo
 var cur_trans
 
 var persist_vars = {} # var values to remember
-var scene = null:
+var scene:Node2D = null:
 	get: return get_tree().current_scene
 	
 var screen = [
@@ -17,7 +17,6 @@ var screen = [
 # fix pause screen because it sets the paused of the tree as well
 func _ready():
 	focus_change.connect(focus_changed)
-	print(scene.name)
 
 var just_pressed:bool = false
 var is_full:bool = false
@@ -70,23 +69,31 @@ func reset_scene(_skip_trans:bool = false) -> void:
 	get_tree().reload_current_scene()
 
 func switch_scene(new_scene, skip_trans:bool = false) -> void:
+	print('LEAVING '+ scene.name)
+	print_orphan_nodes() # should not print anything if you're a good coder
+
 	if new_scene is String:
 		new_scene = new_scene.to_lower()
-		if new_scene == 'play_scene' and Prefs.chart_player: new_scene += '_empty'
+		if new_scene == 'play_scene' and Prefs.basic_play: new_scene += '_simple'
 		var path = 'res://game/scenes/%s.tscn'
 		
 		if skip_trans:
+			queue_free()	
 			get_tree().change_scene_to_file(path % new_scene)
 		else:
 			if cur_trans != null and cur_trans.in_progress:
 				cur_trans.cancel()
 				remove_child(cur_trans)
+				cur_trans.queue_free()
 				get_tree().paused = false
 				
 			get_tree().paused = true
 			cur_trans = TRANS.instantiate()
 			add_child(cur_trans)
 			await cur_trans.trans_out(0.7)
+			#for i in scene.get_child_count():
+			#	scene.get_child(i).queue_free()
+				
 			get_tree().change_scene_to_file(path % new_scene)
 			get_tree().paused = false
 			cur_trans.trans_in(1, true)
@@ -101,10 +108,11 @@ func switch_scene(new_scene, skip_trans:bool = false) -> void:
 func call_func(to_call:String, args:Array[Variant] = [], call_tree:bool = false) -> void:
 	if to_call.length() < 1 or scene == null: return
 	if call_tree:
-		for node in get_tree().get_nodes_in_group(scene.name):
-			print(node)
-			if node.has_method(to_call):
-				node.callv(to_call, args)
+		pass
+		#for node in get_tree().get_nodes_in_group(scene.name):
+		#	print(node)
+		#	if node.has_method(to_call):
+		#		node.callv(to_call, args)
 	else:
 		if scene.has_method(to_call):
 			scene.callv(to_call, args)
@@ -118,14 +126,14 @@ func round_d(num, digit) -> float: # bowomp
 func rand_bool(chance:float = 50) -> bool:
 	return true if (randi() % 100) < chance else false
 
-func remove_all(array:Array[Array], node = null) -> void:
-	if node != null:
-		for arr in array:
-			while arr.size() != 0:
-				node.remove_child(arr[0])
-				arr[0].queue_free()
-				arr.remove_at(0)
-
+func remove_all(array:Array[Array], node) -> void:
+	if node == null: node = scene
+	for sub in array:
+		while sub.size() > 0:
+			node.remove_child(sub[0])
+			sub[0].queue_free()
+			sub.pop_front()
+			
 func get_alias(antialiased:bool = true) -> CanvasItem.TextureFilter:
 	return CanvasItem.TEXTURE_FILTER_LINEAR if antialiased else CanvasItem.TEXTURE_FILTER_NEAREST
 	

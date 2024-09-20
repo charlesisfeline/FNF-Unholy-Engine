@@ -53,9 +53,10 @@ func _ready():
 	update_list()
 	
 func add_song(song:FreeplaySong) -> void:
-	var song_name = Game.format_str(song.song)
+	var song_name:String = Game.format_str(song.song)
 	if added_songs.has(song_name):
 		#print_rich("[color=yellow]"+ song.song +"[/color] already added, skipping")
+		song.queue_free()
 		return
 		
 	added_songs.append(song_name)
