@@ -2,8 +2,10 @@ extends Node2D
 
 var sec_title:Alphabet
 var notif:Alphabet = Alphabet.new('Press a key for: ')
-var is_changing:bool = false
-var selected_bind:String
+var bg_box:ColorRect
+var changing_key:bool = false
+var can_accept_input:bool = false
+var selected_bind:String = ''
 var alt:int = 0 # for getting the first or second bind of a key
 var key_names:Array = ['left', 'down', 'up', 'right']
 
@@ -12,14 +14,22 @@ var cur_bind:int = 0
 var key_binds:Array = []
 var strums:Array[Strum]
 const DEFAULT_KEYS = [['A', 'S', 'W', 'D'], ['Left', 'Down', 'Up', 'Right']]
+
 func _ready():
 	sec_title = Alphabet.new()
 	sec_title.position = Vector2(450, 110)
 	add_child(sec_title)
 	
+	bg_box = ColorRect.new()
+	bg_box.color = Color(0, 0, 0, 0.7)
+	bg_box.custom_minimum_size = Vector2(Game.screen[0] + 10, Game.screen[1] + 10)
+	bg_box.position = Vector2(-5, -5)
+	$Over.add_child(bg_box)
+	bg_box.visible = false
+	
 	notif.scale = Vector2(0.7, 0.7)
 	notif.position = Vector2(200, 200)
-	add_child(notif)
+	$Over.add_child(notif)
 	notif.visible = false
 	swap_menu('note')
 	$SelectBox.scale = Vector2(3, 1.2)
@@ -33,59 +43,68 @@ func _ready():
 		add_child(temp_strum)
 		strums.append(temp_strum)
 
-func _process(delta):
-	if !is_changing:
-		if Input.is_action_just_pressed('menu_left'): update_selection(-1)
-		if Input.is_action_just_pressed('menu_down'): update_selection(4)
-		if Input.is_action_just_pressed('menu_up'): update_selection(-4)
+func _unhandled_key_input(event:InputEvent):
+	if Input.is_action_just_pressed("back"):
+		if changing_key:
+			toggle_change('', false)
+		else:
+			Prefs.set_keybinds()
+			Game.switch_scene('menus/options_menu')
+			
+	if !changing_key:
+		if Input.is_key_pressed(KEY_R):
+			Prefs.note_keys = [['A', 'S', 'W', 'D'],['Left', 'Down', 'Up', 'Right']]
+			Prefs.set_keybinds()
+			swap_menu('note')
+			
+		if Input.is_action_just_pressed('menu_left') : update_selection(-1)
 		if Input.is_action_just_pressed('menu_right'): update_selection(1)
+		if Input.is_action_just_pressed('menu_down') : update_selection(4)
+		if Input.is_action_just_pressed('menu_up')   : update_selection(-4)
 	
-		if Input.is_action_just_pressed("accept"):
-			if key_binds[cur_bind] != null:
-				alt = 0 if cur_bind < floor(key_binds.size() / 2) else 1
-				start_change(cur_menu +'_'+ key_names[cur_bind % 4])
-		if Input.is_action_just_pressed("back"):
-			if is_changing: 
-				is_changing = false
-				selected_bind = ''
-			else:
-				Prefs.set_keybinds()
-				Game.switch_scene('menus/options_menu')
-
-func _unhandled_key_input(event):
-	if !is_changing or selected_bind.length() < 1 or event.pressed or event.is_released() or event is InputEventMouseButton: return
-	var old_key = key_binds[cur_bind].text
-	var key_name = OS.get_keycode_string(event.keycode)
-	var to_replace = InputMap.action_get_events(selected_bind)[alt]
+		if Input.is_action_just_pressed("accept") and key_binds[cur_bind] != null:
+			toggle_change(cur_menu +'_'+ key_names[cur_bind % 4])
+			
+	if changing_key:
+		if !selected_bind.is_empty() and can_accept_input and !event.is_released():
+			var old_key = key_binds[cur_bind].text
+			var key_name = OS.get_keycode_string(event.keycode)
+			
+			var old_event:InputEvent = InputMap.action_get_events(selected_bind)[alt]
+			if InputMap.action_has_event(selected_bind, old_event):
+				InputMap.action_erase_event(selected_bind, old_event)
 	
-	if to_replace != null:
-		InputMap.action_erase_event(selected_bind, to_replace)
+			var new_key = InputEventKey.new()
+			new_key.set_keycode(event.keycode)
+			InputMap.action_add_event(selected_bind, new_key)
 	
-	var new_key = InputEventKey.new()
-	new_key.set_keycode(event.keycode)
-	InputMap.action_add_event(selected_bind, new_key)
-	
-	print('changed '+ selected_bind +'['+ str(alt) +'] to '+ key_name)
-	
-	Prefs.note_keys[alt][Prefs.note_keys[alt].find(old_key)] = key_name
-	Prefs.save_prefs()
-	
-	swap_menu('note') #update the text
-	await get_tree().create_timer(0.2).timeout
-	selected_bind = ''
-	is_changing = false
-	notif.visible = false
+			print('Keybinds: '+ selected_bind +'['+ str(alt) +'] changed ('+ old_key +' -> '+ key_name +')')
+			
+			Prefs.note_keys[alt][cur_bind % 4] = key_name
+			#print(Prefs.note_keys)
+			Prefs.save_prefs()
+			
+			key_binds[cur_bind].text = key_name
+			
+			toggle_change('', false)
 	
 func update_selection(amount:int = 0) -> void:
 	cur_bind = wrapi(cur_bind + amount, 0, key_binds.size())
-	$SelectBox.position = key_binds[cur_bind].position - Vector2(10, 55)
+	alt = 0 if cur_bind < floor(key_binds.size() / 2) else 1
+	$SelectBox.position = key_binds[cur_bind].position - Vector2(10, 60)
 	
-func start_change(bind:String) -> void:
-	notif.text = 'Press a key for: '+ bind.replace('_', ' ')
-	notif.visible = true
-	await get_tree().create_timer(0.15).timeout #wait a sec so it doesnt auto set it to enter or something
+func toggle_change(bind:String = '', on:bool = true) -> void:
+	if !bind.is_empty():
+		notif.text = 'Press a key for: '+ bind.capitalize()
 	selected_bind = bind
-	is_changing = true
+	notif.visible = on
+	bg_box.visible = on
+	changing_key = on
+	if on:
+		await get_tree().create_timer(0.1).timeout
+		can_accept_input = true
+	else:
+		can_accept_input = false
 	
 func swap_menu(to_keys:String = 'note') -> void:
 	var colum:int = 0
@@ -108,7 +127,7 @@ func swap_menu(to_keys:String = 'note') -> void:
 		strum.visible = to_keys == 'note'
 	for _set in _binds:
 		for key in _set:
-			if key.length() < 1: key = 'None'
+			if key.is_empty(): key = 'None'
 			var new_key = Alphabet.new(key, false)
 			new_key.modulate = Color.BLACK
 			new_key.position = Vector2(400 + (200 * colum), 300 + (100 * rows))

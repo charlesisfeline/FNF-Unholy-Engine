@@ -72,12 +72,13 @@ func add_song(song:FreeplaySong) -> void:
 
 var lerp_score:int = 0
 var actual_score:int = 2384397
+
 func _process(delta):
 	lerp_score = floor(lerp(actual_score, lerp_score, exp(-delta * 24)))
 	if abs(lerp_score - actual_score) <= 10:
 		lerp_score = actual_score
 		
-	$SongInfo/Score.text = 'Best Score: ' + str(lerp_score)
+	$SongInfo/Score.text = 'Best Score: '+ str(lerp_score)
 	$SongInfo/Score.position.x = Game.screen[0] - $SongInfo/Score.size[0] - 6
 	$SongInfo/ScoreBG.scale.x = Game.screen[0] - $SongInfo/Score.position.x + 6
 	$SongInfo/ScoreBG.position.x = Game.screen[0] - ($SongInfo/ScoreBG.scale.x / 2)
@@ -150,7 +151,6 @@ func update_save() -> void: # update the file with any new songs/difficulties
 		
 		for dif in song.diff_list: 
 			if da_diffs.has(dif): continue
-			print(dif)
 			da_diffs[dif] = [0, 0, 'N/A'] # score, accuracy, fc
 		best_scores.set_value('Song Scores', _name, da_diffs)
 	

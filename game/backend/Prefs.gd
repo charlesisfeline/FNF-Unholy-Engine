@@ -1,6 +1,6 @@
 extends Node2D
 
-var cfg_file:ConfigFile = ConfigFile.new()
+var saved_prefs:ConfigFile = ConfigFile.new()
 ## GAMEPLAY ##
 var auto_play:bool = false
 var ghost_tapping:bool = true
@@ -88,14 +88,14 @@ func get_vsync_from_string(vsync:String = 'disabled') -> DisplayServer.VSyncMode
 		_: return DisplayServer.VSYNC_DISABLED
 
 func save_prefs() -> void:
-	if cfg_file == null: 
+	if saved_prefs == null: 
 		printerr('CONFIG FILE is NOT loaded, couldn\'t save')
 		return
 		
 	for i in get_list():
-		cfg_file.set_value('Preferences', i.name, get(i.name))
+		saved_prefs.set_value('Preferences', i.name, get(i.name))
 		
-	cfg_file.save('user://data.cfg')
+	saved_prefs.save('user://data.cfg')
 	#set_keybinds()
 	print('Saved Preferences')
 	
@@ -113,15 +113,15 @@ func check_prefs():
 
 	if config_exists: 
 		var prefs_changed:bool = false
-		cfg_file.load('user://data.cfg')
+		saved_prefs.load('user://data.cfg')
 		for pref in list:
-			if !cfg_file.has_section_key('Preferences', pref.name):
+			if !saved_prefs.has_section_key('Preferences', pref.name):
 				prefs_changed = true
-				cfg_file.set_value('Preferences', pref.name, get(pref.name))
+				saved_prefs.set_value('Preferences', pref.name, get(pref.name))
 		if prefs_changed: # if a pref was added, resave the cfg file
 			print('prefs changed, updating')
-			cfg_file.save('user://data.cfg')
+			saved_prefs.save('user://data.cfg')
 			
-		cfg_file = load_prefs()
+		saved_prefs = load_prefs()
 	else:
 		save_prefs()
