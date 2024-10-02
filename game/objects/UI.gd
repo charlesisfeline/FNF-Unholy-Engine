@@ -35,7 +35,7 @@ var sounds:Array[String] = ['intro3', 'intro2', 'intro1', 'introGo']
 var total_hit:float = 0
 var note_percent:float = 0
 var accuracy:float = -1
-var hit_count:Dictionary = {'sick': 0, 'good': 0, 'bad': 0, 'shit': 0, 'miss': 0}
+var hit_count:Dictionary = {'epic': 0, 'sick': 0, 'good': 0, 'bad': 0, 'shit': 0, 'miss': 0}
 var fc:String = 'N/A'
 
 var def_mark_scale:Vector2 = Vector2(0.7, 0.7)
@@ -115,9 +115,10 @@ func get_acc() -> String:
 	
 func get_fc() -> String:
 	if hit_count['miss'] == 0: # dumb
-		var da_fc:String = 'SFC'
+		var da_fc:String = 'FC'
+		if hit_count['epic'] > 0: da_fc = 'EFC'
+		if hit_count['sick'] > 0: da_fc = 'SFC'
 		if hit_count['good'] > 0: da_fc = 'GFC'
-		if hit_count['bad'] > 0 or hit_count['shit'] > 0: da_fc = 'FC'
 		return da_fc
 	if hit_count['miss'] in range(1, 10):
 		return 'SDCB'
@@ -183,8 +184,12 @@ func start_countdown(from_beginning:bool = false) -> void:
 		Audio.play_sound('skins/'+ cur_style +'/'+ sounds[times_looped])
 		start_countdown()
 	else:
-		finished_countdown = true
+		stop_countdown()
+		song_start.emit()
+
+func stop_countdown() -> void:
+	finished_countdown = true
+	times_looped = -1
+	if count_down != null:
 		remove_child(count_down)
 		count_down.queue_free()
-		times_looped = -1
-		song_start.emit()

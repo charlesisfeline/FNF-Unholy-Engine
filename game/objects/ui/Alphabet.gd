@@ -97,7 +97,6 @@ func make_text(tx:String) -> void:
 		letters_made.append(letter)
 		cur_loop += 1
 	
-	name = 'Alphabet:'+ text
 	for i in letters_made:
 		if i.char != '': width += i._width
 		add_child(i)
@@ -130,8 +129,13 @@ func get_anim(item) -> String:
 		"]": return ")" if !bold else "]"
 		"&": return "amp"
 		"!": return "exclamation"
+		"¡": return "inverted exclamation"
 		"'": return "apostrophe"
+		",": return "comma"
 		"?": return "question"
+		"¿": return "inverted question"
+		"/": return "forward slash"
+		".": return "period"
 		_:
 			if item == null or item == "" or item == "\n": return ""
 			if !bold:
@@ -146,6 +150,7 @@ func offset_letter(item) -> Vector2:
 		'!': return Vector2(0, -5)
 		':': return Vector2(0, 7)
 		"'": return Vector2(0, -5)
+		",": return Vector2(0, 10)
 		_: return Vector2.ZERO
 
 class Letter extends AnimatedSprite2D:

@@ -1,13 +1,12 @@
 extends Node2D
 
 var credits:Array[Array] = [
-	['Test',         'empty',  'Just a Test',        Color.ROSY_BROWN, func(): Audio.play_sound('cackles_like_a_dumbass')],
-	['Shadow Mario', 'empty',  'Psyched Individual', Color.DIM_GRAY, func(): OS.shell_open('https://ninja-muffin24.itch.io/funkin')],
-	['Zyflx',        'empty',  'Boobie Guy',         Color.DARK_RED, func(): Audio.play_sound('cackles_like_a_dumbass')],
-	['Maru',         'empty',  'Very Gay',           Color.DARK_RED, func(): Audio.play_sound('cackles_like_a_dumbass')],
-	['Crowplexus',   'empty',  'Godot woman',        Color.DARK_RED, func(): Audio.play_sound('cackles_like_a_dumbass')],
-	['Daniel',       'daniel',    'heieh',           Color(0.22, 0.21, 0.34), func(): Prefs.daniel = true],
-
+	['People I Stole From'],
+	['Shadow Mario', 'shadow',  'Psyched Individual', Color.DIM_GRAY, func(): OS.shell_open('https://github.com/ShadowMario')],
+	['Zyflx',        'zyflx',  'Boobie Guy', Color(0.24, 0.78, 0.29), func(): OS.shell_open('https://www.youtube.com/@Zyflx')],
+	['Crowplexus',   'crow',  'Venha pequena fruta, venha comigo', Color.DARK_RED, func(): OS.shell_open('https://github.com/crowplexus')],
+	['Maru',         'empty',  'Very Gay', Color.DARK_RED, func(): print('nothing')],
+	['Daniel',       'daniel',    'heieh', Color(0.22, 0.21, 0.34), func(): Prefs.daniel = true],
 ]
 
 #var credits = [
@@ -51,7 +50,7 @@ func _process(delta):
 	pass
 
 func _unhandled_key_input(event:InputEvent) -> void:
-	if Input.is_action_just_pressed("accept"):
+	if Input.is_action_just_pressed("accept") and credits[cur_select].size() > 4:
 		credits[cur_select][4].call()
 	if Input.is_action_just_pressed("back"):
 		Game.switch_scene('menus/main_menu')
@@ -64,14 +63,16 @@ func update_selection(amount:int = 0) -> void:
 	if amount != 0: Audio.play_sound('scrollMenu')
 	cur_select = wrapi(cur_select + amount, 0, credits.size())
 	
-	if FileAccess.file_exists('res://assets/images/credits/'+ credits[cur_select][1] +'_img.jpg'):
-		$CreditImage.visible = true
-		$CreditImage.texture = load('res://assets/images/credits/'+ credits[cur_select][1] +'_img.jpg')
-	else:
-		$CreditImage.visible = false
+	if credits[cur_select].size() > 1:
+		if FileAccess.file_exists('res://assets/images/credits/'+ credits[cur_select][1] +'_img.jpg'):
+			$CreditImage.visible = true
+			$CreditImage.texture = load('res://assets/images/credits/'+ credits[cur_select][1] +'_img.jpg')
+		else:
+			$CreditImage.visible = false
 		
 	cred_desc.text = credits[cur_select][2] if credits[cur_select].size() > 2 else ''
-	
+	cred_desc.color = Color.WHITE
+
 	var new_col = credits[cur_select][3] if credits[cur_select].size() > 3 else Color.WHITE
 	if col_tween: col_tween.kill()
 	col_tween = create_tween()

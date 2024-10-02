@@ -46,8 +46,12 @@ class Train extends Sprite2D:
 				frame_limit = 0.0
 				if sound.get_playback_position() >= 4.7:
 					started = true
-					Game.scene.gf.idle_suffix = '-hair' #play_anim('hairBlow')
-					#Game.scene.gf.special_anim = true
+					Game.scene.gf.play_anim('hairBlowLeft')
+					Game.scene.gf.can_dance = false
+					#var last_frame:int = Game.scene.gf.frame
+					#Game.scene.gf.play_anim(Game.scene.gf.animation +'-hair')
+					#Game.scene.gf.frame = last_frame
+					
 				if started:
 					position.x -= 400
 					if position.x < -2000 && !stopping:
@@ -58,20 +62,29 @@ class Train extends Sprite2D:
 					
 					if position.x < -4000 && stopping:
 						restart()
-				
+						
+	var dance_gf:bool = false
 	func beat_hit(beat:int):
 		if !active:
 			cooldown += 1
 
-		if beat % 8 == 4 && Game.rand_bool(30) && !active && cooldown > 8:
+		if beat % 8 == 4 && Game.rand_bool(30) && !active && cooldown > 8: # 30
 			cooldown = randi_range(-4, 0)
 			active = true
 			sound.play(0)
 				
 	func restart() -> void:
-		Game.scene.gf.idle_suffix = ''
-		Game.scene.gf.play_anim('hairFall')
-		Game.scene.gf.special_anim = true
+		var geef:Character = Game.scene.gf
+		#geef.idle_suffix = ''
+		geef.play_anim('hairFall')
+		#geef.can_dance = false
+		geef.special_anim = true
+		geef.danced = false
+		geef.can_dance = true
+		#geef.anim_finished = func():
+		#	geef.can_dance = true
+		#	geef.danced = true
+		#	geef.reset_func()
 		#Game.scene.gf.danced = Game.scene.gf.danced
 		
 		

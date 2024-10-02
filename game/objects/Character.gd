@@ -24,15 +24,26 @@ var hold_timer:float = 0.0
 var sing_duration:float = 4.0
 var sing_timer:float = 0.0 # for anim looping with sustains
 
-var special_anim:bool = false
 var last_anim:StringName = ''
-var anim_timer:float = 0.0: # play an anim for a certain amount of time
+var special_anim:bool = false:
+	set(spec): 
+		if spec: last_anim = animation
+		special_anim = spec
+var anim_timer:float = -1.0: # play an anim for a certain amount of time
 	set(time):
 		anim_timer = time
 		if !special_anim and time > 0:
 			special_anim = true
-			last_anim = animation
+			
+var on_anim_finished:Callable = func():
+	special_anim = false
+	can_dance = true
+	dance()
+	animation_finished.disconnect(on_anim_finished)
 
+var anim_finished:bool:
+	get: return frame == sprite_frames.get_frame_count(animation) - 1
+	
 var width:float = 0.0:
 	get: return width * abs(scale.x)
 var height:float = 0.0:
@@ -41,8 +52,7 @@ var height:float = 0.0:
 var antialiasing:bool = true:
 	get: return texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST
 	set(anti):
-		var filter = CanvasItem.TEXTURE_FILTER_LINEAR if anti else CanvasItem.TEXTURE_FILTER_NEAREST
-		texture_filter = filter
+		texture_filter = Game.get_alias(anti)
 
 var sing_anims:Array[String] = ['singLEFT', 'singDOWN', 'singUP', 'singRIGHT']
 
@@ -51,7 +61,7 @@ func _init(pos:Vector2 = Vector2.ZERO, char:String = 'bf', player:bool = false):
 	#cur_char = char
 	is_player = player
 	position = pos
-	print('init ' + char)
+	#print('init ' + char)
 	load_char(char)
 	
 func load_char(new_char:String = 'bf') -> void:
@@ -109,16 +119,14 @@ func load_char(new_char:String = 'bf') -> void:
 func _process(delta):
 	sing_timer = max(sing_timer - delta, 0)
 	if special_anim:
-		if anim_timer <= 0:
-			await animation_finished
-			special_anim = false
-			dance()
+		if anim_timer == -1.0:
+			if !animation_finished.is_connected(on_anim_finished):
+				animation_finished.connect(on_anim_finished)
 		else:
 			anim_timer = max(anim_timer - delta, 0)
-			if anim_timer <= 0:
+			if anim_timer <= 0.0:
 				special_anim = false
 				if animation == last_anim:
-					print('boogie')
 					dance()
 	else:
 		if animation.begins_with('sing'):
@@ -150,12 +158,16 @@ func _process(delta):
 
 func dance(forced:bool = false) -> void:
 	if special_anim or !can_dance: return
-	if looping: forced = true
+	#if looping: forced = true
 	var idle:String = 'idle'
 	if dance_idle:
 		danced = !danced
 		idle = 'dance'+ ('Right' if danced else 'Left')
 	
+	#modulate.v = 1000
+	#test.tween_property(self, 'modulate:v', 1, Conductor.step_crochet / 500.0)
+	
+	times_danced += 1
 	play_anim(idle + idle_suffix, forced)
 	hold_timer = 0
 	sing_timer = 0
@@ -164,7 +176,7 @@ func sing(dir:int = 0, suffix:String = '', reset:bool = true) -> void:
 	hold_timer = 0
 
 	if sing_timer == 0:
-		sing_timer = 0 if reset else Conductor.step_crochet / 1200.0
+		sing_timer = 0 if reset else Conductor.step_crochet / 1000.0
 		play_anim(sing_anims[dir] + suffix, true)
 
 func flip_char() -> void:
@@ -179,6 +191,7 @@ func swap_sing(anim1:String, anim2:String) -> void:
 	sing_anims[index1] = anim2
 	sing_anims[index2] = anim1
 
+var times_danced:int = 0
 func play_anim(anim:String, forced:bool = false) -> void:
 	if forced_suffix.length() > 0: 
 		anim += forced_suffix
@@ -188,8 +201,12 @@ func play_anim(anim:String, forced:bool = false) -> void:
 	
 	looping = false
 	special_anim = false
+	anim_timer = -1.0
+
 	play(anim)
 	if forced: frame = 0
+	#if cur_char == 'gf':
+	#	print(anim +' | '+ str(danced) +' | '+ str(times_danced))
 
 	if offsets.has(anim):
 		var anim_offset = offsets[anim]
@@ -219,11 +236,15 @@ func copy_char(char:Character) -> Character:
 	return Character.new(self.position, self.cur_char, self.is_player)
 
 static func get_closest(char:String = 'bf') -> String: # if theres no character named "pico-but-devil" itll just use "pico"
-	var check = char.split('-')
-	for i in check:
+	for file in DirAccess.get_files_at('res://assets/data/characters'):
+		file = file.replace('.json', '')
+		if file.to_lower().contains(char): return file
+		
+	for i in char.split('-'): # get more specific
 		for file in DirAccess.get_files_at('res://assets/data/characters'):
 			file = file.replace('.json', '')
 			if i.to_lower().contains(file): return file
+			
 	return 'bf'
 
 #func get_anim(anim:String): # get the animation from the json file

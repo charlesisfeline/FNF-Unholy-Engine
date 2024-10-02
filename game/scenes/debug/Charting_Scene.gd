@@ -593,8 +593,6 @@ func update_grids(skip_remake:bool = false, only_current:bool = false) -> void:
 	next_grid.visible = cur_section < SONG.notes.size() - 1
 	next_e_grid.visible = next_grid.visible
 	
-	#print('loaded '+ str(new_sec.sectionNotes.size()) +' notes')
-
 	if cur_section > 0 and prev_grid.visible:
 		var last_sec = SONG.notes[cur_section - 1]
 		make_notes.call(last_sec, prev_grid, -1, prev_notes)

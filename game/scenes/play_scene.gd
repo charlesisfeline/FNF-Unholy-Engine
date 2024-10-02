@@ -39,7 +39,7 @@ var opponent_strums:Array[Strum] = []
 
 var key_names = ['note_left', 'note_down', 'note_up', 'note_right']
 
-var should_save:bool = !Prefs.auto_play
+var should_save:bool = false #!Prefs.auto_play
 @onready var auto_play:bool:
 	set(auto):
 		if auto: should_save = false
@@ -147,7 +147,7 @@ func _ready():
 		stage.move_child(gf, 2)
 	
 	if Prefs.rating_cam == 'game':
-		Judge.rating_pos = boyfriend.position + Vector2(-15, -15)
+		Judge.rating_pos = boyfriend.position + Vector2(0, -40)
 		Judge.combo_pos = boyfriend.position + Vector2(-150, 60)
 	elif Prefs.rating_cam == 'hud':
 		Judge.rating_pos = Vector2(580, 300)
@@ -191,9 +191,8 @@ var section_data
 var chunk:int = 0
 func _process(delta):
 	if Input.is_key_pressed(KEY_R): ui.hp = 0
-	#if ui.hp <= 0:
-		#print('die')
-		#try_death()
+	if ui.hp <= 0:
+		try_death()
 		
 	if Input.is_action_just_pressed("debug_1"):
 		await RenderingServer.frame_post_draw
@@ -346,6 +345,7 @@ func key_release(key:int = 0) -> void:
 	ui.player_strums[key].play_anim('static')
 
 func try_death() -> void:
+	kill_all_notes()
 	boyfriend.process_mode = Node.PROCESS_MODE_ALWAYS
 	gf.play_anim('sad')
 	get_tree().paused = true
@@ -371,9 +371,7 @@ func refresh(restart:bool = true) -> void: # start song from beginning with no r
 	Conductor.reset_beats()
 	Conductor.bpm = SONG.bpm # reset bpm to init whoops
 	
-	while notes.size() != 0:
-		kill_note(notes[0])
-	notes.clear()
+	if !notes.is_empty(): kill_all_notes()
 	events.clear()
 	
 	for strum in ui.player_strums:
@@ -412,9 +410,13 @@ func event_hit(event:EventData) -> void:
 			else:
 				cur_speed = new_speed
 		'Add Camera Zoom':
-			pass
-			#ui.zoom += 0.02
-			#cam.zoom += Vector2(0.04, 0.04)
+			var ev_zoom = [float(event.values[0]), float(event.values[1])]
+
+			var zoom_ui = 0.015 if is_nan(ev_zoom[0]) else ev_zoom[0]
+			var zoom_game = 0.3 if is_nan(ev_zoom[0]) else ev_zoom[0]
+			
+			ui.zoom += zoom_ui
+			cam.zoom += Vector2(zoom_game, zoom_game)
 		'Change Character': 
 			var char = "boyfriend"
 			var new_char = Character.get_closest(event.values[1])
@@ -428,7 +430,10 @@ func event_hit(event:EventData) -> void:
 				get(char).position = last_pos
 				if char == 'boyfriend': ui.icon_p1.change_icon(get(char).icon, true)
 				if char == 'dad': ui.icon_p2.change_icon(get(char).icon)
-			
+		
+		'Set GF Speed':
+			var new_speed = int(event.values[0])
+			gf.dance_beat = new_speed if new_speed != null else 1
 		'FocusCamera':
 			move_cam(event.values[0].char == 0)
 			pass
@@ -459,8 +464,10 @@ func good_note_hit(note:Note) -> void:
 	combo += 1
 	grace = combo > 10
 	pop_up_combo(note.rating, combo)
-	score += int(300 * (((1.0 + exp(-0.08 * (abs(time) - 40))) + 54.99)) / (55 / judge_info[2])) # good enough im happy
-	#print(int(300 * (((1.0 + exp(-0.08 * (abs(time) - 40))) + 54.99)) / (55 / judge_info[2])))
+	var to_add = int(300 * (((1.0 + exp(-0.08 * (abs(time) - 40))) + 66.3)) / (55 / judge_info[2])) # good enough im happy
+	score += judge_info[0] if Prefs.legacy_score else to_add
+	# 500 is the perfect hit score amount
+	#print(int(300 * (((1.0 + exp(-0.08 * (abs(time) - 40))) + 66.3)) / (55 / judge_info[2])))
 	ui.note_percent += judge_info[1]
 	ui.total_hit += 1
 	ui.hit_count[note.rating] += 1
@@ -469,7 +476,7 @@ func good_note_hit(note:Note) -> void:
 	ui.update_score_txt()
 	kill_note(note)
 
-	if Prefs.hitsound_volume != 0:
+	if Prefs.hitsound_volume > 0:
 		Audio.play_sound('hitsound', Prefs.hitsound_volume / 100.0)
 
 var time_dropped:float = 0
@@ -540,7 +547,8 @@ func note_miss(note:Note) -> void:
 
 		kill_note(note)
 	
-	if combo >= 5: pop_up_combo('', '000', true)
+	pop_up_combo('miss', ('000' if combo >= 5 else ''), true)
+	#if combo >= 5: pop_up_combo('', '000', true)
 		
 	combo = 0
 	
@@ -578,3 +586,8 @@ func kill_note(note:Note) -> void:
 		note.spawned = false
 		notes.remove_at(notes.find(note))
 		note.queue_free()
+
+func kill_all_notes() -> void:
+	while notes.size() != 0:
+		kill_note(notes[0])
+	notes.clear()

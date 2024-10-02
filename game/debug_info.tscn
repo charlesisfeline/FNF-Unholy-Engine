@@ -19,6 +19,17 @@ theme_override_fonts/font = ExtResource("2_56t0x")
 theme_override_font_sizes/font_size = 14
 text = "Freams you sec: 104!"
 
+[node name="Other" type="Label" parent="."]
+offset_left = 10.0
+offset_top = 30.0
+offset_right = 156.0
+offset_bottom = 53.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+theme_override_fonts/font = ExtResource("2_56t0x")
+theme_override_font_sizes/font_size = 11
+text = "Freams you sec: 104!"
+
 [node name="Volume" type="Control" parent="."]
 layout_mode = 3
 anchor_left = 0.434

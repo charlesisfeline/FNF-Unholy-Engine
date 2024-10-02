@@ -2,7 +2,7 @@ extends Node2D
 
 var first_init:bool = true
 var can_rpc:bool
-var _info = {id = 1225971084998737952, l_img = 'fembo', l_txt = 'out here unholy-ing baby'}
+var _info = {id = 1225971084998737952, l_img = 'deedee_phantonm', l_txt = 'out here unholy-ing baby'}
 
 var last_presence:Array[String] = [] # hold the actual presence text, so it can swap
 func init_discord() -> void:

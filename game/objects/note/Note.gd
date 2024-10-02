@@ -40,10 +40,9 @@ var unknown:bool = false
 var type:String = "":
 	set(new_type):
 		if (new_type.is_empty() or new_type == '0') and type.is_empty(): return
-		convert_type(new_type)
 	
-		type = new_type
-		match new_type:
+		type = convert_type(new_type)
+		match type:
 			'Hey': pass
 			'Alt': alt = '-alt'
 			'No Anim': no_anim = true

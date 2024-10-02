@@ -28,7 +28,7 @@ func _process(delta):
 
 func set_music(new_music:String, vol:float = 1, looped:bool = true): # set the music without auto playing it
 	var path:String = 'assets/music/'+ new_music +'.ogg'
-	if FileAccess.file_exists('res://'+ path):
+	if ResourceLoader.exists('res://'+ path):
 		Player.stream = load('res://'+ path)
 		music = new_music
 		volume = vol
@@ -63,7 +63,7 @@ func finished():
 func return_sound(sound:String, use_skin:bool = false) -> AutoSound:
 	if use_skin and !sound.begins_with('skins/'): 
 		sound = 'skins/'+ Game.scene.cur_style +'/'+ sound
-	return AutoSound.new('res://assets/audio/%s.ogg' % sound)
+	return AutoSound.new('res://assets/sounds/%s.ogg' % sound)
 
 func play_sound(sound:String, vol:float = 1, use_skin:bool = false, auto_clear:bool = true) -> void:
 	if use_skin and !sound.begins_with('skins/'): 

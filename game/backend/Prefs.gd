@@ -10,9 +10,10 @@ var middlescroll:bool = false
 var hitsound_volume:int = 0 # will be divided by 100
 var offset:int = 0
 
-var sick_window:int = 45
-var good_window:int = 90
-var bad_window:int = 135
+var epic_window:float = 22.5
+var sick_window:float = 45.0
+var good_window:float = 90.0
+var bad_window:float = 135.0
 
 ## VISUALS ##
 var fps:int = 60:
@@ -34,6 +35,7 @@ var splash_sprite:String = 'haxe'
 var behind_strums:bool = false
 var rating_cam:String = 'game'
 var chart_grid:bool = true
+var legacy_score:bool = false
 
 var daniel:bool = false: # if you switch too much, it'll break lol
 	set(dani): 

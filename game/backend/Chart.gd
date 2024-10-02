@@ -33,6 +33,7 @@ func load_named_chart(song_name:String, chart_name:String = ''):
 func load_common(data) -> Array:
 	for sec in data.notes:
 		for note in sec.sectionNotes:
+			if note[1] < 0: continue
 			var time:float = maxf(0, note[0])
 			if note[2] is String: continue
 			var sustain_length:float = maxf(0, note[2])
@@ -45,8 +46,8 @@ func load_common(data) -> Array:
 			var to_add = [round(time), n_data, is_sustain, sustain_length, must_hit, type]
 			if !return_notes.has(to_add): # skip adding a note that exists
 				return_notes.append(to_add)
-			return_notes.sort_custom(func(a, b): return a[0] < b[0])
-			
+	
+	return_notes.sort_custom(func(a, b): return a[0] < b[0])
 	return return_notes
 
 # new base game
@@ -61,8 +62,8 @@ func load_base(data, diff:String = 'normal') -> Array:
 		var to_add = [round(time), int(note.d), sustain_length > 0, sustain_length, note.d <= 3, type]
 		if !return_notes.has(to_add): # skip adding a note that exists
 			return_notes.append(to_add)
-		return_notes.sort_custom(func(a, b): return a[0] < b[0])
 	
+	return_notes.sort_custom(func(a, b): return a[0] < b[0])
 	return return_notes
 
 func get_events(song:String = '') -> Array[EventData]:

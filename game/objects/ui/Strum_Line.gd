@@ -40,7 +40,10 @@ func note_hit(note:Note) -> void:
 		else:
 			singer.sing(note.dir, note.alt, !note.is_sustain)
 			
-	if Prefs.note_splashes == 'all' or (Prefs.note_splashes == 'sicks' and note.rating == 'sick'):
+	var can_splash = note.rating == 'sick' or note.rating == 'epic'
+	if Prefs.note_splashes == 'all' or \
+	  (Prefs.note_splashes == 'epics' and note.rating == 'epic') or \
+	  (Prefs.note_splashes == 'both' and can_splash):
 		spawn_splash(get_strums()[note.dir])
 
 func note_miss(note:Note) -> void:
@@ -65,7 +68,7 @@ func strum_anim(dir:int = 0, player:bool = false, force:bool = true) -> void:
 	
 	if force or strum.anim_timer <= 0:
 		strum.play_anim('confirm', true)
-		strum.anim_timer = Conductor.step_crochet / 1200.0
+		strum.anim_timer = Conductor.step_crochet / 1000.0
 	
 	if !player:
 		strum.reset_timer = Conductor.step_crochet * 1.25 / 1000.0 #0.15

@@ -109,7 +109,7 @@ func get_events(song:String = '') -> Array[EventData]:
 	if _SONG.has('events'): # check current song json for any events
 		events_found.append_array(_SONG.events)
 	
-	if parse_type != 'v_slice' and FileAccess.file_exists(path_to_check): # then check if there is a event json
+	if parse_type != 'v_slice' and ResourceLoader.exists(path_to_check, 'JSON'): # then check if there is a event json
 		print(path_to_check)
 		
 		var json = JSON.parse_string(FileAccess.open(path_to_check, FileAccess.READ).get_as_text())

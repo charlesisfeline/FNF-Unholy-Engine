@@ -41,7 +41,7 @@ func beat_hit(beat) -> void:
 	if !finished_intro:
 		match beat:
 			1:
-				Audio.play_music() # restart song so it sync
+				Audio.play_music('freakyMenu') # restart song so it sync
 				create_tween().tween_property(Audio, 'volume', 0.7, 4)
 			2: make_funny(['Stupid ass engine by'], 40)
 			4: add_funny('unholywanderer', 40)

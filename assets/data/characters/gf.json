@@ -197,7 +197,7 @@
 				-8
 			],
 			"fps": 24,
-			"anim": "hairBlow",
+			"anim": "hairBlowLeft",
 			"indices": [
 				0,
 				1,

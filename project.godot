@@ -12,6 +12,7 @@ config_version=5
 
 config/name="FNF-Unholy Engine"
 config/description="A stupid FNF Engine made in Godot (for the 1,000,000th time)"
+config/tags=PackedStringArray("audio")
 run/main_scene="res://game/scenes/menus/title_scene.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://icon.png"
@@ -22,13 +23,10 @@ Prefs="*res://game/backend/Prefs.gd"
 Audio="*res://game/backend/Audio.gd"
 Game="*res://game/Game.gd"
 Conductor="*res://game/backend/Conductor.gd"
+HighScore="*res://game/backend/HighScore.gd"
 DebugInfo="*res://game/debug_info.tscn"
 JsonHandler="*res://game/backend/JsonHandler.gd"
 Discord="*res://game/backend/Discord.gd"
-
-[debug]
-
-settings/stdout/verbose_stdout=true
 
 [display]
 
@@ -44,10 +42,20 @@ project/assembly_name="Unholy Engine"
 [editor]
 
 movie_writer/movie_file="C:/Users/Jaeden/Downloads/Ay yo codin/Godot v4.2.2/Unholy Engine/wargh.avi"
+export/convert_text_resources_to_binary=false
 
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/discord-rpc-gd/plugin.cfg")
+
+[file_customization]
+
+folder_colors={
+"res://assets/": "red",
+"res://game/": "green",
+"res://game/resources/": "blue",
+"res://game/tools/": "yellow"
+}
 
 [input]
 

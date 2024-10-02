@@ -5,15 +5,42 @@ var this = Game.scene
 var last_cam_pos:Vector2
 var last_zoom:Vector2
 
-var timer:Timer = Timer.new()
+var on_death_start:Callable = func(): # once the death sound and deathStart finish playing
+	if !retried:
+		Audio.play_music('skins/'+ this.cur_style +'/gameOver')
+		dead.play_anim('deathLoop')
+
+
+var on_death_confirm:Callable = func(): # once the player chooses to retry
+	var cam_twen = create_tween().tween_property(this.cam, 'position', last_cam_pos, 1).set_trans(Tween.TRANS_SINE)
+	create_tween().tween_property($BG, 'modulate:a', 0, 0.7).set_trans(Tween.TRANS_SINE)
+	create_tween().tween_property(this.cam, 'zoom', last_zoom, 1).set_trans(Tween.TRANS_SINE)
+	await cam_twen.finished
+	for i in [this.ui, this.cam, this.boyfriend, this.stage]:
+		i.process_mode = Node.PROCESS_MODE_INHERIT
+	
+	this.cam.position_smoothing_speed = 4
+	this.boyfriend.visible = true
+	this.gf.danced = false
+	
+	this.ui.visible = true
+	get_tree().paused = false
+	this.refresh()
+	queue_free()
+	this.gf.play_anim('cheer')
+
+var death_sound:AudioStreamPlayer
+@onready var timer:Timer = $Timer
 func _ready():
+	Audio.stop_all_sounds()
 	Game.focus_change.connect(focus_change)
 	Discord.change_presence('Game Over on '+ this.SONG.song.capitalize() +' - '+ JsonHandler.get_diff.to_upper(), 'I\'ll get it next time maybe')
 	
 	#await RenderingServer.frame_post_draw
-	this.ui.process_mode = Node.PROCESS_MODE_ALWAYS
-	this.cam.process_mode = Node.PROCESS_MODE_ALWAYS
-	this.stage.process_mode = Node.PROCESS_MODE_ALWAYS
+	for i in [this.ui, this.cam, this.stage]:
+		i.process_mode = Node.PROCESS_MODE_ALWAYS
+	this.ui.stop_countdown()
+	
 	this.ui.visible = false
 	this.boyfriend.visible = false # hide his ass!!!
 	Conductor.paused = true
@@ -30,27 +57,24 @@ func _ready():
 
 	add_child(dead)
 	move_child(dead, 1)
+	
+	death_sound = Audio.return_sound('fnf_loss_sfx', true)
+	add_child(death_sound)
+	death_sound.play()
 
-	dead.play_anim('deathStart', true)
-	Audio.play_sound('fnf_loss_sfx', 1, true)
+	#Audio.play_sound('fnf_loss_sfx', 1, true)
 	
 	last_cam_pos = this.cam.position
 	last_zoom = this.cam.zoom
 	#create_tween().tween_property(this.cam, 'zoom', Vector2(1.05, 1.05), 2.5).set_trans(Tween.TRANS_ELASTIC)#\
 #	.set_delay(0.7)
-	timer.one_shot = true
-	add_child(timer)
-	
-	fade_in()
-	timer.start(2.5)
-	await timer.timeout
-	
-	if !retried:
-		Audio.play_music('skins/'+ this.cur_style +'/gameOver')
-		dead.play_anim('deathLoop')
 
-func fade_in() -> void:
 	create_tween().tween_property($BG, 'modulate:a', 0.7, 0.7).set_trans(Tween.TRANS_SINE)
+	timer.start(2.5)
+	timer.timeout.connect(on_death_start)
+	
+	await get_tree().create_timer(0.05).timeout
+	dead.play_anim('deathStart', true)
 
 var retried:bool = false
 var focused:bool = false
@@ -64,43 +88,31 @@ func _process(delta):
 		this.cam.zoom.x = lerpf(this.cam.zoom.x, 1.05, delta * 4)
 		this.cam.zoom.y = this.cam.zoom.x
 	
-	if dead.frame >= 14 and !focused:
+	if (dead.frame >= 14 or dead.anim_finished) and !focused:
 		focused = true
 		this.cam.position_smoothing_speed = 2
 		this.cam.position = dead.position + Vector2(dead.width / 2, (dead.height / 2) - 30)
 
-	if Input.is_action_just_pressed('accept') and !retried:
-		timer.stop()
-		retried = true
-		Audio.play_music('skins/'+ this.cur_style +'/gameOverEnd', false)
-		dead.play_anim('deathConfirm', true)
+	if !retried:
+		if Input.is_action_just_pressed('accept'):
+			if death_sound != null and death_sound.get_playback_position() < 1.0: # skip to mic drop
+				death_sound.play(1)
+			timer.paused = false
+			timer.start(2)
+			timer.timeout.disconnect(on_death_start)
+			timer.timeout.connect(on_death_confirm)
+
+			retried = true
+			Audio.play_music('skins/'+ this.cur_style +'/gameOverEnd', false)
+			dead.play_anim('deathConfirm', true)
 		
-		timer.start(2)
-		await timer.timeout
-		
-		var cam_twen = create_tween().tween_property(this.cam, 'position', last_cam_pos, 1).set_trans(Tween.TRANS_SINE)
-		create_tween().tween_property($BG, 'modulate:a', 0, 0.7).set_trans(Tween.TRANS_SINE)
-		create_tween().tween_property(this.cam, 'zoom', last_zoom, 1).set_trans(Tween.TRANS_SINE)
-		await cam_twen.finished
-		this.ui.process_mode = Node.PROCESS_MODE_INHERIT
-		this.cam.process_mode = Node.PROCESS_MODE_INHERIT
-		this.cam.position_smoothing_speed = 4
-		this.boyfriend.process_mode = Node.PROCESS_MODE_INHERIT
-		this.stage.process_mode = Node.PROCESS_MODE_INHERIT
-		this.boyfriend.visible = true
-		this.ui.visible = true
-		get_tree().paused = false
-		this.refresh()
-		queue_free()
-		
-		#get_tree().reload_current_scene()
-	elif Input.is_action_just_pressed('back') and !retried:
-		timer.stop()
-		Audio.stop_music()
-		Audio.stop_all_sounds()
-		Conductor.reset()
-		get_tree().paused = false
-		Game.switch_scene('menus/freeplay', true)
+		if Input.is_action_just_pressed('back'):
+			timer.stop()
+			Audio.stop_music()
+			Audio.stop_all_sounds()
+			Conductor.reset()
+			get_tree().paused = false
+			Game.switch_scene('menus/freeplay', true)
 
 func focus_change(is_focused):
 	if !is_focused:

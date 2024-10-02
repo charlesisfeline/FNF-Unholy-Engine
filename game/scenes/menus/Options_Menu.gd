@@ -12,16 +12,17 @@ var gameplay = [
 	['middlescroll',     'bool'], 
 	['hitsound_volume',   'int', [0, 100]],
 	['offset',            'int', [0, 300]], 
-	['sick_window',       'int', [15, 45]], 
-	['good_window',       'int', [15, 90]], 
-	['bad_window' ,       'int', [15, 135]]
+	['epic_window',     'float', [15, 22.5]], 
+	['sick_window',     'float', [15, 45]], 
+	['good_window',     'float', [15, 90]], 
+	['bad_window' ,     'float', [15, 135]]
 ]
 var visuals = [
 	['fps',             'int', [0, 240]],
-	['vsync',         'array', ['Disabled', 'Enabled', 'Adaptive', 'Mailbox']],
+	['vsync',         'array', ['disabled', 'enabled', 'adaptive', 'mailbox']],
 	['allow_rpc',      'bool'],
 	['basic_play',     'bool'],
-	['note_splashes', 'array', ['sicks', 'all', 'none']],
+	['note_splashes', 'array', ['epics', 'both', 'all', 'none']],
 	['splash_sprite', 'array', ['base', 'haxe', 'forever']],
 	['behind_strums',  'bool'],
 	['rating_cam',    'array', ['game', 'hud', 'none']],
@@ -57,9 +58,11 @@ func _process(delta):
 	
 	if in_sub:
 		var da_pref = pref_list[sub_option]
-		if ['array', 'int'].has(da_pref.type):
-			if Input.is_action_just_pressed('menu_left'): da_pref.update_option(-1)
-			if Input.is_action_just_pressed('menu_right'): da_pref.update_option(1)
+		if ['array', 'int', 'float'].has(da_pref.type):
+			var update = 1
+			if da_pref.type == 'float' and Input.is_key_pressed(KEY_CTRL): update = 0.1
+			if Input.is_action_just_pressed('menu_left'): da_pref.update_option(-update)
+			if Input.is_action_just_pressed('menu_right'): da_pref.update_option(update)
 		if da_pref.type == 'bool' and Input.is_action_just_pressed("accept"): 
 			da_pref.update_option()
 		if Input.is_action_just_pressed('back'): show_main()
@@ -158,7 +161,7 @@ class Option extends Alphabet:
 		match type:
 			'array':
 				cur_op = wrapi(cur_op + round(diff), 0, choices.size())
-				Prefs.set(option, choices[cur_op])
+				Prefs.set(option, choices[cur_op].to_lower())
 			'int', 'float':
 				if Input.is_key_pressed(KEY_SHIFT): diff *= 10
 				cur_val = clamp(cur_val + diff, min_val, max_val)

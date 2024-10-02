@@ -68,41 +68,38 @@ func center_obj(obj = null, axis:String = 'xy') -> void:
 func reset_scene(_skip_trans:bool = false) -> void:
 	get_tree().reload_current_scene()
 
-func switch_scene(new_scene, skip_trans:bool = false) -> void:
+func switch_scene(to_scene, skip_trans:bool = false) -> void:	
+	if ((to_scene is not String) and (to_scene is not PackedScene)) or to_scene == null:
+		printerr('Switch Scene: new scene is invalid')
+		return
+	
 	print('LEAVING '+ scene.name)
-	print_orphan_nodes() # should not print anything if you're a good coder
-
-	if new_scene is String:
-		new_scene = new_scene.to_lower()
-		if new_scene == 'play_scene' and Prefs.basic_play: new_scene += '_simple'
-		var path = 'res://game/scenes/%s.tscn'
-		
-		if skip_trans:
-			queue_free()	
-			get_tree().change_scene_to_file(path % new_scene)
-		else:
-			if cur_trans != null and cur_trans.in_progress:
-				cur_trans.cancel()
-				remove_child(cur_trans)
-				cur_trans.queue_free()
-				get_tree().paused = false
-				
-			get_tree().paused = true
-			cur_trans = TRANS.instantiate()
-			add_child(cur_trans)
-			await cur_trans.trans_out(0.7)
-			#for i in scene.get_child_count():
-			#	scene.get_child(i).queue_free()
-				
-			get_tree().change_scene_to_file(path % new_scene)
-			get_tree().paused = false
-			cur_trans.trans_in(1, true)
-			cur_trans.on_finish = func():
-				remove_child(cur_trans)
-				cur_trans.queue_free()
-
-	if new_scene is PackedScene:
+	if to_scene is String: # scene is a string, make it into a packed scene
+		to_scene = to_scene.to_lower()
+		if to_scene == 'play_scene' and Prefs.basic_play: to_scene += '_simple'
+		if ResourceLoader.exists('res://game/scenes/'+ to_scene +'.tscn', 'PackedScene'):
+			to_scene = load('res://game/scenes/'+ to_scene +'.tscn')
+	
+	var new_scene:PackedScene = to_scene
+	if skip_trans:
 		get_tree().change_scene_to_packed(new_scene)
+	else:
+		if cur_trans != null and cur_trans.in_progress:
+			remove_child(cur_trans)
+			cur_trans.cancel()
+			get_tree().paused = false
+			
+		get_tree().paused = true
+		cur_trans = TRANS.instantiate()
+		add_child(cur_trans)
+		await cur_trans.trans_out(0.7)
+
+		get_tree().change_scene_to_packed(new_scene)
+		get_tree().paused = false
+		cur_trans.trans_in(1, true)
+		cur_trans.on_finish = func():
+			remove_child(cur_trans)
+			cur_trans.queue_free()
 
 # call function on nodes or somethin
 func call_func(to_call:String, args:Array[Variant] = [], call_tree:bool = false) -> void:

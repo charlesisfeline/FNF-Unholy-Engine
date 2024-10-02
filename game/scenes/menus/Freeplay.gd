@@ -18,13 +18,13 @@ func _ready():
 		Audio.play_music('freakyMenu', true, 0.7)
 	Discord.change_presence('Maining some Menus', 'In Freeplay')
 	
-	for i in order: added_weeks.append(i.strip_edges())
-	
-	for file in order: # base songs first~
-		var week_file = JsonHandler.parse_week(file)
-		var d_list = week_file.difficulties if week_file.has('difficulties') else []
-		for song in week_file.songs:
-			add_song(FreeplaySong.new(song, d_list))
+	if order != null: 
+		for file in order: # base songs first~
+			added_weeks.append(file.strip_edges())
+			var week_file = JsonHandler.parse_week(file)
+			var d_list = week_file.difficulties if week_file.has('difficulties') else []
+			for song in week_file.songs:
+				add_song(FreeplaySong.new(song, d_list))
 	
 	# you dont need a json to add songs, without one itll only have base 3 diffs, no color, and a bf icon
 	var weeks_to_add = []
@@ -140,7 +140,7 @@ func _unhandled_key_input(event):
 		Game.switch_scene('play_scene')
 	
 func update_save() -> void: # update the file with any new songs/difficulties
-	if FileAccess.file_exists('user://highscores.cfg'):
+	if ResourceLoader.exists('user://highscores.cfg'):
 		best_scores.load('user://highscores.cfg')
 	
 	for song in songs:
