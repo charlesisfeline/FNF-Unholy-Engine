@@ -2,6 +2,7 @@ class_name Character; extends AnimatedSprite2D;
 
 var json
 var chart:Array = []
+var speaker_data:Dictionary = {}
 
 var offsets:Dictionary = {}
 var focus_offsets:Vector2 = Vector2.ZERO # cam offset type shit
@@ -70,7 +71,7 @@ func load_char(new_char:String = 'bf') -> void:
 		return
 		
 	cur_char = new_char
-	if !FileAccess.file_exists('res://assets/data/characters/%s.json' % cur_char):
+	if !ResourceLoader.exists('res://assets/data/characters/%s.json' % cur_char):
 		printerr('CHARACTER '+ cur_char +' does NOT have a json')
 		print_rich('[color=red]'+ cur_char +' [color=yellow]-> [color=green]'+ get_closest(cur_char) +'[/color]')
 		cur_char = get_closest(cur_char)
@@ -78,11 +79,11 @@ func load_char(new_char:String = 'bf') -> void:
 	json = JsonHandler.get_character(cur_char) # get offsets and anim names...
 	var path = 'characters/'+ json.image.replace('characters/', '') +'.res'
 		
-	if !FileAccess.file_exists('res://assets/images/'+ path): # json exists, but theres no res file
+	if !ResourceLoader.exists('res://assets/images/'+ path): # json exists, but theres no res file
 		printerr('No .res file found: '+ path)
 		path = 'characters/bf/char.res'
 		
-	sprite_frames = load('res://assets/images/'+ path)
+	sprite_frames = ResourceLoader.load('res://assets/images/'+ path)
 	
 	offsets.clear()
 	for anim in json.animations:
@@ -96,8 +97,13 @@ func load_char(new_char:String = 'bf') -> void:
 	focus_offsets.x = json.camera_position[0]
 	focus_offsets.y = json.camera_position[1]
 	
+	speaker_data.clear()
+	if json.has('speaker'):
+		speaker_data = json.speaker
+	
 	dance_idle = offsets.has('danceLeft') and offsets.has('danceRight')
 	if dance_idle: dance_beat = 1
+	
 	match(cur_char):
 		'senpai-angry':
 			forced_suffix = '-alt' # boooo
@@ -145,15 +151,16 @@ func _process(delta):
 			
 	if !chart.is_empty():
 		for i in chart: # [0] = strum time, [1] = direction, [2] = is sustain, [3] = length
+			#if !i[4]: continue
 			if i[2]:
 				if i[0] <= Conductor.song_pos and i[0] + i[3] > Conductor.song_pos:
-					sing(i[1], '', false)
+					sing(i[1] % 4, '', false)
 				if Conductor.song_pos > i[0] + i[3]: # sustain should be finished
 					chart.remove_at(chart.find(i))
 			else:
 				if i[0] <= Conductor.song_pos:
-					var suff:String = str(randi_range(1, 2))
-					sing(i[1], suff)
+					#var suff:String = str(randi_range(1, 2))
+					sing(i[1] % 4, '')
 					chart.remove_at(chart.find(i))
 
 func dance(forced:bool = false) -> void:
@@ -178,6 +185,8 @@ func sing(dir:int = 0, suffix:String = '', reset:bool = true) -> void:
 	if sing_timer == 0:
 		sing_timer = 0 if reset else Conductor.step_crochet / 1000.0
 		play_anim(sing_anims[dir] + suffix, true)
+		#frame = 4
+
 
 func flip_char() -> void:
 	scale.x *= -1
@@ -192,7 +201,7 @@ func swap_sing(anim1:String, anim2:String) -> void:
 	sing_anims[index2] = anim1
 
 var times_danced:int = 0
-func play_anim(anim:String, forced:bool = false) -> void:
+func play_anim(anim:String, forced:bool = false, reversed:bool = false) -> void:
 	if forced_suffix.length() > 0: 
 		anim += forced_suffix
 	if !has_anim(anim): 
@@ -202,11 +211,12 @@ func play_anim(anim:String, forced:bool = false) -> void:
 	looping = false
 	special_anim = false
 	anim_timer = -1.0
-
-	play(anim)
-	if forced: frame = 0
-	#if cur_char == 'gf':
-	#	print(anim +' | '+ str(danced) +' | '+ str(times_danced))
+	
+	if reversed:
+		play_backwards(anim)
+	else:
+		play(anim)
+	if forced: frame = sprite_frames.get_frame_count(anim) - 1 if reversed else 0 
 
 	if offsets.has(anim):
 		var anim_offset = offsets[anim]

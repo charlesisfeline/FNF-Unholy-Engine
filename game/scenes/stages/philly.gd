@@ -10,6 +10,7 @@ func _ready():
 	
 	bf_pos += Vector2(70, -50)
 	dad_pos += Vector2(100, -50)
+	gf_pos.x += 100
 	add_child(train)
 	move_child(train, 4)
 
@@ -46,7 +47,7 @@ class Train extends Sprite2D:
 				frame_limit = 0.0
 				if sound.get_playback_position() >= 4.7:
 					started = true
-					Game.scene.gf.play_anim('hairBlowLeft')
+					Game.scene.gf.play_anim('hairBlow')
 					Game.scene.gf.can_dance = false
 					#var last_frame:int = Game.scene.gf.frame
 					#Game.scene.gf.play_anim(Game.scene.gf.animation +'-hair')
@@ -75,18 +76,10 @@ class Train extends Sprite2D:
 				
 	func restart() -> void:
 		var geef:Character = Game.scene.gf
-		#geef.idle_suffix = ''
 		geef.play_anim('hairFall')
-		#geef.can_dance = false
 		geef.special_anim = true
 		geef.danced = false
 		geef.can_dance = true
-		#geef.anim_finished = func():
-		#	geef.can_dance = true
-		#	geef.danced = true
-		#	geef.reset_func()
-		#Game.scene.gf.danced = Game.scene.gf.danced
-		
 		
 		position.x = Game.screen[0] + 300
 		active = false

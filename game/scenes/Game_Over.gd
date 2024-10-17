@@ -1,5 +1,9 @@
 extends Node2D
 
+signal on_game_over # when you first die, with the deathStart anim and sounds
+signal on_game_over_idle # after the timer is done and the deathLoop starts
+signal on_game_over_confirm(is_retry:bool) # once you choose to either leave or retry the song
+
 var dead:Character
 var this = Game.scene
 var last_cam_pos:Vector2
@@ -7,9 +11,9 @@ var last_zoom:Vector2
 
 var on_death_start:Callable = func(): # once the death sound and deathStart finish playing
 	if !retried:
-		Audio.play_music('skins/'+ this.cur_style +'/gameOver')
+		Audio.play_music('skins/'+ this.cur_skin +'/gameOver')
 		dead.play_anim('deathLoop')
-
+	on_game_over_idle.emit()
 
 var on_death_confirm:Callable = func(): # once the player chooses to retry
 	var cam_twen = create_tween().tween_property(this.cam, 'position', last_cam_pos, 1).set_trans(Tween.TRANS_SINE)
@@ -18,15 +22,20 @@ var on_death_confirm:Callable = func(): # once the player chooses to retry
 	await cam_twen.finished
 	for i in [this.ui, this.cam, this.boyfriend, this.stage]:
 		i.process_mode = Node.PROCESS_MODE_INHERIT
+	if this.stage.has_node('CharGroup'):
+		for i in this.stage.get_node('CharGroup').get_children():
+			i.process_mode = Node.PROCESS_MODE_INHERIT
+			
+	dead.visible = false
 	
 	this.cam.position_smoothing_speed = 4
+	this.gf.danced = true
 	this.boyfriend.visible = true
-	this.gf.danced = false
-	
 	this.ui.visible = true
 	get_tree().paused = false
 	this.refresh()
 	queue_free()
+	this.boyfriend.dance()
 	this.gf.play_anim('cheer')
 
 var death_sound:AudioStreamPlayer
@@ -39,8 +48,18 @@ func _ready():
 	#await RenderingServer.frame_post_draw
 	for i in [this.ui, this.cam, this.stage]:
 		i.process_mode = Node.PROCESS_MODE_ALWAYS
-	this.ui.stop_countdown()
 	
+	if this.stage.has_node('CharGroup'):
+		for i in this.stage.get_node('CharGroup').get_children():
+			i.process_mode = Node.PROCESS_MODE_DISABLED
+		
+	this.ui.stop_countdown()
+	on_game_over.connect(this.stage.game_over_start)
+	on_game_over_idle.connect(this.stage.game_over_idle)
+	on_game_over_confirm.connect(this.stage.game_over_confirm)
+	
+	on_game_over.emit()
+
 	this.ui.visible = false
 	this.boyfriend.visible = false # hide his ass!!!
 	Conductor.paused = true
@@ -49,25 +68,21 @@ func _ready():
 	$Fade.modulate.a = 0
 	
 	var da_boy = this.boyfriend.death_char
-	if da_boy == 'bf-dead' and FileAccess.file_exists('res://assets/data/characters/'+ this.boyfriend.cur_char +'-dead.json'):
+	if da_boy == 'bf-dead' and ResourceLoader.exists('res://assets/data/characters/'+ this.boyfriend.cur_char +'-dead.json'):
 		da_boy = this.boyfriend.cur_char +'-dead'
 		
 	dead = Character.new(this.boyfriend.position, da_boy, true)
-	#print(this.boyfriend.position - Vector2(-15, this.boyfriend.height * 0.83))
-
+	
+	dead.play_anim('deathStart', true) # apply the offsets
+	#dead.stop()
 	add_child(dead)
 	move_child(dead, 1)
 	
 	death_sound = Audio.return_sound('fnf_loss_sfx', true)
-	add_child(death_sound)
 	death_sound.play()
 
-	#Audio.play_sound('fnf_loss_sfx', 1, true)
-	
 	last_cam_pos = this.cam.position
 	last_zoom = this.cam.zoom
-	#create_tween().tween_property(this.cam, 'zoom', Vector2(1.05, 1.05), 2.5).set_trans(Tween.TRANS_ELASTIC)#\
-#	.set_delay(0.7)
 
 	create_tween().tween_property($BG, 'modulate:a', 0.7, 0.7).set_trans(Tween.TRANS_SINE)
 	timer.start(2.5)
@@ -95,6 +110,8 @@ func _process(delta):
 
 	if !retried:
 		if Input.is_action_just_pressed('accept'):
+			on_game_over_confirm.emit(true)
+			
 			if death_sound != null and death_sound.get_playback_position() < 1.0: # skip to mic drop
 				death_sound.play(1)
 			timer.paused = false
@@ -103,10 +120,12 @@ func _process(delta):
 			timer.timeout.connect(on_death_confirm)
 
 			retried = true
-			Audio.play_music('skins/'+ this.cur_style +'/gameOverEnd', false)
+			Audio.play_music('skins/'+ this.cur_skin +'/gameOverEnd', false)
 			dead.play_anim('deathConfirm', true)
 		
 		if Input.is_action_just_pressed('back'):
+			on_game_over_confirm.emit(false)
+
 			timer.stop()
 			Audio.stop_music()
 			Audio.stop_all_sounds()
@@ -115,5 +134,6 @@ func _process(delta):
 			Game.switch_scene('menus/freeplay', true)
 
 func focus_change(is_focused):
-	if !is_focused:
-		timer.paused = true
+	timer.paused = !is_focused
+	if death_sound != null:
+		death_sound.stream_paused = !is_focused

@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://game/objects/ui/Health_Bar.gd" id="1_5oe4u"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8eeax"]
+resource_local_to_scene = true
 bg_color = Color(1, 0, 0, 1)
 border_width_left = 5
 border_width_top = 5
@@ -19,6 +20,7 @@ expand_margin_right = 5.0
 expand_margin_bottom = 5.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_x1b8t"]
+resource_local_to_scene = true
 bg_color = Color(0.4, 1, 0.2, 1)
 
 [node name="HealthBar" type="Control"]

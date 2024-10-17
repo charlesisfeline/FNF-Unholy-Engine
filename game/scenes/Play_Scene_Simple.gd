@@ -346,8 +346,9 @@ func note_miss(note:Note) -> void:
 			hp_diff = ui.hp - 0.1
 			
 		ui.hp -= hp_diff 
-	
-		if combo >= 5: pop_up_combo('', '000', true)
+		
+		pop_up_combo('miss', ('000' if combo >= 5 else ''), true)
+		#if combo >= 5: pop_up_combo('', '000', true)
 		combo = 0
 	
 		if Conductor.vocals != null:

@@ -8,7 +8,7 @@ var cur_tex:String = ''
 var in_progress:bool = false
 
 const TEX_PATH:String = 'assets/images/ui/transitions/%s.png'
-const RARE_IMAGES:Array[String] = ['boyfriend', 'bowser', 'scrunkly', 'steve']
+const RARE_IMAGES:Array[String] = ['bald', 'bowser', 'boyfriend', 'miku', 'scrunkly', 'natsuki', 'steve']
 const HOLE_IMAGES:Array[String] = ['circle', 'icon', 'skry', 'bf', 'dad', 'gf']
 @onready var hole = $Group/Hole
 @onready var black = $Group/Black
@@ -51,7 +51,7 @@ func start() -> void:
 	var new_tex:String = RARE_IMAGES.pick_random() if chance else HOLE_IMAGES.pick_random()
 	cur_tex = new_tex
 	if new_tex == 'bowser':
-		Audio.play_sound('cackles_like_a_dumbass', 0.7)
+		Audio.play_sound('cackle', 0.7)
 		
 	if chance: new_tex = 'rare/'+ new_tex
 	hole.texture = load(TEX_PATH % new_tex) # funny random

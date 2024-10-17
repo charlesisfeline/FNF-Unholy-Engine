@@ -77,14 +77,14 @@ func load_song(song:String = '') -> void:
 
 	var suffix:String = '-'+ JsonHandler._SONG.variant if JsonHandler._SONG.has('variant') else ''
 
-	if FileAccess.file_exists(path % ['Inst'+ suffix]):
+	if ResourceLoader.exists(path % ['Inst'+ suffix]):
 		inst.stream = load(path % ['Inst'+ suffix])
 		song_length = inst.stream.get_length() * 1000.0
-	if FileAccess.file_exists(path % ['Voices-player'+ suffix]):
+	if ResourceLoader.exists(path % ['Voices-player'+ suffix]):
 		mult_vocals = true
 		vocals.stream = load(path % ['Voices-player'+ suffix])
 		vocals_opp.stream = load(path % ['Voices-opponent'+ suffix])
-	elif FileAccess.file_exists(path % ['Voices'+ suffix]):
+	elif ResourceLoader.exists(path % ['Voices'+ suffix]):
 		mult_vocals = false
 		vocals.stream = load(path % ['Voices'+ suffix])
 	
@@ -105,8 +105,8 @@ func _process(delta):
 			beat_time += crochet
 			cur_beat += 1
 			beat_hit.emit(cur_beat)
-			#Game.call_func('beat_hit', [cur_beat])
-			if cur_beat % 4 == 0:
+			var beats:int = 4
+			if cur_beat % beats == 0:
 				cur_section += 1
 				section_hit.emit(cur_section)
 			

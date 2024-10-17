@@ -43,10 +43,11 @@ func _ready():
 	for song in DirAccess.get_directories_at('res://assets/songs'):
 		add_song(FreeplaySong.new([song, 'bf', [100, 100, 100]]))
 	
-	update_save() # you should only need to update it once me
-	
-	if JsonHandler._SONG != null:
-		last_loaded.song = JsonHandler._SONG.song.to_lower().replace(' ', '-')
+	HighScore.init_save()
+	#update_save() # changed who it works
+
+	if JsonHandler._SONG.has('song'):
+		last_loaded.song = Game.format_str(JsonHandler._SONG.song)
 		last_loaded.diff = JsonHandler.get_diff
 		cur_song = added_songs.find(last_loaded.song)
 	
@@ -114,14 +115,19 @@ func change_diff(amount:int = 0) -> void:
 	diff_str = diff_list[diff_int]
 	var text = '< '+ diff_str.to_upper() +' >'
 	if diff_list.size() == 1: text = text.replace('<', ' ').replace('>', ' ')
-	actual_score = best_scores.get_value('Song Scores', added_songs[cur_song])[diff_str][0]
+	actual_score = HighScore.get_score(added_songs[cur_song], diff_str)
 	$SongInfo/Difficulty.text = text
 
 func _unhandled_key_input(event):
-	var diff:int = 4 if Input.is_key_pressed(KEY_SHIFT) else 1
+	var shifty = Input.is_key_pressed(KEY_SHIFT)
+	var diff:int = 4 if shifty else 1
 	var is_pressed:Callable = func(action): 
 		return Input.is_action_just_pressed(action) or Input.is_action_pressed(action)
 		
+	if Input.is_key_pressed(KEY_R):
+		print('Erasing '+ ('all' if shifty else diff_str) +' | '+ songs[cur_song].text)
+		HighScore.clear_score(songs[cur_song].text, diff_str, shifty)
+		update_list()
 	if is_pressed.call('menu_down') : update_list(diff)
 	if is_pressed.call('menu_up')   : update_list(-diff)
 	if is_pressed.call('menu_left') : change_diff(-1)
@@ -140,22 +146,33 @@ func _unhandled_key_input(event):
 		Game.switch_scene('play_scene')
 	
 func update_save() -> void: # update the file with any new songs/difficulties
-	if ResourceLoader.exists('user://highscores.cfg'):
-		best_scores.load('user://highscores.cfg')
+	#NOTE rather than go over every single song every time you enterr freeplay 
+	# (which only happened because of the old system)
+	# it now only saves the song once you actually play and beat it
+	# i will still keep this here, maybe for the future
+	#if ResourceLoader.exists('user://highscores.cfg'):
+	#	best_scores.load('user://highscores.cfg')
 	
 	for song in songs:
 		var _name:String = Game.format_str(song.song)
-		var da_diffs:Dictionary = {}
-		if best_scores.has_section_key('Song Scores', _name): # if it exists, get it so we dont delete scores
-			da_diffs = best_scores.get_value('Song Scores', _name)
+		#if !HighScore.saved_scores.has_section_key(_name): pass
+		if song.diff_list == JsonHandler.base_diffs:
+			HighScore.set_data(_name, HighScore.get_data(_name))
+			
+
+		#if best_scores.has_section_key('Song Scores', _name): # if it exists, get it so we dont delete scores
+		#	da_data = best_scores.get_value('Song Scores', _name)
+		var da_data:Dictionary = {}
+		for dif in song.diff_list:
+			if da_data.has(dif): continue
+		#	HighScore.set_score(_name, dif, HighScore.get_data(_name, dif))
+			da_data[dif] = HighScore.get_data(_name, dif)
 		
-		for dif in song.diff_list: 
-			if da_diffs.has(dif): continue
-			da_diffs[dif] = [0, 0, 'N/A'] # score, accuracy, fc
-		best_scores.set_value('Song Scores', _name, da_diffs)
+		HighScore.set_data(_name, da_data)
+		#best_scores.set_value('Song Scores', _name, da_diffs)
 	
-	best_scores.save('user://highscores.cfg') # then save and reload, just to make sure we keep it
-	best_scores.load('user://highscores.cfg')
+	#best_scores.save('user://highscores.cfg') # then save and reload, just to make sure we keep it
+	#best_scores.load('user://highscores.cfg')
 	
 class FreeplaySong extends Alphabet:
 	var song:String = 'Tutorial'

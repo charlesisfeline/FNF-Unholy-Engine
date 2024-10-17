@@ -1,13 +1,12 @@
 class_name Note; extends Node2D;
 
-var style:StyleInfo:
-	get: return Game.scene.ui.STYLE if Game.scene.has_node('UI') else StyleInfo.new()
-var tex_path:String = 'assets/images/ui/styles/%s/notes/'
+var skin:SkinInfo = (Game.scene.ui.SKIN if Game.scene.has_node('UI') else SkinInfo.new())
+var tex_path:String = 'assets/images/ui/skins/%s/notes/'
 var antialiasing:bool = true:
 	get: return texture_filter == CanvasItem.TEXTURE_FILTER_LINEAR
 	set(alias):
 		antialiasing = alias
-		texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR if alias else CanvasItem.TEXTURE_FILTER_NEAREST
+		texture_filter = Game.get_alias(alias)
 
 var width:float = 0:
 	get:
@@ -102,10 +101,10 @@ func _init(data = null, sustain:bool = false, in_chart:bool = false):
 
 func _ready():
 	spawned = true
-	tex_path = tex_path % [style.style]
-	antialiasing = style.antialiased
+	tex_path = tex_path % [skin.cur_skin]
+	antialiasing = skin.antialiased
 	position = Vector2(INF, -INF) #you can see it spawn in for a frame or two
-	scale = style.note_scale
+	scale = skin.note_scale
 	
 	if is_sustain:
 		alpha = 0.6
@@ -182,36 +181,44 @@ func _process(delta):
 
 func follow_song_pos(strum:Strum) -> void:
 	if is_sustain and holding: 
-		position.y = strum.position.y
+		position = strum.position
 		return
 		
+	#var snap:float = 40 / (randf_range(1.0, 12.0) / 16.0)
 	var pos:float = (0.45 * (Conductor.song_pos - strum_time) * speed) #/ Conductor.playback_rate# + offset_y
+	#pos = floor(pos / snap) * snap
+	
 	if !strum.downscroll: pos *= -1
 	
-	position.x = strum.position.x
-	position.y = strum.position.y + pos
-	if !is_sustain:
+	if skin.cur_skin != strum.skin.cur_skin: load_skin(strum.skin.cur_skin)
+	position.x = strum.position.x + (pos * cos(strum.scroll * PI / 180))
+	position.y = strum.position.y + (pos * sin(strum.scroll * PI / 180))
+	if is_sustain:
+		rotation = deg_to_rad(strum.scroll - 90.0) + strum.rotation
+	else:
 		rotation = strum.rotation
 
-func load_skin(skin) -> void:
-	tex_path = 'res://assets/images/ui/styles/'+ skin.style +'/notes/'+ COLORS[dir]
+func load_skin(new_skin:String) -> void:
+	skin.load_skin(new_skin)
+
+	tex_path = 'res://assets/images/ui/skins/'+ skin.cur_skin +'/notes/'
 	antialiasing = skin.antialiased
 	scale = skin.note_scale
-
+	
 	if is_sustain:
-		scale.y = 0.7
-		sustain.texture = load(tex_path +'_hold.png')
-		end.texture = load(tex_path +'_end.png')
+		#scale.y = 0.7
+		sustain.texture = load(tex_path + COLORS[dir] +'_hold.png')
+		end.texture = load(tex_path + COLORS[dir] +'_end.png')
 		resize_hold(true)
 	else:
-		note.texture = load(tex_path +'.png')
+		note.texture = load(tex_path + COLORS[dir] +'.png')
 
 func resize_hold(update_control:bool = false) -> void:
 	if !spawned: return
 	hold_group.size.y = ((length * 0.63) * speed)
-	var rounded_scale = Game.round_d(style.note_scale.y, 1)
+	var rounded_scale = Game.round_d(skin.note_scale.y, 1)
 	if rounded_scale > 0.7: 
-		hold_group.size.y /= (rounded_scale + (rounded_scale / 2))
+		hold_group.size.y /= (rounded_scale + (rounded_scale / 2.0))
 	
 	if update_control:
 		sustain.set_anchor_and_offset(SIDE_BOTTOM, 1.0, -end.texture.get_height() + 1.0)

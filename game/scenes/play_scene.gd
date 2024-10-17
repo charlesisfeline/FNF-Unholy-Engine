@@ -8,11 +8,10 @@ extends Node2D
 
 var default_zoom:float = 0.8
 var SONG
-var cur_style:String = 'default': # yes
-	set(new_style): 
-		ui.cur_style = new_style
-		cur_style = ui.cur_style
-		
+var cur_skin:String = 'default': # yes
+	set(new_skin): 
+		ui.cur_skin = new_skin
+		cur_skin = ui.cur_skin
 var cur_speed:float = 1:
 	set(new_speed):
 		cur_speed = new_speed
@@ -31,15 +30,13 @@ var boyfriend:Character
 var dad:Character
 var gf:Character
 var characters:Array = []
+var speaker
 
 var cached_chars:Dictionary = {'bf' = [], 'gf' = [], 'dad' = []}
 
-var player_strums:Array[Strum] = []
-var opponent_strums:Array[Strum] = []
-
 var key_names = ['note_left', 'note_down', 'note_up', 'note_right']
 
-var should_save:bool = false #!Prefs.auto_play
+var should_save:bool = !Prefs.auto_play
 @onready var auto_play:bool:
 	set(auto):
 		if auto: should_save = false
@@ -57,10 +54,8 @@ func _ready():
 	SONG = JsonHandler._SONG
 	if Prefs.daniel and !SONG.player1.contains('bf-girl'):
 		var try = SONG.player1.replace('bf', 'bf-girl')
-		if FileAccess.file_exists('res://assets/data/characters/'+ try +'.json'):
-			SONG.player1 = try
-		else:
-			SONG.player1 = 'bf-girl'
+		var it_exists = ResourceLoader.exists('res://assets/data/characters/'+ try +'.json')
+		SONG.player1 = try if it_exists else 'bf-girl'
 
 	Conductor.load_song(SONG.song)
 	Conductor.bpm = SONG.bpm
@@ -84,19 +79,23 @@ func _ready():
 			'ugh', 'guns', 'stress': cur_stage = 'tank'
 
 	var to_load = 'stage'
-	if FileAccess.file_exists('res://game/scenes/stages/'+ cur_stage +'.tscn'):
+	if ResourceLoader.exists('res://game/scenes/stages/'+ cur_stage +'.tscn'):
 		to_load = cur_stage
 		
 	stage = load('res://game/scenes/stages/%s.tscn' % [to_load]).instantiate() # im sick of grey bg FUCK
 	add_child(stage)
 	default_zoom = stage.default_zoom
-	#ui.cur_style = 'pixel'
 	
-	var gf_ver = 'gf'
-	if SONG.has('gfVersion'): 
+	if SONG.has('players'): 
+		SONG.player1 = SONG.players[0]
+		SONG.player2 = SONG.players[1]
+		SONG.gfVersion = SONG.players[2]
+		
+	var gf_ver
+	if SONG.has('gfVersion'):
 		gf_ver = SONG.gfVersion
-	elif SONG.has('player3'): 
-		gf_ver = SONG.player3 if SONG.player3 != null else 'gf'
+	elif SONG.has('player3'):
+		gf_ver = SONG.player3
 	else: # base game type shit baybeee
 		match SONG.song.to_lower().replace(' ', '-'):
 			'satin-panties', 'high', 'milf': gf_ver = 'gf-car'
@@ -104,20 +103,22 @@ func _ready():
 			'senpai', 'roses', 'thorns': gf_ver = 'gf-pixel'
 			'ugh', 'guns': gf_ver = 'gf-tankmen'
 			'stress': gf_ver = 'pico-speaker'
-	
-	if SONG.has('players'): 
-		SONG.player1 = SONG.players[0]
-		SONG.player2 = SONG.players[1]
-		SONG.gfVersion = SONG.players[2]
-		
+			
+	if gf_ver == null or gf_ver.is_empty(): gf_ver = 'gf'
+
 	var add:Callable = stage.get_node('CharGroup').add_child if stage.has_node('CharGroup') else add_child
-	#var spec = load('res://game/objects/show_spectrum.tscn').instantiate()
-	#add.call(spec)
 	
-	gf = Character.new(stage.gf_pos, gf_ver if gf_ver != null else 'gf')
+	gf = Character.new(stage.gf_pos, gf_ver)
+	if gf.speaker_data.keys().size() > 0:
+		var _data = gf.speaker_data
+
+		match _data.sprite:
+			'ABot': speaker = load('res://game/objects/a_bot.tscn').instantiate()
+			_: speaker = Speaker.new(gf)
+		speaker.offsets = Vector2(_data.offsets[0] + 80, _data.offsets[1])
+		add.call(speaker)
+	
 	add.call(gf)
-	
-	#spec.position = gf.position + Vector2(10, 0)
 	
 	if gf.cur_char.to_lower() == 'pico-speaker' and cur_stage.contains('tank'):
 		stage.init_tankmen()
@@ -140,7 +141,7 @@ func _ready():
 	ui.opponent_group.singer = dad
 	
 	if cur_stage.contains('school'):
-		cur_style = 'pixel'
+		cur_skin = 'pixel'
 	if cur_stage == 'limo': # lil dumb...
 		remove_child(gf)
 		stage.add_child(gf)
@@ -179,7 +180,9 @@ func _ready():
 	
 	Conductor.beat_hit.connect(stage.beat_hit)
 	
-	
+	#ui.player_group.set_style('pixel')
+	#for i in ui.strums.size():
+	#	if i % 2 == 0: ui.strums[i].load_skin('pixel')
 	ui.start_countdown(true)
 	
 	if JsonHandler.parse_type == 'v_slice': event_hit(EventData.new(
@@ -275,6 +278,7 @@ func countdown_tick(tick) -> void:
 	for i in characters:
 		if tick % i.dance_beat == 0 and !i.animation.begins_with('sing'):
 			i.dance()
+	if speaker != null: speaker.bump()
 	ui.icon_p1.bump()
 	ui.icon_p2.bump()
 	
@@ -284,7 +288,7 @@ func beat_hit(beat) -> void:
 	for i in characters:
 		if !i.animation.contains('sing') and beat % i.dance_beat == 0:
 			i.dance()
-		
+	if speaker != null: speaker.bump()
 	ui.icon_p1.bump()
 	ui.icon_p2.bump()
 
@@ -292,7 +296,7 @@ func step_hit(step) -> void: pass
 
 func section_hit(section) -> void:
 	ui.zoom += 0.04
-	cam.zoom += Vector2(0.08, 0.08)
+	cam.zoom += Vector2(0.045, 0.045)
 	ui.mark.scale = ui.def_mark_scale + (ui.def_mark_scale / 5)
 
 	if JsonHandler.parse_type != 'v_slice' and SONG.notes.size() > section:
@@ -345,8 +349,9 @@ func key_release(key:int = 0) -> void:
 	ui.player_strums[key].play_anim('static')
 
 func try_death() -> void:
+	Game.persist['deaths'] += 1
 	kill_all_notes()
-	boyfriend.process_mode = Node.PROCESS_MODE_ALWAYS
+	#boyfriend.process_mode = Node.PROCESS_MODE_ALWAYS
 	gf.play_anim('sad')
 	get_tree().paused = true
 	var death_screen = load('res://game/scenes/game_over.tscn').instantiate()
@@ -354,16 +359,12 @@ func try_death() -> void:
 
 func song_end() -> void:
 	if should_save:
-		var scores = ConfigFile.new()
-		scores.load('user://highscores.cfg')
-		var to_save = scores.get_value('Song Scores', Game.format_str(SONG.song))
-		if to_save[JsonHandler.get_diff] == [0, 0, 'N/A'] or score > to_save[JsonHandler.get_diff][0]: 
-			to_save[JsonHandler.get_diff] = [score, ui.accuracy, ui.fc]
-
-			scores.set_value('Song Scores', Game.format_str(SONG.song), to_save)
-			scores.save('user://highscores.cfg')
+		var save_data = [score, ui.accuracy, misses, ui.fc, combo]
+		var saved_score = HighScore.get_score(SONG.song, JsonHandler.get_diff)
 		
-	#refresh(false)
+		if save_data[0] > saved_score:
+			HighScore.set_score(SONG.song, JsonHandler.get_diff, save_data)
+
 	Conductor.reset()
 	Game.switch_scene("menus/freeplay")
 	
@@ -380,10 +381,10 @@ func refresh(restart:bool = true) -> void: # start song from beginning with no r
 	chart_notes = JsonHandler.chart_notes.duplicate()
 	events = JsonHandler.song_events.duplicate()
 	
-	for item in ['combo', 'score', 'misses']: set(item, 0)
-	ui.reset_stats()
 	chunk = 0
 	if restart:
+		for item in ['combo', 'score', 'misses']: set(item, 0)
+		ui.reset_stats()
 		Discord.change_presence('Starting: '+ SONG.song.capitalize())
 		ui.get_node('Text').text = '0:00'
 		ui.time_bar.value = 0
@@ -402,6 +403,9 @@ func event_hit(event:EventData) -> void:
 			boyfriend.anim_timer = 0.6
 			gf.play_anim('cheer', true)
 			gf.anim_timer = 0.6
+		'Play Animation':
+			boyfriend.play_anim(event.values[0], true)
+			boyfriend.special_anim = true
 		'Change Scroll Speed': 
 			var new_speed = SONG.speed * float(event.values[0])
 			var len := float(event.values[1])
@@ -412,8 +416,8 @@ func event_hit(event:EventData) -> void:
 		'Add Camera Zoom':
 			var ev_zoom = [float(event.values[0]), float(event.values[1])]
 
-			var zoom_ui = 0.015 if is_nan(ev_zoom[0]) else ev_zoom[0]
-			var zoom_game = 0.3 if is_nan(ev_zoom[0]) else ev_zoom[0]
+			var zoom_ui = 0.03 if is_nan(ev_zoom[0]) else ev_zoom[0] / 2.2
+			var zoom_game = 0.3 if is_nan(ev_zoom[0]) else ev_zoom[0] / 2.2
 			
 			ui.zoom += zoom_ui
 			cam.zoom += Vector2(zoom_game, zoom_game)
@@ -499,7 +503,8 @@ func good_sustain_press(sustain:Note, delt:float = 0.0) -> void:
 			ui.player_group.note_hit(sustain)
 		
 			grace = true
-			score += floor(550 * delt)
+			if !Prefs.legacy_score:
+				score += floor(550 * delt)
 			ui.hp += (4 * delt)
 			ui.update_score_txt()
 
@@ -534,7 +539,8 @@ func note_miss(note:Note) -> void:
 	ui.hit_count['miss'] = misses
 	if note != null:
 		ui.player_group.note_miss(note)
-		score -= floor(note.length * 2) if note.is_sustain else int(30 + (15 * floor(misses / 3)))
+		var away = floor(note.length * 2) if note.is_sustain else int(30 + (15 * floor(misses / 3)))
+		score -= 10 if Prefs.legacy_score else away
 		#print(int(30 + (15 * floor(misses / 3))))
 		ui.total_hit += 1
 	
@@ -548,6 +554,7 @@ func note_miss(note:Note) -> void:
 		kill_note(note)
 	
 	pop_up_combo('miss', ('000' if combo >= 5 else ''), true)
+	if combo >= 10: gf.play_anim('sad')
 	#if combo >= 5: pop_up_combo('', '000', true)
 		
 	combo = 0

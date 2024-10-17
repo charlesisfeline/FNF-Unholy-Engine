@@ -62,7 +62,7 @@
 			],
 			"indices": [],
 			"fps": 24,
-			"anim": "Kidle",
+			"anim": "knifeIdle",
 			"loop": false,
 			"name": "KnifeIdle"
 		},
@@ -106,7 +106,7 @@
 			],
 			"indices": [],
 			"fps": 24,
-			"anim": "Cheer",
+			"anim": "cheer",
 			"loop": false,
 			"name": "ComboCheer"
 		},
@@ -124,7 +124,7 @@
 	],
 	"vocals_file": "",
 	"no_antialiasing": false,
-	"image": "characters/nene",
+	"image": "characters/gf/nene/char",
 	"position": [
 		0,
 		0

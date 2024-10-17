@@ -3,8 +3,8 @@ class_name BasicNote; extends Node2D;
 
 const COLORS:Array[String] = ['purple', 'blue', 'green', 'red']
 
-var style:StyleInfo = StyleInfo.new()
-var tex_path:String = 'assets/images/ui/styles/%s/notes/'
+var skin:SkinInfo# = (Game.scene.skin if Game.scene.get('skin') != null else SkinInfo.new())
+var tex_path:String = 'assets/images/ui/skins/%s/notes/'
 var antialiasing:bool = true:
 	get: return texture_filter == CanvasItem.TEXTURE_FILTER_LINEAR
 	set(alias):
@@ -89,8 +89,8 @@ func _init(data = null, sustain:bool = false, in_chart:bool = false):
 
 func _ready():
 	spawned = true
-	tex_path = tex_path % [style.style]
-	antialiasing = style.antialiased
+	tex_path = tex_path % ['default'] #[skin.cur_skin]
+	antialiasing = true #skin.antialiased
 	position = Vector2(INF, -INF) #you can see it spawn in for a frame or two
 	
 	if is_sustain:
@@ -103,14 +103,14 @@ func _ready():
 		move_child(hold_group, 0)
 		
 		end = TextureRect.new()
-		end.texture = load(tex_path + COLORS[dir] +'_end.png')
+		end.texture = ResourceLoader.load(tex_path + COLORS[dir] +'_end.png')
 
 		end.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
 		end.grow_horizontal = Control.GROW_DIRECTION_BOTH
 		end.grow_vertical = Control.GROW_DIRECTION_BEGIN
 		
 		sustain = TextureRect.new()
-		sustain.texture = load(tex_path + COLORS[dir] +'_hold.png')
+		sustain.texture = ResourceLoader.load(tex_path + COLORS[dir] +'_hold.png')
 		
 		sustain.set_anchors_preset(Control.PRESET_FULL_RECT)
 		sustain.set_anchor_and_offset(SIDE_BOTTOM, 1.0, -end.texture.get_height())
@@ -121,7 +121,7 @@ func _ready():
 		hold_group.add_child(end)
 	else:
 		note = Sprite2D.new()
-		note.texture = load(tex_path + COLORS[dir] +'.png')
+		note.texture = ResourceLoader.load(tex_path + COLORS[dir] +'.png')
 
 		add_child(note)
 		
@@ -130,7 +130,7 @@ func _ready():
 		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	
-		label.add_theme_font_override('font', load('res://assets/fonts/vcr.ttf'))
+		label.add_theme_font_override('font', ResourceLoader.load('res://assets/fonts/vcr.ttf'))
 		label.add_theme_font_size_override('font_size', 20)
 		label.add_theme_constant_override('outline_size', 5)
 		label.scale *= 5
@@ -147,7 +147,7 @@ func _process(delta):
 		hitting = was_hit and strum_time + length > Conductor.song_pos
 
 func load_skin(skin) -> void:
-	tex_path = 'res://assets/images/ui/styles/'+ skin.style +'/notes/'+ COLORS[dir]
+	tex_path = 'res://assets/images/ui/skins/'+ skin.cur_skin +'/notes/'+ COLORS[dir]
 	antialiasing = skin.antialiased
 	scale = skin.note_scale
 
@@ -162,7 +162,7 @@ func load_skin(skin) -> void:
 func resize_hold(update_control:bool = false, to_size:float = 0.0) -> void:
 	if !spawned: return
 	hold_group.size.y = to_size
-	#var rounded_scale = Game.round_d(style.note_scale.y, 1)
+	#var rounded_scale = Game.round_d(skin.note_scale.y, 1)
 	#if rounded_scale > 0.7: 
 	#	hold_group.size.y /= (rounded_scale + (rounded_scale / 2))
 	

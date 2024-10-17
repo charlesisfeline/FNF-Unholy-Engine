@@ -39,7 +39,7 @@ func _ready():
 			icon.follow_spr = tes
 	
 	cred_desc = Alphabet.new('Empty Empty', false)
-	cred_desc.scale = Vector2(0.8, 0.8)
+	cred_desc.scale = Vector2(0.5, 0.5)
 	cred_desc.color = Color.WHITE
 	cred_desc.position = Vector2(600, 650)
 	add_child(cred_desc)
@@ -63,12 +63,11 @@ func update_selection(amount:int = 0) -> void:
 	if amount != 0: Audio.play_sound('scrollMenu')
 	cur_select = wrapi(cur_select + amount, 0, credits.size())
 	
+	
 	if credits[cur_select].size() > 1:
-		if FileAccess.file_exists('res://assets/images/credits/'+ credits[cur_select][1] +'_img.jpg'):
-			$CreditImage.visible = true
+		$CreditImage.visible = ResourceLoader.exists('res://assets/images/credits/'+ credits[cur_select][1] +'_img.jpg')
+		if $CreditImage.visible:
 			$CreditImage.texture = load('res://assets/images/credits/'+ credits[cur_select][1] +'_img.jpg')
-		else:
-			$CreditImage.visible = false
 		
 	cred_desc.text = credits[cur_select][2] if credits[cur_select].size() > 2 else ''
 	cred_desc.color = Color.WHITE

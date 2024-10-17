@@ -106,7 +106,7 @@
 		}
 	],
 	"no_antialiasing": false,
-	"image": "characters/pico-speaker",
+	"image": "characters/pico/tankman/char",
 	"position": [
 		120,
 		-125

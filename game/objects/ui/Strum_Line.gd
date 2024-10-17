@@ -4,6 +4,7 @@ class_name Strum_Line; extends Node2D;
 var SPLASH = preload('res://game/objects/note/note_splash.tscn')
 var SPARK = preload('res://game/objects/note/holdnote_splash.tscn')
 
+var INIT_POS = [Vector2.ZERO, Vector2.ZERO, Vector2.ZERO, Vector2.ZERO]
 @export var is_cpu:bool = true:
 	set(cpu): 
 		is_cpu = cpu
@@ -25,20 +26,25 @@ func _ready():
 		cur_strum.downscroll = Prefs.downscroll
 		cur_strum.is_player = !is_cpu
 		cur_strum.position.x = spacing * (i % 4)
-
+		INIT_POS[i] = cur_strum.position
+	
 func get_strums() -> Array[Strum]:
 	return [$Left, $Down, $Up, $Right]
+	
+func set_all_skins(skin:String = ''):
+	for i in get_strums():
+		i.load_skin(skin)
 	
 func note_hit(note:Note) -> void:
 	strum_anim(note.dir, !is_cpu, !note.is_sustain)
 	
-	if singer == null: return
-	if !note.no_anim:
-		if note.type == 'Hey':
-			singer.play_anim('hey', true)
-			singer.anim_timer = 0.6
-		else:
-			singer.sing(note.dir, note.alt, !note.is_sustain)
+	if singer != null:
+		if !note.no_anim:
+			if note.type == 'Hey':
+				singer.play_anim('hey', true)
+				singer.anim_timer = 0.6
+			else:
+				singer.sing(note.dir, note.alt, !note.is_sustain)
 			
 	var can_splash = note.rating == 'sick' or note.rating == 'epic'
 	if Prefs.note_splashes == 'all' or \
@@ -51,14 +57,24 @@ func note_miss(note:Note) -> void:
 		singer.sing(note.dir, 'miss')
 		if note.length > 0:
 			singer.anim_timer = note.length / Conductor.step_crochet * 0.16
-		
+
+var total_splash:Array[AnimatedSprite2D] = []
 func spawn_splash(strum:Strum) -> void:
-	var new_splash = SPLASH.instantiate()
+	if total_splash.size() > 20:
+		while total_splash.size() > 20:
+			total_splash[0].visible = false
+			total_splash[0].animation_finished.emit()
+		
+	var new_splash:AnimatedSprite2D = SPLASH.instantiate()
 	new_splash.strum = strum
-	add_child(new_splash)
 	new_splash.on_anim_finish = func():
+		total_splash.remove_at(total_splash.find(new_splash))
 		remove_child(new_splash)
 		new_splash.queue_free()
+		
+	add_child(new_splash)
+	move_child(new_splash, 4)
+	total_splash.append(new_splash)
 	
 func spawn_hold_splash(strum:Strum) -> void:
 	pass

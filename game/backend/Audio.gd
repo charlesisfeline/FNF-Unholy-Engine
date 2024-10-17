@@ -62,12 +62,14 @@ func finished():
 
 func return_sound(sound:String, use_skin:bool = false) -> AutoSound:
 	if use_skin and !sound.begins_with('skins/'): 
-		sound = 'skins/'+ Game.scene.cur_style +'/'+ sound
-	return AutoSound.new('res://assets/sounds/%s.ogg' % sound)
+		sound = 'skins/'+ Game.scene.cur_skin +'/'+ sound
+	var to_return = AutoSound.new('res://assets/sounds/%s.ogg' % sound)
+	add_child(to_return)
+	return to_return
 
-func play_sound(sound:String, vol:float = 1, use_skin:bool = false, auto_clear:bool = true) -> void:
+func play_sound(sound:String, vol:float = 1.0, use_skin:bool = false) -> void:
 	if use_skin and !sound.begins_with('skins/'): 
-		sound = 'skins/'+ Game.scene.cur_style +'/'+ sound
+		sound = 'skins/'+ Game.scene.cur_skin +'/'+ sound
 
 	var path = 'res://assets/sounds/%s.ogg' % sound
 	var new_sound := AutoSound.new(path, vol)

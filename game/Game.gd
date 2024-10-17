@@ -5,7 +5,7 @@ signal focus_change(is_focused) # when you click on/off the game window
 var TRANS = preload('res://game/objects/ui/transition.tscn') # always have it loaded for instantiating
 var cur_trans
 
-var persist_vars = {} # var values to remember
+var persist = {'deaths': 0} # var values to remember
 var scene:Node2D = null:
 	get: return get_tree().current_scene
 	
@@ -72,13 +72,17 @@ func switch_scene(to_scene, skip_trans:bool = false) -> void:
 	if ((to_scene is not String) and (to_scene is not PackedScene)) or to_scene == null:
 		printerr('Switch Scene: new scene is invalid')
 		return
-	
+		
+	persist.deaths = 0
 	print('LEAVING '+ scene.name)
 	if to_scene is String: # scene is a string, make it into a packed scene
 		to_scene = to_scene.to_lower()
 		if to_scene == 'play_scene' and Prefs.basic_play: to_scene += '_simple'
 		if ResourceLoader.exists('res://game/scenes/'+ to_scene +'.tscn', 'PackedScene'):
 			to_scene = load('res://game/scenes/'+ to_scene +'.tscn')
+		else:
+			printerr('Switch Scene: "'+ to_scene +'" doesn\'t exist, reloading')
+			return reset_scene()
 	
 	var new_scene:PackedScene = to_scene
 	if skip_trans:
@@ -103,7 +107,7 @@ func switch_scene(to_scene, skip_trans:bool = false) -> void:
 
 # call function on nodes or somethin
 func call_func(to_call:String, args:Array[Variant] = [], call_tree:bool = false) -> void:
-	if to_call.length() < 1 or scene == null: return
+	if to_call.is_empty() or scene == null: return
 	if call_tree:
 		pass
 		#for node in get_tree().get_nodes_in_group(scene.name):
@@ -117,10 +121,10 @@ func call_func(to_call:String, args:Array[Variant] = [], call_tree:bool = false)
 func format_str(str:String = '') -> String:
 	return str.to_lower().strip_edges().replace(' ', '-').replace('\'', '')
 
-func round_d(num, digit) -> float: # bowomp
+func round_d(num:float, digit:int) -> float: # bowomp
 	return round(num * pow(10.0, digit)) / pow(10.0, digit)
 	
-func rand_bool(chance:float = 50) -> bool:
+func rand_bool(chance:float = 50.0) -> bool:
 	return true if (randi() % 100) < chance else false
 
 func remove_all(array:Array[Array], node) -> void:

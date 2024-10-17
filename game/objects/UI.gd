@@ -7,10 +7,10 @@ signal song_start # technically countdown tick 4 is song start but why would you
 # probably gonna move some note shit in here
 @onready var mark:Sprite2D = $Mark
 @onready var score_txt:Label = $Score_Txt
-@onready var time_bar:Control = $TimeBar
-@onready var health_bar:Control = $HealthBar
-@onready var icon_p1:Sprite2D = $HealthBar/IconP1
-@onready var icon_p2:Sprite2D = $HealthBar/IconP2
+@onready var time_bar:HealthBar = $TimeBar
+@onready var health_bar:HealthBar = $HealthBar
+@onready var icon_p1:Icon = $HealthBar/IconP1
+@onready var icon_p2:Icon = $HealthBar/IconP2
 
 @onready var player_group:Strum_Line = $Strum_Group/Player
 @onready var opponent_group:Strum_Line = $Strum_Group/Opponent
@@ -21,12 +21,12 @@ var chart_notes = []
 
 var characters:Array[Character] = []
 
-var STYLE = StyleInfo.new()
-var cur_style:String = 'default':
+var SKIN = SkinInfo.new()
+var cur_skin:String = 'default':
 	set(new_style): 
-		if new_style != cur_style:
-			cur_style = new_style
-			change_style(new_style)
+		if new_style != cur_skin:
+			cur_skin = new_style
+			change_skin(new_style)
 			
 var finished_countdown:bool = false
 var countdown_spr:Array[String] = ['ready', 'set', 'go']
@@ -46,7 +46,7 @@ var zoom:float = 1:
 
 func _ready():
 	time_bar.fill_mode = 0
-	time_bar.set_colors(Color.BLACK, Color.WHITE)
+	time_bar.set_colors(Color(0, 0, 0.5), Color(0.25, 0.65, 0.95))
 	
 	strums.append_array(opponent_strums)
 	strums.append_array(player_strums)
@@ -80,12 +80,12 @@ func _ready():
 	if downscroll:
 		score_txt.position.y = 130
 		
-	mark.texture = load('res://assets/images/ui/styles/'+ cur_style +'/auto.png')
-	mark.scale = STYLE.strum_scale
+	mark.texture = load('res://assets/images/ui/skins/'+ cur_skin +'/auto.png')
+	mark.scale = SKIN.strum_scale
 	mark.position = health_bar.position + Vector2(330, -5)
 	mark.z_index = -2
 
-var hp:float = 50:
+var hp:float = 50.0:
 	set(val): hp = clampf(val, 0, 100)
 	
 func _process(delta):
@@ -104,7 +104,13 @@ func _process(delta):
 func update_score_txt() -> void:
 	if Game.scene.get('score') != null:
 		var stuff = [Game.scene.score, get_acc(), Game.scene.misses]
-		score_txt.text = 'Score: %s - Accuracy: [%s] - Misses: %s' % stuff
+		score_txt.text = 'Score: %s / Accuracy: [%s] \\ Misses: %s' % stuff
+	#$Talley.text = '
+	#[color=purple]Epics: '+ str(hit_count['epic']) +'
+	#[color=cyan]Sicks: '+ str(hit_count['sick']) +'
+	#[color=green]Goods: '+ str(hit_count['good']) +'
+	#[color=yellow]Bads: '+ str(hit_count['bad']) +'
+	#[color=red]Shits: '+ str(hit_count['shit'])
 
 func get_acc() -> String:
 	var new_acc = clampf(note_percent / total_hit, 0, 1)
@@ -116,9 +122,10 @@ func get_acc() -> String:
 func get_fc() -> String:
 	if hit_count['miss'] == 0: # dumb
 		var da_fc:String = 'FC'
-		if hit_count['epic'] > 0: da_fc = 'EFC'
-		if hit_count['sick'] > 0: da_fc = 'SFC'
-		if hit_count['good'] > 0: da_fc = 'GFC'
+		if hit_count['bad'] + hit_count['shit'] == 0:
+			if hit_count['epic'] > 0: da_fc = 'EFC'
+			if hit_count['sick'] > 0: da_fc = 'SFC'
+			if hit_count['good'] > 0: da_fc = 'GFC'
 		return da_fc
 	if hit_count['miss'] in range(1, 10):
 		return 'SDCB'
@@ -136,7 +143,7 @@ func reset_stats() -> void:
 
 func add_to_strum_group(item:Variant, to_player:bool = true) -> void:
 	if item == null: return
-	var group = $'Strum_Group/Player' if to_player else $'Strum_Group/Opponent'
+	var group = player_group if to_player else opponent_group
 	group.add_child(item)
 
 func add_behind(item) -> void:
@@ -144,14 +151,19 @@ func add_behind(item) -> void:
 	item.z_index = -1
 	#move_child(item, 0) #layering would get fucked
 
-func change_style(new_style:String = 'default') -> void: # change style of whole hud, instead of one by one
-	cur_style = new_style
-	STYLE.load_style(new_style)
-	for strum in strums: strum.load_skin(STYLE)
-	for note in Game.scene.notes: note.load_skin(STYLE)
-	mark.texture = load('res://assets/images/ui/styles/'+ cur_style +'/auto.png')
-	mark.texture_filter = Game.get_alias(STYLE.antialiased)
-	def_mark_scale = (STYLE.strum_scale if STYLE.strum_scale.x <= 0.7 else STYLE.strum_scale / 1.5)
+func change_skin(new_skin:String = 'default') -> void: # change style of whole hud, instead of one by one
+	cur_skin = new_skin
+	SKIN.load_skin(new_skin)
+	
+	player_group.set_all_skins(new_skin)
+	opponent_group.set_all_skins(new_skin)
+	#for strum in strums: strum.load_skin(new_skin)
+	for note in Game.scene.notes: 
+		note.load_skin(new_skin)
+		
+	mark.texture = load('res://assets/images/ui/skins/'+ cur_skin +'/auto.png')
+	mark.texture_filter = Game.get_alias(SKIN.antialiased)
+	def_mark_scale = (SKIN.strum_scale if SKIN.strum_scale.x <= 0.7 else SKIN.strum_scale / 1.5)
 	mark.scale = def_mark_scale
 
 var count_down:Timer
@@ -173,15 +185,15 @@ func start_countdown(from_beginning:bool = false) -> void:
 	if times_looped < 4:
 		if times_looped > 0:
 			var spr = Sprite2D.new()
-			spr.texture = load('res://assets/images/ui/styles/'+ cur_style +'/'+ countdown_spr[times_looped - 1] +'.png')
+			spr.texture = load('res://assets/images/ui/skins/'+ cur_skin +'/'+ countdown_spr[times_looped - 1] +'.png')
 			add_child(spr)
-			spr.scale = STYLE.countdown_scale
-			spr.texture_filter = Game.get_alias(STYLE.antialiased)
+			spr.scale = SKIN.countdown_scale
+			spr.texture_filter = Game.get_alias(SKIN.antialiased)
 			Game.center_obj(spr)
 			
 			var tween = create_tween().tween_property(spr, 'modulate:a', 0, Conductor.crochet / 1000)
 			tween.finished.connect(spr.queue_free)
-		Audio.play_sound('skins/'+ cur_style +'/'+ sounds[times_looped])
+		Audio.play_sound(sounds[times_looped], 1, true)
 		start_countdown()
 	else:
 		stop_countdown()

@@ -27,10 +27,11 @@ func _ready():
 	$Time.modulate.a = 0
 	create_tween().tween_property($Time, 'modulate:a', 1, 0.3).set_delay(0.4)
 	
+	$Balled.text = 'Blueballed: '+ str(Game.persist['deaths'])
 	$Balled.modulate.a = 0
 	create_tween().tween_property($Balled, 'modulate:a', 1, 0.3).set_delay(0.9)
 	
-	Audio.play_music('skins/%s/breakfast' % this.cur_style, true, 0)
+	Audio.play_music('skins/%s/breakfast' % this.cur_skin, true, 0)
 
 	create_tween().tween_property(Audio, 'volume', 0.7, 20).set_delay(1)
 	
@@ -55,7 +56,7 @@ func _process(_delta):
 			var choice = options[cur_option].text
 			if diffs.has(choice.to_lower()):
 				var path = 'res://assets/songs/'+ Game.format_str(this.SONG.song) +'/charts/' 
-				if FileAccess.open(path + choice +'.json', FileAccess.READ):
+				if ResourceLoader.exists(path + choice +'.json', 'JSON'):
 					JsonHandler.parse_song(this.SONG.song, choice, true)
 					close()
 					Conductor.reset()

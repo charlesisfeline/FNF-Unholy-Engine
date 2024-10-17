@@ -21,7 +21,7 @@ func change_icon(new_image:String = 'face', player:bool = false, credit:bool = f
 	image = new_image
 	var icon_path = 'res://assets/images/icons/icon-%s.png'
 	if credit: icon_path = icon_path.replace('icons/', 'credits/').replace('icon-', '')
-	if !FileAccess.file_exists(icon_path % image): image = 'face'
+	if !ResourceLoader.exists(icon_path % image): image = 'face'
 	texture = load(icon_path % image)
 	
 	if image.ends_with('-pixel'): antialiasing = false

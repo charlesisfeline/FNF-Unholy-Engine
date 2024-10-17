@@ -7,6 +7,9 @@ var ghost_tapping:bool = true
 var downscroll:bool = false
 var middlescroll:bool = false
 
+var legacy_score:bool = false
+
+var saved_volume:float = 1.0
 var hitsound_volume:int = 0 # will be divided by 100
 var offset:int = 0
 
@@ -30,12 +33,11 @@ var allow_rpc:bool = true:
 		allow_rpc = allow
 		if allow: Discord.init_discord()
 		else: Discord.clear()
-var note_splashes:String = 'sicks'
+var note_splashes:String = 'both'
 var splash_sprite:String = 'haxe'
 var behind_strums:bool = false
 var rating_cam:String = 'game'
 var chart_grid:bool = true
-var legacy_score:bool = false
 
 var daniel:bool = false: # if you switch too much, it'll break lol
 	set(dani): 
@@ -56,6 +58,7 @@ var ui_keys:Array = [
 func _ready():
 	check_prefs()
 	set_keybinds()
+	DebugInfo.volume = saved_volume
 
 func set_keybinds() -> void:
 	var key_names:Array[String] = ['note_left', 'note_down', 'note_up', 'note_right']

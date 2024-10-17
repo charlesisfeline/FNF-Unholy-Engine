@@ -6,7 +6,7 @@ func _ready():
 	default_zoom = 0.9
 	bf_pos = Vector2(810, 100)
 	dad_pos = Vector2(20, 100)
-	gf_pos = Vector2(200, 65)
+	gf_pos = Vector2(500, 65)
 	 
 	$Clouds/Sprite.moving = true
 	$Clouds/Sprite.position = Vector2(randi_range(-700, -100), randi_range(-20, -20))
@@ -20,7 +20,7 @@ func init_tankmen():
 	var chart = Chart.new()
 	gf.chart = chart.load_named_chart(SONG.song, 'pico-speaker')
 	tank_notes = gf.chart.duplicate()
-	
+
 	for note in tank_notes:
 		if Game.rand_bool(16):
 			var tankyboy = Tankmen.new(Vector2(500, 240 + randi_range(10, 50)), note[1] < 2)
@@ -35,6 +35,15 @@ func beat_hit(beat:int):
 		tank.get_node('Sprite').play('idle')
 	$Watchtower/Sprite.frame = 0
 	$Watchtower/Sprite.play('idle')
+
+var played_line:bool = false
+func game_over_start(): played_line = false
+func game_over_idle():
+	if !played_line:
+		played_line = true
+		Audio.volume = 0.4
+		Audio.play_sound('tank/jeffGameover-'+ str(randi_range(1, 25)))
+
 
 class TankBG extends AnimatedSprite2D:
 	var off = Vector2(700, 1300)

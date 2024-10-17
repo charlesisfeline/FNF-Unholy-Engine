@@ -53,6 +53,24 @@ position = Vector2(95, 55)
 position = Vector2(795, 55)
 is_cpu = false
 
+[node name="Tally" type="RichTextLabel" parent="."]
+visible = false
+offset_left = 15.0
+offset_top = 254.0
+offset_right = 218.0
+offset_bottom = 448.0
+theme_override_constants/outline_size = 4
+theme_override_constants/line_separation = 14
+theme_override_fonts/normal_font = ExtResource("8_1567e")
+theme_override_font_sizes/normal_font_size = 18
+bbcode_enabled = true
+text = "[color=purple]Epics: 0
+[color=cyan]Sicks: 0
+[color=green]Goods: 0
+[color=yellow]Bads: 0
+[color=red]Shits: 0"
+scroll_active = false
+
 [node name="Score_Txt" type="Label" parent="."]
 anchors_preset = 5
 anchor_left = 0.5
@@ -66,7 +84,7 @@ theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 5
 theme_override_fonts/font = ExtResource("8_1567e")
 theme_override_font_sizes/font_size = 19
-text = "Score: 0 - Accuracy: [?] - Misses: 0"
+text = "Score: 0 / Accuracy: [?] \\ Misses: 0"
 horizontal_alignment = 1
 vertical_alignment = 1
 text_direction = 3

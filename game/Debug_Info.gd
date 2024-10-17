@@ -4,26 +4,33 @@ var time_existed:float = 0.0
 var vol_visible:bool = false
 var vol_tween:Tween
 var max_tween:Tween
+var pressed_key:bool = false
 var volume:float = 1.0:
 	set(vol):
 		vol = clamp(vol, 0, 1)
-		if vol > volume: 
-			Audio.play_sound('vol/up')
-		elif vol < volume:
-			Audio.play_sound('vol/down')
-		else:
-			$Volume/BarsBG/VolBar10.modulate = Color.RED
-			if max_tween: max_tween.kill()
-			max_tween = create_tween()
-			max_tween.tween_property($Volume/BarsBG/VolBar10, 'modulate', Color.WHITE, 0.3)
-			Audio.play_sound('vol/max')
-		$Volume.position.y = 0
 		vol_visible = true
-		time_existed = 0
+		if pressed_key:
+			pressed_key = false
+			if vol > volume: 
+				Audio.play_sound('vol/up')
+			elif vol < volume:
+				Audio.play_sound('vol/down')
+			else:
+				$Volume/BarsBG/VolBar10.modulate = Color.RED
+				if max_tween: max_tween.kill()
+				max_tween = create_tween()
+				max_tween.tween_property($Volume/BarsBG/VolBar10, 'modulate', Color.WHITE, 0.3)
+				Audio.play_sound('vol/max')
+			$Volume.position.y = 0
+			time_existed = 0
 		AudioServer.set_bus_volume_db(0, linear_to_db(vol))
 		volume = vol
+		Prefs.saved_volume = vol
+		Prefs.save_prefs()
 
 func _ready():
+	volume = Prefs.saved_volume
+
 	Game.center_obj($Volume, 'x')
 	$Volume.position.x -= ($Volume.size.x * $Volume.scale.x) / 2.0
 	$Other.visible = OS.is_debug_build()
@@ -61,9 +68,10 @@ func _process(delta):
 			$Other.text += '\nTotal Draw Obj/Calls: '+ str(Performance.get_monitor(Performance.RENDER_TOTAL_OBJECTS_IN_FRAME)) +' / '+ str(Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME))
 
 func _unhandled_key_input(_event):
+	pressed_key = true
 	if Input.is_action_just_pressed('vol_up'): volume = min(volume + 0.1, 1)
 	if Input.is_action_just_pressed('vol_down'): volume = max(volume - 0.1, 0)
 	
-	if Input.is_key_pressed(KEY_L): Conductor.playback_rate += 0.1
-	if Input.is_key_pressed(KEY_J): Conductor.playback_rate -= 0.1
+	if Input.is_key_pressed(KEY_L): Conductor.playback_rate *= 2.0
+	if Input.is_key_pressed(KEY_J): Conductor.playback_rate /= 2.0
 	if Input.is_key_pressed(KEY_I): Conductor.playback_rate = 1

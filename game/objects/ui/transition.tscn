@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://548wadsc4u4o"]
 
 [ext_resource type="Script" path="res://game/objects/ui/Transition.gd" id="1_d20kq"]
-[ext_resource type="Texture2D" uid="uid://dvy47cxlx4mgx" path="res://assets/images/ui/transitions/gradient.png" id="2_50755"]
+[ext_resource type="Texture2D" uid="uid://dfncx5ekj6wit" path="res://assets/images/ui/transitions/unused/gradient.png" id="2_50755"]
 [ext_resource type="Texture2D" uid="uid://cv6o3hdr4ereh" path="res://assets/images/ui/transitions/circle.png" id="3_3bo4c"]
 
 [sub_resource type="Gradient" id="Gradient_maa3h"]

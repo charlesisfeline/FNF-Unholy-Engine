@@ -15,19 +15,23 @@ func load_chart(data, chart_type:String = 'psych', diff:String = 'normal') -> Ar
 	if data == null: return []
 	return_notes.clear()
 	match chart_type:
-		'old_base', 'psych': return load_common(data)
-		'v_slice': return load_base(data, diff)
+		'old_base', 'psych': 
+			type = CHART_TYPE.LEGACY
+			return load_common(data)
+		'v_slice': 
+			type = CHART_TYPE.V_SLICE
+			return load_base(data, diff)
 		_: return []
 		
 # for loading a chart that isnt named a difficulty
 # used for pico speaker
 func load_named_chart(song_name:String, chart_name:String = ''):
-	var path:String = 'res://assets/songs/%s/charts/%s' % [Game.format_str(song_name), chart_name]
+	var path:String = 'res://assets/songs/%s/charts/%s.json' % [Game.format_str(song_name), chart_name]
 	print(path)
-	if FileAccess.file_exists(path +'.json'):
-		var json = JSON.parse_string(FileAccess.open(path +'.json', FileAccess.READ).get_as_text())
+	if ResourceLoader.exists(path, 'JSON'):
+		var json = JSON.parse_string(FileAccess.open(path, FileAccess.READ).get_as_text())
 		return load_chart(json.song)
-	return
+	return []
 	
 # old base game/psych
 func load_common(data) -> Array:
@@ -66,16 +70,22 @@ func load_base(data, diff:String = 'normal') -> Array:
 	return_notes.sort_custom(func(a, b): return a[0] < b[0])
 	return return_notes
 
-func get_events(song:String = '') -> Array[EventData]:
-	var path_to_check = 'res://assets/songs/%s/events.json' % [Game.format_str(song)]
+func get_events(SONG:Dictionary) -> Array[EventData]:
+	var path_to_check = 'res://assets/songs/%s/events.json' % Game.format_str(SONG.song)
+	#if parse_type == 'v_slice': path_to_check.replace('events', 'charts/chart')
 	var events_found:Array = []
 	var events:Array[EventData] = []
-	if JsonHandler._SONG.has('events'): # check current song json for any events
-		events_found.append_array(JsonHandler._SONG.events)
+	if SONG.has('events'): # check current song json for any events
+		events_found.append_array(SONG.events)
 	
-	if FileAccess.file_exists(path_to_check): # then check if there is a event json
+	
+	if type != CHART_TYPE.V_SLICE and ResourceLoader.exists(path_to_check, 'JSON'): # then check if there is a event json
 		print(path_to_check)
-		var json = JSON.parse_string(FileAccess.open(path_to_check, FileAccess.READ).get_as_text()).song
+		
+		var json = JSON.parse_string(FileAccess.open(path_to_check, FileAccess.READ).get_as_text())
+		if json.has('song'): json = json.song
+		#if json.has('events'): json = json.events
+		
 		if json.has('notes') and json.notes.size() > 0: # if events are a -1 note
 			for sec in json.notes:
 				for note in sec.sectionNotes:
@@ -85,11 +95,11 @@ func get_events(song:String = '') -> Array[EventData]:
 			events_found.append_array(json.events)
 	
 	for event in events_found:
-		var time = event[0]
-		for i in event[1]:
-			var new_event = EventData.new([time, i])
-			events.append(new_event)
-			#print([time, i])
+		if type == CHART_TYPE.V_SLICE:
+			events.append(EventData.new(event, 'v_slice'))
+		else:
+			for i in event[1]:
+				events.append(EventData.new([event[0], i]))
 	
 	events.sort_custom(func(a, b): return a.strum_time < b.strum_time)
 	return events

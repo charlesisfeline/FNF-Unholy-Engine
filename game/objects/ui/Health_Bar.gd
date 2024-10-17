@@ -16,13 +16,23 @@ var value:float = 50.0:
 		
 var fill_mode:int = 1:
 	set(new_fill):
-		fill_mode = wrapi(new_fill, 0, 3)
+		fill_mode = clampi(new_fill, 0, 3)
 		$Bar.fill_mode = fill_mode
 		
+@export var left_color:Color = Color.RED:
+	set(new): 
+		left_color = new
+		$Bar.get_theme_stylebox("background").bg_color = new
+		
+@export var right_color:Color = Color(0.4, 1, 0.2):
+	set(new): 
+		right_color = new
+		$Bar.get_theme_stylebox("fill").bg_color = new
+
 var style_box:Dictionary = {'background': null, 'fill': null}
 func set_colors(left:Color, right:Color) -> void: # i might use this maybe who knows
-	if left != null: style_box.background.bg_color = left
-	if right != null: style_box.fill.bg_color = right
+	if left != null: $Bar.get_theme_stylebox("background").bg_color = left
+	if right != null: $Bar.get_theme_stylebox("fill").bg_color = right
 	
 func _ready():
 	if $Sprite == null:

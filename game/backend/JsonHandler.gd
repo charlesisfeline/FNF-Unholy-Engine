@@ -5,7 +5,7 @@ var song_diffs:Array = []
 var get_diff:String
 
 var charted:bool = false
-var _SONG = null
+var _SONG:Dictionary = {}
 
 var chart_notes:Array = [] # keep loaded chart and events for restarting songs
 var song_events:Array[EventData] = []
@@ -15,10 +15,10 @@ var old_events:Array[EventData] = []
 var song_meta = null
 var parse_type:String = ''
 func parse_song(song:String, diff:String, auto_create:bool = false, type:String = 'psych'):
-	if _SONG != null: _SONG.clear()
+	_SONG.clear()
 	
 	song = Game.format_str(song)
-	if FileAccess.file_exists('res://assets/songs/'+ song +'/charts/chart.json'):#\
+	if ResourceLoader.exists('res://assets/songs/'+ song +'/charts/chart.json'):#\
 		#FileAccess.file_exists('res://assets/songs/'+ song +'/metadata.json')
 		type = 'v_slice'
 	
@@ -33,16 +33,15 @@ func parse_song(song:String, diff:String, auto_create:bool = false, type:String 
 		#_: parsed_song = psych(song)
 	_SONG = parsed_song
 	
-	if FileAccess.file_exists('res://assets/songs/'+ song +'/metadata.json'):
+	if ResourceLoader.exists('res://assets/songs/'+ song +'/metadata.json'):
 		song_meta = JSON.parse_string(FileAccess.open('res://assets/songs/'+ song +'/metadata.json', FileAccess.READ).get_as_text())
 		print(song_meta)
 		if type == 'v_slice':
 			_SONG.speed = _SONG.scrollSpeed[diff] if _SONG.scrollSpeed.has(diff) else _SONG.scrollSpeed.default
-			var play = song_meta.playData
-			_SONG.player1 = play['characters'].player
-			_SONG.gfVersion = play['characters'].girlfriend
-			_SONG.player2 = play['characters'].opponent
-			_SONG.stage = play.stage
+			_SONG.player1 = song_meta.playData['characters'].player
+			_SONG.gfVersion = song_meta.playData['characters'].girlfriend
+			_SONG.player2 = song_meta.playData['characters'].opponent
+			_SONG.stage = song_meta.playData.stage
 			_SONG.song = song_meta.songName
 			_SONG.bpm = song_meta.timeChanges[0].bpm
 			
@@ -74,7 +73,7 @@ func you_WILL_get_a_json(song:String) -> FileAccess:
 	if parse_type == 'v_slice':
 		returned = path + 'chart.json'
 	else:
-		if !FileAccess.file_exists(path + get_diff +'.json'):
+		if !ResourceLoader.exists(path + get_diff +'.json'):
 			printerr(song +' has no '+ get_diff +'.json')
 			get_diff = 'hard'
 			return you_WILL_get_a_json('tutorial')
@@ -91,52 +90,18 @@ func generate_chart(data, keep_loaded:bool = true) -> Array:
 	if data == null: 
 		return parse_song('tutorial', get_diff)
 	
-	song_events = get_events(Game.format_str(data.song)) # load events whenever chart is made
-	
 	var chart = Chart.new()
-	
 	var _notes := chart.load_chart(data, parse_type, get_diff) # get diff here only matters for base game as of now
+	song_events = chart.get_events(data) # load events whenever chart is made
+
 	if keep_loaded:
 		chart_notes = _notes.duplicate()
-	
+		
 	return _notes
-
-func get_events(song:String = '') -> Array[EventData]:
-	var path_to_check = 'res://assets/songs/%s/events.json' % song
-	#if parse_type == 'v_slice': path_to_check.replace('events', 'charts/chart')
-	var events_found:Array = []
-	var events:Array[EventData] = []
-	if _SONG.has('events'): # check current song json for any events
-		events_found.append_array(_SONG.events)
-	
-	if parse_type != 'v_slice' and ResourceLoader.exists(path_to_check, 'JSON'): # then check if there is a event json
-		print(path_to_check)
-		
-		var json = JSON.parse_string(FileAccess.open(path_to_check, FileAccess.READ).get_as_text())
-		if json.has('song'): json = json.song
-		#if json.has('events'): json = json.events
-		
-		if json.has('notes') and json.notes.size() > 0: # if events are a -1 note
-			for sec in json.notes:
-				for note in sec.sectionNotes:
-					if note[1] == -1: 
-						events_found.append([note[0], [[note[2], note[3], note[4]]]])
-		else:
-			events_found.append_array(json.events)
-	
-	for event in events_found:
-		if parse_type != 'v_slice':
-			for i in event[1]:
-				events.append(EventData.new([event[0], i]))
-		else:
-			events.append(EventData.new(event, 'v_slice'))
-	
-	events.sort_custom(func(a, b): return a.strum_time < b.strum_time)
-	return events
 
 func get_character(character:String = 'bf'):
 	var json_path = 'res://assets/data/characters/%s.json' % character
-	if !FileAccess.file_exists(json_path):
+	if !ResourceLoader.exists(json_path):
 		printerr('JSON: get_character | [%s.json] COULD NOT BE FOUND' % character);
 		return null
 	var file = FileAccess.open(json_path, FileAccess.READ)

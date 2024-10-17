@@ -1,8 +1,20 @@
-[gd_scene load_steps=4 format=3 uid="uid://dpqvj0l125gl5"]
+[gd_scene load_steps=7 format=3 uid="uid://dpqvj0l125gl5"]
 
 [ext_resource type="Script" path="res://game/scenes/menus/Options_Menu.gd" id="1_b1snu"]
 [ext_resource type="Texture2D" uid="uid://cg7ftu5fhls3v" path="res://assets/images/menuBGBlue.png" id="1_xcv5o"]
 [ext_resource type="FontFile" uid="uid://dgbxo5q4vbi80" path="res://assets/fonts/PM Full.ttf" id="3_cu7cg"]
+
+[sub_resource type="Gradient" id="Gradient_lh322"]
+offsets = PackedFloat32Array(0, 0.248, 1)
+colors = PackedColorArray(0, 0, 0, 1, 0.929412, 0.929412, 0, 0.294118, 1, 1, 1, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_v2hej"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_jc7a4"]
+width = 1220
+height = 75
+color_ramp = SubResource("Gradient_lh322")
+noise = SubResource("FastNoiseLite_v2hej")
 
 [node name="Options_Menu" type="Node2D"]
 script = ExtResource("1_b1snu")
@@ -11,7 +23,100 @@ script = ExtResource("1_b1snu")
 position = Vector2(640, 360)
 texture = ExtResource("1_xcv5o")
 
+[node name="Copyright" type="Label" parent="."]
+offset_left = 10.0
+offset_top = 696.0
+offset_right = 333.0
+offset_bottom = 720.0
+theme_override_constants/outline_size = 2
+theme_override_fonts/font = ExtResource("3_cu7cg")
+theme_override_font_sizes/font_size = 20
+text = "Copyright FNF Unholy 2024 Real"
+
+[node name="Header" type="Control" parent="."]
+clip_contents = true
+custom_minimum_size = Vector2(1220, 70)
+layout_mode = 3
+anchors_preset = 0
+offset_left = 30.0
+offset_top = 20.0
+offset_right = 30.0
+offset_bottom = 20.0
+
+[node name="BG" type="ColorRect" parent="Header"]
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 0
+offset_right = 1220.0
+offset_bottom = 70.0
+color = Color(0, 0, 0, 0.7)
+
+[node name="Scroll" type="HFlowContainer" parent="Header"]
+visible = false
+clip_contents = true
+layout_mode = 0
+offset_right = 1220.0
+offset_bottom = 70.0
+alignment = 1
+
+[node name="Options" type="Control" parent="."]
+clip_contents = true
+layout_mode = 3
+anchors_preset = 0
+offset_left = 30.0
+offset_top = 100.0
+offset_right = 1250.0
+offset_bottom = 625.0
+
+[node name="BG" type="ColorRect" parent="Options"]
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 0
+offset_right = 1220.0
+offset_bottom = 525.0
+color = Color(0, 0, 0, 0.5)
+
+[node name="SelectBox" type="Sprite2D" parent="Options"]
+texture = SubResource("NoiseTexture2D_jc7a4")
+centered = false
+
+[node name="List" type="Node2D" parent="Options"]
+
+[node name="Description" type="Node2D" parent="."]
+
+[node name="BG" type="ColorRect" parent="Description"]
+custom_minimum_size = Vector2(100, 50)
+offset_left = 30.0
+offset_top = 625.0
+offset_right = 1250.0
+offset_bottom = 695.0
+color = Color(0, 0, 0, 1)
+
+[node name="Text" type="Label" parent="Description"]
+offset_left = 30.0
+offset_top = 625.0
+offset_right = 1250.0
+offset_bottom = 695.0
+theme_override_fonts/font = ExtResource("3_cu7cg")
+theme_override_font_sizes/font_size = 16
+text = "Blah Blah Coolswag"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="Alert" type="Label" parent="Description"]
+visible = false
+offset_left = 519.0
+offset_top = 690.0
+offset_right = 761.0
+offset_bottom = 727.0
+theme_override_fonts/font = ExtResource("3_cu7cg")
+theme_override_font_sizes/font_size = 16
+text = "Hold Ctrl for more precision"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
 [node name="TextBG" type="ColorRect" parent="."]
+visible = false
 offset_left = 40.0
 offset_top = 428.0
 offset_right = 521.0

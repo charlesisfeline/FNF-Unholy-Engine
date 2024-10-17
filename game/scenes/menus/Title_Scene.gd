@@ -6,7 +6,6 @@ var colors:Array[Color] = [Color(0.2, 1, 1, 1), Color(0.21, 0.21, 0.8, 0.64)]
 
 var finished_intro:bool = false
 var added_text:Array = []
-var intro_text = FileAccess.open('res://assets/data/introText.txt', FileAccess.READ).get_as_text().split('\n')
 
 var flash = ColorRect.new()
 var show_cow:bool = Game.rand_bool(5)
@@ -14,14 +13,17 @@ var blurb:Array = []
 func _ready():
 	Discord.change_presence('Title Screen', 'Welcome to the Funkin')
 	
+	add_child(flash)
+	move_child(flash, 4)
 	flash.color = Color.BLACK
 	flash.position = Vector2(-15, -15)
 	flash.size = Vector2(1300, 755)
-	add_child(flash)
-	move_child(flash, 4)
 
 	if !show_cow:
 		blurb = get_funny().pick_random()
+		if blurb.is_empty(): 
+			blurb = ['there\'s nothing', 'to say']
+			
 	print(blurb)
 	
 	Game.center_obj($GodotLogo)
@@ -34,6 +36,7 @@ func _ready():
 
 var danced:bool = false
 func beat_hit(beat) -> void:
+	#Audio.play_sound('tick')
 	danced = !danced
 	$TitleGF.play('dance'+ ('Left' if danced else 'Right'))
 	$Funkin.scale = Vector2(1.1, 1.1)
@@ -147,11 +150,13 @@ func remove_funny() -> void:
 	Game.remove_all([added_text], self)
 		
 func get_funny() -> Array[Array]:
-	var intro_txt = FileAccess.open('res://assets/data/introText.txt', FileAccess.READ).get_as_text().split('\n')
+	var intro_txt:String = FileAccess.open('res://assets/data/introText.txt', FileAccess.READ).get_as_text()
+	#print(intro_txt)
+
 	var split_intro:Array[Array] = []
-	
-	for txt in intro_txt:
-		split_intro.append(Array(txt.strip_edges().split('--')))
+	if intro_txt != null and intro_txt.length() > 0:
+		for txt in intro_txt.split('\n'):
+			split_intro.append(Array(txt.strip_edges().split('--')))
 	
 	return split_intro
 
