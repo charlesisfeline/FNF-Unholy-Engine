@@ -47,8 +47,9 @@ class Train extends Sprite2D:
 				frame_limit = 0.0
 				if sound.get_playback_position() >= 4.7:
 					started = true
-					Game.scene.gf.play_anim('hairBlow')
-					Game.scene.gf.can_dance = false
+					if Game.scene.gf.has_anim('hairBlow'):
+						Game.scene.gf.play_anim('hairBlow')
+						Game.scene.gf.can_dance = false
 					#var last_frame:int = Game.scene.gf.frame
 					#Game.scene.gf.play_anim(Game.scene.gf.animation +'-hair')
 					#Game.scene.gf.frame = last_frame
@@ -76,10 +77,11 @@ class Train extends Sprite2D:
 				
 	func restart() -> void:
 		var geef:Character = Game.scene.gf
-		geef.play_anim('hairFall')
-		geef.special_anim = true
-		geef.danced = false
-		geef.can_dance = true
+		if geef.has_anim('hairFall'):
+			geef.play_anim('hairFall')
+			geef.special_anim = true
+			geef.danced = false
+			geef.can_dance = true
 		
 		position.x = Game.screen[0] + 300
 		active = false

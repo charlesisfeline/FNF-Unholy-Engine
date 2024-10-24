@@ -33,7 +33,7 @@ var playback_rate:float = 1.0:
 				Game.scene.get_child(i).speed_scale = rate
 		#Engine.time_scale = 1
 		
-#var offset:float = 0
+var offset:float = 300.0
 var safe_zone:float = 166.0
 var song_length:float = INF
 
@@ -59,14 +59,19 @@ var mult_vocals:bool = false
 
 var inst = AudioStreamPlayer.new()
 var vocals = AudioStreamPlayer.new()
+#var vocals2 = AudioStreamPlayer.new()
 var vocals_opp = AudioStreamPlayer.new()
 
 var bpm_changes
 func _ready():
 	add_child(inst)
 	add_child(vocals)
+	#add_child(vocals2)
 	add_child(vocals_opp)
-
+	inst.bus = 'Instrumental'
+	vocals.bus = 'Vocals'
+	vocals_opp.bus = 'Vocals'
+	
 func load_song(song:String = '') -> void:
 	if song.is_empty():
 		printerr('Conductor.load_song: NO SONG ENTERED')
@@ -77,6 +82,7 @@ func load_song(song:String = '') -> void:
 
 	var suffix:String = '-'+ JsonHandler._SONG.variant if JsonHandler._SONG.has('variant') else ''
 
+	#vocals2.stream = load('res://assets/songs/darnell/audio/Voices-player.ogg')
 	if ResourceLoader.exists(path % ['Inst'+ suffix]):
 		inst.stream = load(path % ['Inst'+ suffix])
 		song_length = inst.stream.get_length() * 1000.0
@@ -94,7 +100,7 @@ func _process(delta):
 	if paused: return
 
 	if song_loaded:
-		song_pos += (1000 * delta) * playback_rate #AudioServer.get_time_since_last_mix()
+		song_pos = song_pos + (1000 * delta) * playback_rate #AudioServer.get_time_since_last_mix()
 	
 	if song_pos > 0:
 		if !song_started: 
@@ -137,7 +143,7 @@ func check_resync(sound:AudioStreamPlayer) -> void: # ill keep this here for now
 		print('resynced')
 
 func resync_audio() -> void:
-	for_all_audio('seek', song_pos / 1000.0)
+	for_all_audio('seek', (song_pos / 1000.0))
 	print('resynced audios')
 
 func stop() -> void:

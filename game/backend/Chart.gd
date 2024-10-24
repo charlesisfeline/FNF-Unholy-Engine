@@ -34,9 +34,21 @@ func load_named_chart(song_name:String, chart_name:String = ''):
 	return []
 	
 # old base game/psych
+var total:int = 0
+var cur:int = -1
+
+var cur_notes:int = 0
+var total_notes:int = 0
+
 func load_common(data) -> Array:
+	#total = data.notes.size() - 1
 	for sec in data.notes:
+		#cur += 1
+		#print(str(cur) +' / '+ str(total))
+		total_notes = sec.sectionNotes.size() - 1
 		for note in sec.sectionNotes:
+			#cur_notes += 1
+			#print(str(cur_notes) +' / '+ str(total_notes))
 			if note[1] < 0: continue
 			var time:float = maxf(0, note[0])
 			if note[2] is String: continue

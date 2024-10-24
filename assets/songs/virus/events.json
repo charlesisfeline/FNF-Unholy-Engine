@@ -1,0 +1,206 @@
+{
+	"song": {
+		"events": [
+			[
+				63600,
+				[
+					[
+						"Play Animation",
+						"singRIGHT-alt",
+						"dad"
+					]
+				]
+			],
+			[
+				63800,
+				[
+					[
+						"Play Animation",
+						"singRIGHT-alt",
+						"dad"
+					]
+				]
+			],
+			[
+				63850,
+				[
+					[
+						"Play Animation",
+						"singRIGHT-alt",
+						"dad"
+					]
+				]
+			],
+			[
+				63900,
+				[
+					[
+						"Play Animation",
+						"singRIGHT-alt",
+						"dad"
+					]
+				]
+			],
+			[
+				63950,
+				[
+					[
+						"Play Animation",
+						"singRIGHT-alt",
+						"dad"
+					]
+				]
+			],
+			[
+				64000,
+				[
+					[
+						"Play Animation",
+						"danceRight",
+						"dad"
+					]
+				]
+			],
+			[
+				86200,
+				[
+					[
+						"Play Animation",
+						"singLEFT-alt",
+						"dad"
+					]
+				]
+			],
+			[
+				86400,
+				[
+					[
+						"Play Animation",
+						"danceRight",
+						"dad"
+					]
+				]
+			],
+			[
+				98800,
+				[
+					[
+						"Play Animation",
+						"singUP-alt",
+						"dad"
+					]
+				]
+			],
+			[
+				99200,
+				[
+					[
+						"Play Animation",
+						"danceRight",
+						"dad"
+					]
+				]
+			],
+			[
+				105600,
+				[
+					[
+						"Change Character",
+						"dad",
+						"lemon"
+					]
+				]
+			],
+			[
+				107200,
+				[
+					[
+						"Change Character",
+						"gf",
+						"barbara-raspberry-scared"
+					]
+				]
+			],
+			[
+				107300,
+				[
+					[
+						"Change Scroll Speed",
+						"1.2",
+						"0.5"
+					]
+				]
+			],
+			[
+				169431.578947369,
+				[
+					[
+						"Camera Follow Pos",
+						"620",
+						"200"
+					]
+				]
+			],
+			[
+				187115.789473685,
+				[
+					[
+						"Change Scroll Speed",
+						"1",
+						"3"
+					]
+				]
+			],
+			[
+				188449.122807018,
+				[
+					[
+						"Camera Follow Pos",
+						"",
+						""
+					]
+				]	
+			],
+			[
+				196213.828689371,
+				[
+					[
+						"Change Character",
+						"dad",
+						"zumbidu"
+					]
+				]
+			],
+			[
+				211037.358101136,
+				[
+					[
+						"Change Scroll Speed",
+						"1.2",
+						"2"
+					]
+				]
+			],
+			[
+				230133.333333334,
+				[
+					[
+						"Change Scroll Speed",
+						"0.9",
+						"5"
+					]
+				]
+			],
+			[
+				251606.636500755,
+				[
+					[
+						"Add Camera Zoom",
+						"0.02",
+						"0.01"
+					]
+				]
+			]
+		]
+	}
+}

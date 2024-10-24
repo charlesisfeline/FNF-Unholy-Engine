@@ -1,0 +1,32 @@
+{
+	"songs": [
+		[
+			"challeng-edd",
+			"edd",
+			[
+				146,
+				113,
+				253
+			]
+		]
+	],
+	"hiddenUntilUnlocked": false,
+	"hideFreeplay": false,
+	"weekBackground": "eddsworld",
+	"difficulties": ["hard", "fucked", "re-hard", "re-fucked"],
+	"weekCharacters": [
+		"menuedd",
+		"bf",
+		"gf"
+	],
+	"storyName": "eddsworld",
+	"weekName": "challeng-edd",
+	"freeplayColor": [
+		146,
+		113,
+		253
+	],
+	"hideStoryMode": false,
+	"weekBefore": "tutorial",
+	"startUnlocked": true
+}

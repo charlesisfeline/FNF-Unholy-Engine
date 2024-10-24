@@ -16,6 +16,7 @@ var screen = [
 
 # fix pause screen because it sets the paused of the tree as well
 func _ready():
+	set_mouse_visibility(false)
 	focus_change.connect(focus_changed)
 
 var just_pressed:bool = false
@@ -72,7 +73,10 @@ func switch_scene(to_scene, skip_trans:bool = false) -> void:
 	if ((to_scene is not String) and (to_scene is not PackedScene)) or to_scene == null:
 		printerr('Switch Scene: new scene is invalid')
 		return
-		
+	
+	set_mouse_visibility(false)
+	if Prefs.skip_transitions: skip_trans = true
+	
 	persist.deaths = 0
 	print('LEAVING '+ scene.name)
 	if to_scene is String: # scene is a string, make it into a packed scene
@@ -85,14 +89,15 @@ func switch_scene(to_scene, skip_trans:bool = false) -> void:
 			return reset_scene()
 	
 	var new_scene:PackedScene = to_scene
+
+	if cur_trans != null and cur_trans.in_progress: # cancel previous trans, if exists
+		remove_child(cur_trans)
+		cur_trans.cancel()
+		get_tree().paused = false
+		
 	if skip_trans:
 		get_tree().change_scene_to_packed(new_scene)
 	else:
-		if cur_trans != null and cur_trans.in_progress:
-			remove_child(cur_trans)
-			cur_trans.cancel()
-			get_tree().paused = false
-			
 		get_tree().paused = true
 		cur_trans = TRANS.instantiate()
 		add_child(cur_trans)
@@ -155,3 +160,7 @@ func to_time(secs:float, is_milli:bool = true, show_ms:bool = false) -> String:
 		time_part1 += str(time_part2)
 	
 	return time_part1
+
+func set_mouse_visibility(show:bool = true) -> void:
+	var vis = Input.MOUSE_MODE_VISIBLE if show else Input.MOUSE_MODE_HIDDEN
+	Input.mouse_mode = vis

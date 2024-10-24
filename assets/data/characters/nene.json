@@ -126,7 +126,7 @@
 	"no_antialiasing": false,
 	"image": "characters/gf/nene/char",
 	"position": [
-		0,
+		-40,
 		0
 	],
 	"healthicon": "gf",
@@ -141,6 +141,11 @@
 		0
 	],
 	"sing_duration": 4,
+	"speaker": {
+		"sprite": "ABot",
+		"offsets": [-100, 320],
+		"scale": 1
+	},
 	"scale": 1,
 	"_editor_isPlayer": false
 }

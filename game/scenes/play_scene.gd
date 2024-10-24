@@ -91,13 +91,17 @@ func _ready():
 		SONG.player2 = SONG.players[1]
 		SONG.gfVersion = SONG.players[2]
 		
+	#var lua = LuaAPI.new()
+	#lua.do_file('res://assets/songs/bopeebo/test.lua')
+	#print(lua.call_function('hi', []))
+	
 	var gf_ver
 	if SONG.has('gfVersion'):
 		gf_ver = SONG.gfVersion
 	elif SONG.has('player3'):
 		gf_ver = SONG.player3
 	else: # base game type shit baybeee
-		match SONG.song.to_lower().replace(' ', '-'):
+		match Game.format_str(SONG.song):
 			'satin-panties', 'high', 'milf': gf_ver = 'gf-car'
 			'cocoa', 'eggnog', 'winter-horrorland': gf_ver = 'gf-christmas'
 			'senpai', 'roses', 'thorns': gf_ver = 'gf-pixel'
@@ -106,18 +110,40 @@ func _ready():
 			
 	if gf_ver == null or gf_ver.is_empty(): gf_ver = 'gf'
 
-	var add:Callable = stage.get_node('CharGroup').add_child if stage.has_node('CharGroup') else add_child
+	var has_group = stage.has_node('CharGroup')
+	var add:Callable = stage.get_node('CharGroup').add_child if has_group else add_child
 	
-	gf = Character.new(stage.gf_pos, gf_ver)
+	gf = Character.new(stage.gf_pos, 'gf-king') #gf_ver
 	if gf.speaker_data.keys().size() > 0:
 		var _data = gf.speaker_data
 
 		match _data.sprite:
-			'ABot': speaker = load('res://game/objects/a_bot.tscn').instantiate()
+			'ABot': 
+				speaker = load('res://game/objects/a_bot.tscn').instantiate()
+				speaker.parent = gf
+				
 			_: speaker = Speaker.new(gf)
-		speaker.offsets = Vector2(_data.offsets[0] + 80, _data.offsets[1])
+		speaker.offsets = Vector2(_data.offsets[0], _data.offsets[1])
 		add.call(speaker)
+		
+		if _data.has('addons'):
+			for i in _data.addons: # [sprite_name, [offset_x, offset_y], scale, flip_x, index_to_use]
+				var new := AnimatedSprite2D.new()
+				new.sprite_frames = load('res://assets/images/characters/speakers/addons/'+ i[0] +'.res')
+				new.centered = false
+				new.name = i[0]
+				#new.position = speaker.position
+				new.offset = Vector2(i[1][0], i[1][1])
+				new.scale = Vector2(i[2], i[2])
+				new.flip_h = i[3]
 	
+				add.call(new)
+				if i.size() >= 5:
+					var movin:Callable = stage.get_node('CharGroup').move_child if has_group else move_child
+					movin.call(new, i[4])
+				speaker.addons.append(new)
+				
+	#print(get_tree_string_pretty())
 	add.call(gf)
 	
 	if gf.cur_char.to_lower() == 'pico-speaker' and cur_stage.contains('tank'):
@@ -154,7 +180,7 @@ func _ready():
 		Judge.rating_pos = Vector2(580, 300)
 		Judge.combo_pos = Vector2(450, 400)
 		
-	print(SONG.song)
+	print(SONG.song +' '+ JsonHandler.get_diff.to_upper())
 	
 	Discord.change_presence('Starting '+ SONG.song.capitalize())
 	
@@ -192,12 +218,16 @@ func _ready():
 	
 var section_data
 var chunk:int = 0
+var aha:float = 1.0
 func _process(delta):
 	if Input.is_key_pressed(KEY_R): ui.hp = 0
 	if ui.hp <= 0:
 		try_death()
 		
 	if Input.is_action_just_pressed("debug_1"):
+		if JsonHandler.parse_type == 'v_slice':
+			Audio.play_sound('cancelMenu')
+			return
 		await RenderingServer.frame_post_draw
 		Game.switch_scene('debug/Charting_Scene')
 	if Input.is_action_just_pressed("back"):
@@ -327,6 +357,11 @@ func key_press(key:int = 0) -> void:
 	hittable_notes.sort_custom(func(a, b): return a.strum_time < b.strum_time)
 	
 	if hittable_notes.is_empty():
+		#for i in 15:
+		#	var llol = NoteData.new([Conductor.song_pos + 300 + (100 * i), key, 0, null, true, ''])
+		#	var ha = Note.new(llol)
+		#	ui.add_to_strum_group(ha, true)
+		#	notes.push_front(ha)
 		if !Prefs.ghost_tapping:
 			ui.hp = 0
 			try_death()
@@ -364,7 +399,17 @@ func song_end() -> void:
 		
 		if save_data[0] > saved_score:
 			HighScore.set_score(SONG.song, JsonHandler.get_diff, save_data)
+		#var scores = ConfigFile.new()
+		#scores.load('user://highscores.cfg')
+		#var to_save = scores.get_value('Song Scores', Game.format_str(SONG.song))
+		#if to_save[JsonHandler.get_diff] == [0, 0, 'N/A'] or score > to_save[JsonHandler.get_diff][0]: 
+		#	to_save[JsonHandler.get_diff] = [score, ui.accuracy, ui.fc]
 
+		#	scores.set_value('Song Scores', Game.format_str(SONG.song), to_save)
+		#	scores.save('user://highscores.cfg')
+	
+	#if auto_play:
+	#	refresh(false)
 	Conductor.reset()
 	Game.switch_scene("menus/freeplay")
 	
@@ -395,6 +440,12 @@ func refresh(restart:bool = true) -> void: # start song from beginning with no r
 		Conductor.start(0)
 	section_hit(0)
 
+func char_from_string(str:String) -> Character:
+	match str.to_lower().strip_edges():
+		'2', 'girlfriend', 'gf', 'spectator': return gf
+		'1', 'dad', 'opponent': return dad
+		_: return boyfriend
+			
 func event_hit(event:EventData) -> void:
 	print(event.event, event.values)
 	match event.event:
@@ -404,36 +455,43 @@ func event_hit(event:EventData) -> void:
 			gf.play_anim('cheer', true)
 			gf.anim_timer = 0.6
 		'Play Animation':
-			boyfriend.play_anim(event.values[0], true)
-			boyfriend.special_anim = true
+			var char := char_from_string(event.values[1])
+			if char.has_anim(event.values[0]):
+				char.play_anim(event.values[0], true)
+				char.special_anim = true
 		'Change Scroll Speed': 
 			var new_speed = SONG.speed * float(event.values[0])
 			var len := float(event.values[1])
-			if len > 0:
+			if abs(len) > 0:
 				create_tween().tween_property(Game.scene, 'cur_speed', new_speed, len)
 			else:
 				cur_speed = new_speed
 		'Add Camera Zoom':
 			var ev_zoom = [float(event.values[0]), float(event.values[1])]
 
-			var zoom_ui = 0.03 if is_nan(ev_zoom[0]) else ev_zoom[0] / 2.2
-			var zoom_game = 0.3 if is_nan(ev_zoom[0]) else ev_zoom[0] / 2.2
+			var zoom_ui = 0.03 #if is_nan(ev_zoom[0]) else ev_zoom[0] / 2.2
+			var zoom_game = 0.06 #if is_nan(ev_zoom[0]) else ev_zoom[0] / 2.2
 			
 			ui.zoom += zoom_ui
 			cam.zoom += Vector2(zoom_game, zoom_game)
 		'Change Character': 
-			var char = "boyfriend"
+			var char := char_from_string(event.values[0])
 			var new_char = Character.get_closest(event.values[1])
-			match event.values[0].to_lower():
-				'2', 'gf', 'girlfriend': char = "gf"
-				'1', 'dad', 'opponent': char = "dad"
 			
-			var last_pos = get(char).position
-			if JsonHandler.get_character(new_char) != null and new_char != get(char).cur_char:
-				get(char).load_char(event.values[1])
-				get(char).position = last_pos
-				if char == 'boyfriend': ui.icon_p1.change_icon(get(char).icon, true)
-				if char == 'dad': ui.icon_p2.change_icon(get(char).icon)
+			var last_pos:Vector2
+			match char:
+				dad: last_pos = stage.dad_pos
+				gf: last_pos = stage.gf_pos
+				_: last_pos = stage.bf_pos
+				
+			if JsonHandler.get_character(new_char) != null and new_char != char.cur_char:
+				char.load_char(event.values[1])
+				char.position = last_pos
+				if char.speaker_data.is_empty():
+					pass
+					
+				if char == boyfriend: ui.icon_p1.change_icon(char.icon, true)
+				if char == dad: ui.icon_p2.change_icon(char.icon)
 		
 		'Set GF Speed':
 			var new_speed = int(event.values[0])
@@ -456,7 +514,7 @@ func good_note_hit(note:Note) -> void:
 		
 	#Conductor.playback_rate = 1
 	if Conductor.vocals.stream != null: 
-		Conductor.vocals.volume_db = linear_to_db(1)
+		Conductor.vocals.volume_db = linear_to_db(1.0)
 		
 	var time = Conductor.song_pos - note.strum_time if !auto_play else 0
 	note.rating = Judge.get_rating(time)
@@ -475,7 +533,7 @@ func good_note_hit(note:Note) -> void:
 	ui.note_percent += judge_info[1]
 	ui.total_hit += 1
 	ui.hit_count[note.rating] += 1
-	ui.hp += 2.0
+	ui.hp += 1.0
 	
 	ui.update_score_txt()
 	kill_note(note)
@@ -498,10 +556,10 @@ func good_sustain_press(sustain:Note, delt:float = 0.0) -> void:
 			note_miss(null)
 		else:
 			if Conductor.vocals.stream != null: 
-				Conductor.vocals.volume_db = linear_to_db(1) 
+				Conductor.vocals.volume_db = linear_to_db(1.0) 
 			ui.player_group.singer = gf if sustain.gf else boyfriend
 			ui.player_group.note_hit(sustain)
-		
+			
 			grace = true
 			if !Prefs.legacy_score:
 				score += floor(550 * delt)

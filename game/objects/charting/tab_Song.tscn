@@ -1,0 +1,99 @@
+[gd_scene format=3 uid="uid://dy6ra5sr6shul"]
+
+[node name="Song" type="Control"]
+custom_minimum_size = Vector2(380, 439)
+layout_mode = 3
+anchor_right = 0.297
+anchor_bottom = 0.61
+offset_right = -380.16
+offset_bottom = -439.2
+metadata/_tab_index = 4
+
+[node name="Song" type="LineEdit" parent="."]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 190.0
+offset_bottom = 41.0
+focus_mode = 1
+placeholder_text = "Song Name"
+select_all_on_focus = true
+caret_blink = true
+
+[node name="BPM" type="SpinBox" parent="."]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 50.0
+offset_right = 135.0
+offset_bottom = 85.0
+min_value = 1.0
+max_value = 999.0
+step = 0.0
+value = 100.0
+suffix = "BPM"
+
+[node name="Speed" type="SpinBox" parent="."]
+layout_mode = 0
+offset_left = 150.0
+offset_top = 50.0
+offset_right = 233.063
+offset_bottom = 85.0
+min_value = 0.1
+max_value = 10.0
+step = 0.1
+value = 1.0
+
+[node name="Player1" type="OptionButton" parent="."]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 140.0
+offset_right = 110.0
+offset_bottom = 175.0
+tooltip_text = "The song's Player character"
+focus_mode = 0
+
+[node name="Player2" type="OptionButton" parent="."]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 260.0
+offset_right = 110.0
+offset_bottom = 295.0
+tooltip_text = "The song's Opponent character"
+focus_mode = 0
+
+[node name="GF" type="OptionButton" parent="."]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 200.0
+offset_right = 110.0
+offset_bottom = 235.0
+tooltip_text = "The song's GF/Spectator character"
+focus_mode = 0
+
+[node name="ClearNotes" type="Button" parent="."]
+layout_mode = 0
+offset_left = 255.0
+offset_top = 305.0
+offset_right = 375.0
+offset_bottom = 340.0
+focus_mode = 0
+text = "Clear Notes"
+
+[node name="ClearEvent" type="Button" parent="."]
+layout_mode = 0
+offset_left = 255.0
+offset_top = 350.0
+offset_right = 375.0
+offset_bottom = 385.0
+focus_mode = 0
+text = "Clear Events"
+
+[node name="ClearAll" type="Button" parent="."]
+self_modulate = Color(1, 0, 0, 1)
+layout_mode = 0
+offset_left = 255.0
+offset_top = 395.0
+offset_right = 375.0
+offset_bottom = 430.0
+focus_mode = 0
+text = "Clear All"

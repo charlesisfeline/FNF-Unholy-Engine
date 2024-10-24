@@ -27,6 +27,7 @@ var vsync:String = 'disabled':
 		DisplayServer.window_set_vsync_mode(get_vsync_from_string(vsync))
 
 var auto_pause:bool = true
+var skip_transitions:bool = false
 var basic_play:bool = false
 var allow_rpc:bool = true:
 	set(allow): 
@@ -58,6 +59,7 @@ var ui_keys:Array = [
 func _ready():
 	check_prefs()
 	set_keybinds()
+	Discord.init_discord()
 	DebugInfo.volume = saved_volume
 
 func set_keybinds() -> void:

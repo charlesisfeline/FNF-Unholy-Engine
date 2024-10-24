@@ -111,7 +111,10 @@
 	"speaker": {
 		"sprite": "speaker",
 		"offsets": [-200, 299],
-		"scale": 1
+		"scale": 1,
+		"addons": [
+			["lights", [-80, -40], 1, false]
+		]
 	},
 	"scale": 1
 }

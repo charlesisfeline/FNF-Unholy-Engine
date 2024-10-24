@@ -1,8 +1,40 @@
-[gd_resource type="AudioBusLayout" load_steps=2 format=3 uid="uid://cif8qi0jvpxhy"]
+[gd_resource type="AudioBusLayout" load_steps=6 format=3 uid="uid://cif8qi0jvpxhy"]
 
 [sub_resource type="AudioEffectSpectrumAnalyzer" id="AudioEffectSpectrumAnalyzer_lpjwq"]
 resource_name = "SpectrumAnalyzer"
 
+[sub_resource type="AudioEffectSpectrumAnalyzer" id="AudioEffectSpectrumAnalyzer_r15w6"]
+resource_name = "SpectrumAnalyzer"
+
+[sub_resource type="AudioEffectPanner" id="AudioEffectPanner_j4fcd"]
+resource_name = "Panner"
+
+[sub_resource type="AudioEffectSpectrumAnalyzer" id="AudioEffectSpectrumAnalyzer_du66i"]
+resource_name = "SpectrumAnalyzer"
+
+[sub_resource type="AudioEffectPanner" id="AudioEffectPanner_pqsgs"]
+resource_name = "Panner"
+
 [resource]
 bus/0/effect/0/effect = SubResource("AudioEffectSpectrumAnalyzer_lpjwq")
 bus/0/effect/0/enabled = true
+bus/1/name = &"Instrumental"
+bus/1/solo = false
+bus/1/mute = false
+bus/1/bypass_fx = false
+bus/1/volume_db = 0.0
+bus/1/send = &"Master"
+bus/1/effect/0/effect = SubResource("AudioEffectSpectrumAnalyzer_r15w6")
+bus/1/effect/0/enabled = true
+bus/1/effect/1/effect = SubResource("AudioEffectPanner_j4fcd")
+bus/1/effect/1/enabled = true
+bus/2/name = &"Vocals"
+bus/2/solo = false
+bus/2/mute = false
+bus/2/bypass_fx = false
+bus/2/volume_db = 0.0
+bus/2/send = &"Master"
+bus/2/effect/0/effect = SubResource("AudioEffectSpectrumAnalyzer_du66i")
+bus/2/effect/0/enabled = true
+bus/2/effect/1/effect = SubResource("AudioEffectPanner_pqsgs")
+bus/2/effect/1/enabled = true

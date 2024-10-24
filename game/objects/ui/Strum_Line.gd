@@ -45,6 +45,9 @@ func note_hit(note:Note) -> void:
 				singer.anim_timer = 0.6
 			else:
 				singer.sing(note.dir, note.alt, !note.is_sustain)
+				#if note.is_sustain:
+				#	singer.sing_timer = (note.length / Conductor.step_crochet) * 1.5
+				#	print(singer.sing_timer)
 			
 	var can_splash = note.rating == 'sick' or note.rating == 'epic'
 	if Prefs.note_splashes == 'all' or \
@@ -67,10 +70,15 @@ func spawn_splash(strum:Strum) -> void:
 		
 	var new_splash:AnimatedSprite2D = SPLASH.instantiate()
 	new_splash.strum = strum
+	new_splash.speed_scale = 1.0 / (Conductor.step_crochet / 100.0)
 	new_splash.on_anim_finish = func():
+		#new_splash.on_anim_finish = func():
 		total_splash.remove_at(total_splash.find(new_splash))
 		remove_child(new_splash)
 		new_splash.queue_free()
+		#new_splash.animation_finished.connect(new_splash.on_anim_finish)
+		#new_splash.play_backwards(new_splash.animation)
+	
 		
 	add_child(new_splash)
 	move_child(new_splash, 4)
@@ -87,4 +95,4 @@ func strum_anim(dir:int = 0, player:bool = false, force:bool = true) -> void:
 		strum.anim_timer = Conductor.step_crochet / 1000.0
 	
 	if !player:
-		strum.reset_timer = Conductor.step_crochet * 1.25 / 1000.0 #0.15
+		strum.reset_timer = min(Conductor.step_crochet * 1.25 / 1000.0, 0.15)

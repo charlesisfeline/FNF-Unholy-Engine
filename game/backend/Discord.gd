@@ -1,6 +1,7 @@
 extends Node2D
 
-var first_init:bool = true
+var update_id:bool = true
+
 var can_rpc:bool
 var _info = {id = 1225971084998737952, l_img = 'deedee_phantonm', l_txt = 'out here unholy-ing baby'}
 
@@ -10,8 +11,10 @@ func init_discord() -> void:
 	# yes the daniel pref is very necessary
 	if Prefs.daniel:
 		_info = {id = 1227081103932657664, l_img = 'daniel', l_txt = 'I LOVE DANIEL'}
-
-	DiscordRPC.app_id = _info.id
+	
+	if update_id:
+		update_id = false
+		DiscordRPC.app_id = _info.id
 	DiscordRPC.large_image = _info.l_img
 	DiscordRPC.large_image_text = _info.l_txt
 	DiscordRPC.start_timestamp = int(Time.get_unix_time_from_system())

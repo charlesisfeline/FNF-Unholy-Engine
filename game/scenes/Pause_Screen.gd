@@ -56,7 +56,7 @@ func _process(_delta):
 			var choice = options[cur_option].text
 			if diffs.has(choice.to_lower()):
 				var path = 'res://assets/songs/'+ Game.format_str(this.SONG.song) +'/charts/' 
-				if ResourceLoader.exists(path + choice +'.json', 'JSON'):
+				if ResourceLoader.exists(path + choice +'.json') or JsonHandler._SONG.notes.has(choice.to_lower()):
 					JsonHandler.parse_song(this.SONG.song, choice, true)
 					close()
 					Conductor.reset()

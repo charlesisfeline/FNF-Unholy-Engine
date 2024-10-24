@@ -1,0 +1,97 @@
+[gd_scene load_steps=7 format=3 uid="uid://cxm5dlppp62td"]
+
+[ext_resource type="FontFile" uid="uid://dnssbi7hjccim" path="res://assets/fonts/vcr.ttf" id="1_mhs8o"]
+[ext_resource type="Texture2D" uid="uid://cu42tcwatrxkv" path="res://assets/images/icons/icon-face.png" id="2_nd4l3"]
+[ext_resource type="Script" path="res://game/objects/ui/Icon.gd" id="3_e2i7v"]
+[ext_resource type="SpriteFrames" uid="uid://ci217b3da2a6l" path="res://assets/images/ui/eventStrum.res" id="4_f3h05"]
+[ext_resource type="Script" path="res://game/objects/note/Strum.gd" id="5_y8sj8"]
+[ext_resource type="PackedScene" uid="uid://cj2ryjlbhxh8b" path="res://game/objects/ui/strum_line.tscn" id="6_kaw2g"]
+
+[node name="ChartLine" type="Node2D"]
+position = Vector2(0, -1)
+
+[node name="Line" type="ColorRect" parent="."]
+offset_left = 16.0
+offset_top = -1.0
+offset_right = 546.0
+offset_bottom = 2.0
+metadata/_edit_use_anchors_ = true
+
+[node name="Square" type="ColorRect" parent="Line"]
+layout_mode = 0
+offset_left = -16.0
+offset_top = -9.0
+offset_right = 5.0
+offset_bottom = 12.0
+metadata/_edit_use_anchors_ = true
+
+[node name="BPMTxt" type="Label" parent="."]
+offset_left = 441.0
+offset_top = -24.0
+offset_right = 546.0
+offset_bottom = -1.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = ExtResource("1_mhs8o")
+theme_override_font_sizes/font_size = 25
+text = "100 BPM"
+horizontal_alignment = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="TimeTxt" type="Label" parent="."]
+offset_left = 441.0
+offset_top = 2.0
+offset_right = 546.0
+offset_bottom = 25.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = ExtResource("1_mhs8o")
+theme_override_font_sizes/font_size = 25
+text = "10000"
+horizontal_alignment = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="Highlight" type="ColorRect" parent="."]
+modulate = Color(0, 0.698039, 1, 0.611765)
+custom_minimum_size = Vector2(75, 75)
+offset_left = 212.0
+offset_top = -90.0
+offset_right = 287.0
+offset_bottom = -15.0
+metadata/_edit_use_anchors_ = true
+
+[node name="IconL" type="Sprite2D" parent="."]
+position = Vector2(166, -41)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_nd4l3")
+hframes = 2
+script = ExtResource("3_e2i7v")
+default_scale = 0.5
+
+[node name="IconR" type="Sprite2D" parent="."]
+position = Vector2(325, -41)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_nd4l3")
+flip_h = true
+hframes = 2
+script = ExtResource("3_e2i7v")
+default_scale = 0.5
+
+[node name="EventStrum" type="AnimatedSprite2D" parent="."]
+position = Vector2(56, 7)
+scale = Vector2(0.3, 0.3)
+sprite_frames = ExtResource("4_f3h05")
+animation = &"static"
+autoplay = "static"
+script = ExtResource("5_y8sj8")
+is_event = true
+
+[node name="Left" parent="." instance=ExtResource("6_kaw2g")]
+position = Vector2(106, -11)
+scale = Vector2(0.37, 0.37)
+spacing = 108.0
+
+[node name="Right" parent="." instance=ExtResource("6_kaw2g")]
+position = Vector2(266, -11)
+scale = Vector2(0.37, 0.37)
+spacing = 108.0

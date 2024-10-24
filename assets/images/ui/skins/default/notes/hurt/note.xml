@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Free texture packer v0.6.7 http://free-tex-packer.com
+-->
+<TextureAtlas imagePath="coolNote.png" width="636" height="470">
+  <SubTexture name="Blue0001" x="1" y="1"  width="157" height="150" frameX="-0" frameY="-0" frameWidth="157" frameHeight="150"/>
+  <SubTexture name="Blue0003" x="160" y="1"  width="157" height="150" frameX="-0" frameY="-0" frameWidth="157" frameHeight="150"/>
+  <SubTexture name="Blue0005" x="319" y="1"  width="157" height="150" frameX="-0" frameY="-0" frameWidth="157" frameHeight="150"/>
+  <SubTexture name="Green0001" x="478" y="1"  width="157" height="150" frameX="-0" frameY="-0" frameWidth="157" frameHeight="150"/>
+  <SubTexture name="Green0003" x="1" y="153"  width="157" height="150" frameX="-0" frameY="-0" frameWidth="157" frameHeight="150"/>
+  <SubTexture name="Green0005" x="160" y="153"  width="157" height="150" frameX="-0" frameY="-0" frameWidth="157" frameHeight="150"/>
+  <SubTexture name="Purple0001" x="319" y="153"  width="150" height="157" frameX="-0" frameY="-0" frameWidth="150" frameHeight="157"/>
+  <SubTexture name="Purple0003" x="471" y="153"  width="150" height="157" frameX="-0" frameY="-0" frameWidth="150" frameHeight="157"/>
+  <SubTexture name="Purple0005" x="1" y="305"  width="150" height="157" frameX="-0" frameY="-0" frameWidth="150" frameHeight="157"/>
+  <SubTexture name="Red0001" x="153" y="305"  width="150" height="157" frameX="-0" frameY="-0" frameWidth="150" frameHeight="157"/>
+  <SubTexture name="Red0003" x="305" y="312"  width="150" height="157" frameX="-0" frameY="-0" frameWidth="150" frameHeight="157"/>
+  <SubTexture name="Red0005" x="457" y="312"  width="150" height="157" frameX="-0" frameY="-0" frameWidth="150" frameHeight="157"/>
+  <SubTexture name="Blue0002" x="1" y="1"  width="157" height="150" frameX="-0" frameY="-0" frameWidth="157" frameHeight="150"/>
+  <SubTexture name="Blue0004" x="160" y="1"  width="157" height="150" frameX="-0" frameY="-0" frameWidth="157" frameHeight="150"/>
+  <SubTexture name="Blue0006" x="319" y="1"  width="157" height="150" frameX="-0" frameY="-0" frameWidth="157" frameHeight="150"/>
+  <SubTexture name="Green0002" x="478" y="1"  width="157" height="150" frameX="-0" frameY="-0" frameWidth="157" frameHeight="150"/>
+  <SubTexture name="Green0004" x="1" y="153"  width="157" height="150" frameX="-0" frameY="-0" frameWidth="157" frameHeight="150"/>
+  <SubTexture name="Green0006" x="160" y="153"  width="157" height="150" frameX="-0" frameY="-0" frameWidth="157" frameHeight="150"/>
+  <SubTexture name="Purple0002" x="319" y="153"  width="150" height="157" frameX="-0" frameY="-0" frameWidth="150" frameHeight="157"/>
+  <SubTexture name="Purple0004" x="471" y="153"  width="150" height="157" frameX="-0" frameY="-0" frameWidth="150" frameHeight="157"/>
+  <SubTexture name="Purple0006" x="1" y="305"  width="150" height="157" frameX="-0" frameY="-0" frameWidth="150" frameHeight="157"/>
+  <SubTexture name="Red0002" x="153" y="305"  width="150" height="157" frameX="-0" frameY="-0" frameWidth="150" frameHeight="157"/>
+  <SubTexture name="Red0004" x="305" y="312"  width="150" height="157" frameX="-0" frameY="-0" frameWidth="150" frameHeight="157"/>
+  <SubTexture name="Red0006" x="457" y="312"  width="150" height="157" frameX="-0" frameY="-0" frameWidth="150" frameHeight="157"/>
+</TextureAtlas>

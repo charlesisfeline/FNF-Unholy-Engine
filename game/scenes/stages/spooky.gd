@@ -3,6 +3,7 @@ extends StageBase
 var flash:ColorRect
 func _ready():
 	default_zoom = 1.05
+	gf_pos.y += 25
 	
 	flash = ColorRect.new()
 	flash.modulate.a = 0

@@ -1,0 +1,149 @@
+[gd_scene format=3 uid="uid://wcwdtmwuvcvy"]
+
+[node name="Chart" type="Control"]
+custom_minimum_size = Vector2(380, 439)
+layout_mode = 3
+anchor_right = 0.304
+anchor_bottom = 0.609
+offset_top = -0.5
+offset_right = -0.120026
+offset_bottom = 0.019989
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ToggleGrid" type="CheckBox" parent="."]
+layout_mode = 0
+offset_left = 215.0
+offset_top = 15.0
+offset_right = 369.0
+offset_bottom = 46.0
+focus_mode = 0
+button_pressed = true
+text = "Show Chart Grid"
+
+[node name="Metronome" type="CheckBox" parent="."]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 15.0
+offset_right = 180.0
+offset_bottom = 46.0
+focus_mode = 0
+text = "Metronome
+"
+
+[node name="HitsoundsL" type="CheckBox" parent="."]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 50.0
+offset_right = 186.0
+offset_bottom = 81.0
+focus_mode = 0
+text = "Hitsound (Left) Vol."
+
+[node name="Vol" type="SpinBox" parent="HitsoundsL"]
+layout_mode = 0
+offset_left = 200.0
+offset_top = 1.0
+offset_right = 283.063
+offset_bottom = 32.0
+mouse_filter = 2
+max_value = 3.0
+step = 0.1
+value = 0.4
+update_on_text_changed = true
+
+[node name="HitsoundsR" type="CheckBox" parent="."]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 85.0
+offset_right = 196.0
+offset_bottom = 116.0
+focus_mode = 0
+text = "Hitsound (Right) Vol."
+
+[node name="Vol" type="SpinBox" parent="HitsoundsR"]
+layout_mode = 0
+offset_left = 200.0
+offset_top = 1.0
+offset_right = 283.063
+offset_bottom = 32.0
+max_value = 3.0
+step = 0.1
+value = 0.4
+update_on_text_changed = true
+
+[node name="Inst" type="CheckBox" parent="."]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 285.0
+offset_right = 176.0
+offset_bottom = 316.0
+focus_mode = 0
+button_pressed = true
+text = "Play Inst"
+
+[node name="Vol" type="HSlider" parent="Inst"]
+layout_mode = 0
+offset_left = 170.0
+offset_top = 7.0
+offset_right = 351.0
+offset_bottom = 23.0
+tooltip_text = "Inst Volume"
+focus_mode = 0
+max_value = 2.0
+step = 0.1
+value = 0.5
+
+[node name="Voices" type="CheckBox" parent="."]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 325.0
+offset_right = 124.0
+offset_bottom = 356.0
+focus_mode = 0
+button_pressed = true
+text = "Play Voices"
+
+[node name="Vol" type="HSlider" parent="Voices"]
+layout_mode = 0
+offset_left = 170.0
+offset_top = 9.0
+offset_right = 351.0
+offset_bottom = 25.0
+tooltip_text = "Main/Player Vocal Volume"
+focus_mode = 0
+max_value = 2.0
+step = 0.1
+value = 0.7
+
+[node name="VoicesOpp" type="CheckBox" parent="."]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 365.0
+offset_right = 161.0
+offset_bottom = 396.0
+focus_mode = 0
+button_pressed = true
+text = "Play Opp Voices"
+
+[node name="Vol" type="HSlider" parent="VoicesOpp"]
+layout_mode = 0
+offset_left = 170.0
+offset_top = 7.0
+offset_right = 350.0
+offset_bottom = 27.0
+tooltip_text = "Other/Opponent Vocal Volume"
+focus_mode = 0
+max_value = 2.0
+step = 0.1
+value = 0.7
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 221.0
+offset_top = 245.0
+offset_right = 317.0
+offset_bottom = 273.0
+theme_override_font_sizes/font_size = 20
+text = "Volume"
+horizontal_alignment = 1

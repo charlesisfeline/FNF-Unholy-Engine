@@ -50,7 +50,10 @@ var type:String = "":
 				should_hit = false
 				early_mod = 0.5
 				late_mod = 0.5
-				modulate = Color.BLACK
+				if is_sustain:
+					modulate = Color.BLACK
+				else:
+					tex_path += 'hurt/note'
 			_:
 				unknown = true
 				modulate = Color.GRAY
@@ -81,7 +84,7 @@ var dropped:bool = false:
 		if dropped: 
 			modulate = Color(0.75, 0.75, 0.75, 0.4)
 
-var note:Sprite2D
+var note
 var sustain:TextureRect
 var end:TextureRect
 var hold_group:Control
@@ -92,10 +95,10 @@ var alpha:float = 1.0:
 
 func _init(data = null, sustain:bool = false, in_chart:bool = false):
 	if data != null:
+		is_sustain = (sustain and data is Note)
 		copy_from(data)
 		chart_note = in_chart
-		if sustain and data is Note:
-			is_sustain = true
+		if is_sustain:
 			temp_len = length
 			parent = data
 
@@ -138,8 +141,13 @@ func _ready():
 			if Prefs.downscroll: hold_group.scale.y = -1
 			if Prefs.behind_strums: hold_group.z_index = -1
 	else:
-		note = Sprite2D.new()
-		note.texture = load(tex_path + COLORS[dir] +'.png')
+		if ResourceLoader.exists(tex_path +'.res'):
+			note = AnimatedSprite2D.new()
+			note.sprite_frames = ResourceLoader.load(tex_path +'.res')
+			note.play(COLORS[dir])
+		else:
+			note = Sprite2D.new()
+			note.texture = load(tex_path + COLORS[dir] +'.png')
 		add_child(note)
 		
 		if unknown:
@@ -223,7 +231,7 @@ func resize_hold(update_control:bool = false) -> void:
 	if update_control:
 		sustain.set_anchor_and_offset(SIDE_BOTTOM, 1.0, -end.texture.get_height() + 1.0)
 		hold_group.size.x = maxf(end.texture.get_width(), sustain.texture.get_width())
-		hold_group.position.x = 0 - hold_group.size.x * 0.5
+		hold_group.position.x = 0 - (hold_group.size.x * 0.5)
 
 func copy_from(item) -> void:
 	if item != null and (item is Note or item is NoteData):
@@ -238,7 +246,7 @@ func convert_type(t:String) -> String:
 		'alt animation', 'true': return 'Alt'
 		'no animation': return 'No Anim'
 		'gf sing': return 'GF'
-		'hurt note', 'markov note': return 'Hurt'
+		'hurt note', 'markov note', 'ebola': return 'Hurt'
 		'hey!': return 'Hey'
 		_: return t
 

@@ -5,20 +5,20 @@ var song_diffs:Array = []
 var get_diff:String
 
 var charted:bool = false
-var _SONG:Dictionary = {}
+var _SONG:Dictionary = {} # change name of this to like SONG_DATA or something
+var song_meta = null
 
 var chart_notes:Array = [] # keep loaded chart and events for restarting songs
 var song_events:Array[EventData] = []
 var old_notes:Array = []
 var old_events:Array[EventData] = []
 
-var song_meta = null
 var parse_type:String = ''
-func parse_song(song:String, diff:String, auto_create:bool = false, type:String = 'psych'):
+func parse_song(song:String, diff:String, auto_create:bool = false, type:String = 'psych', split:bool = false):
 	_SONG.clear()
 	
 	song = Game.format_str(song)
-	if ResourceLoader.exists('res://assets/songs/'+ song +'/charts/chart.json'):#\
+	if ResourceLoader.exists('res://assets/songs/'+ song +'/chart.json'):#\
 		#FileAccess.file_exists('res://assets/songs/'+ song +'/metadata.json')
 		type = 'v_slice'
 	
@@ -32,7 +32,10 @@ func parse_song(song:String, diff:String, auto_create:bool = false, type:String 
 		#'osu'     : parsed_song = osu(song)
 		#_: parsed_song = psych(song)
 	_SONG = parsed_song
-	
+	if split:
+		auto_create = false
+		reform_parts(song)
+		
 	if ResourceLoader.exists('res://assets/songs/'+ song +'/metadata.json'):
 		song_meta = JSON.parse_string(FileAccess.open('res://assets/songs/'+ song +'/metadata.json', FileAccess.READ).get_as_text())
 		print(song_meta)
@@ -66,12 +69,36 @@ func psych(song:String) -> Dictionary:
 #func maru(song:String): pass
 #func osu(song:String): pass
 
+func reform_parts(song:String):
+	parse_type = 'psych'
+	var in_folder := DirAccess.get_files_at('res://assets/songs/'+ song +'/charts/')
+	var to_parse:Array = []
+	for i:String in in_folder:
+		if i.begins_with('part'):
+			to_parse.append(i)
+			
+	var chart = Chart.new()
+	var temp_SONG = {}
+	var added_first:bool = false
+	for i in to_parse:
+		print(i)
+		var le_file = FileAccess.open('res://assets/songs/'+ song +'/charts/'+ i, FileAccess.READ).get_as_text()
+		var parsed = JSON.parse_string(le_file)
+		if !added_first:
+			added_first = true
+			temp_SONG = parsed.song
+		else:
+			temp_SONG.notes.append(parsed.song.notes)
+		chart_notes.append(chart.load_common(parsed.song))
+		
+	_SONG = temp_SONG
+
 func you_WILL_get_a_json(song:String) -> FileAccess:
 	var path:String = 'res://assets/songs/%s/charts/' % song
 	var returned:String
 	
 	if parse_type == 'v_slice':
-		returned = path + 'chart.json'
+		returned = path.replace('charts/', '') + 'chart.json'
 	else:
 		if !ResourceLoader.exists(path + get_diff +'.json'):
 			printerr(song +' has no '+ get_diff +'.json')

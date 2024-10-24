@@ -151,7 +151,7 @@ func _process(delta):
 			
 	if !chart.is_empty():
 		for i in chart: # [0] = strum time, [1] = direction, [2] = is sustain, [3] = length
-			#if !i[4]: continue
+			if !i[4]: continue
 			if i[2]:
 				if i[0] <= Conductor.song_pos and i[0] + i[3] > Conductor.song_pos:
 					sing(i[1] % 4, '', false)
@@ -167,6 +167,10 @@ func dance(forced:bool = false) -> void:
 	if special_anim or !can_dance: return
 	#if looping: forced = true
 	var idle:String = 'idle'
+	if cur_char.contains('-dead'): 
+		idle = 'deathLoop'
+		forced = true
+		
 	if dance_idle:
 		danced = !danced
 		idle = 'dance'+ ('Right' if danced else 'Left')

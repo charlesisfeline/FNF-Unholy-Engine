@@ -49,9 +49,8 @@ func _process(delta):
 		vol_visible = time_existed < 1
 		if time_existed >= 1.0:
 			vol_tween = create_tween()
-			vol_tween.tween_property($Volume, 'position:y', -100, 0.35)
+			vol_tween.tween_property($Volume, 'position:y', -100, 0.12)
 	
-	if Engine: pass
 	var mem:String = String.humanize_size(OS.get_static_memory_usage())
 	var mem_peak:String = String.humanize_size(OS.get_static_memory_peak_usage())
 	$FPS.text = 'FPS: '+ str(Engine.get_frames_per_second())
@@ -72,6 +71,7 @@ func _unhandled_key_input(_event):
 	if Input.is_action_just_pressed('vol_up'): volume = min(volume + 0.1, 1)
 	if Input.is_action_just_pressed('vol_down'): volume = max(volume - 0.1, 0)
 	
-	if Input.is_key_pressed(KEY_L): Conductor.playback_rate *= 2.0
-	if Input.is_key_pressed(KEY_J): Conductor.playback_rate /= 2.0
-	if Input.is_key_pressed(KEY_I): Conductor.playback_rate = 1
+	if Input.is_key_pressed(KEY_CTRL): # debuggin baby wahoo
+		if Input.is_key_pressed(KEY_L): Conductor.playback_rate *= 2.0
+		if Input.is_key_pressed(KEY_J): Conductor.playback_rate /= 2.0
+		if Input.is_key_pressed(KEY_I): Conductor.playback_rate = 1

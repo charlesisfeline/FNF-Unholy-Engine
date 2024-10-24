@@ -1,5 +1,8 @@
 extends Node2D
 
+const lol:String = 'assets/images/ui/skins/default/notes/'
+var funny = []
+
 var cur_section:int = 0
 
 var used_notes:int = 0 # if this goes above the amount of premade notes, then make more
@@ -23,7 +26,7 @@ var cur_quant:int = 3:
 	set(new_quant):
 		cur_quant = wrap(new_quant, 0, quant_list.size())
 		note_snap = quant_list[cur_quant]
-		$StrumLine/Line/Square.modulate = quant_colors[cur_quant]
+		$ChartLine/Line/Square.modulate = quant_colors[cur_quant]
 		update_text()
 
 var quant_list:Array[int] = [
@@ -81,6 +84,7 @@ var char_list = [ # fuck you!!
 
 var SONG
 func _ready():
+	Game.set_mouse_visibility(true)
 	Conductor.reset()
 	if JsonHandler.chart_notes.is_empty(): 
 		JsonHandler.parse_song('bopeebo', 'hard', true)
@@ -88,21 +92,21 @@ func _ready():
 	events = JsonHandler.song_events
 	
 	Discord.change_presence('Charting '+ SONG.song.capitalize(), 'One must imagine a charter happy')
-	
+	#get_signal_list()
 	#JsonHandler.old_notes = JsonHandler.chart_notes.duplicate()
 	Conductor.load_song(SONG.song)
 	Conductor.connect_signals()
 	Conductor.bpm = SONG.bpm
 	Conductor.paused = true
 	
-	for i in ['bf-pixel-opponent', 'bf-pixel-opponent']:
+	for i in ['bf', 'bf-pixel-opponent']:
 		var new_boy = Character.new(Vector2.ZERO, i)
 		new_boy.scale *= 0.3
 		$ChartUI.add_child(new_boy)
 		funky_boys.append(new_boy)
 		
 	funky_boys[0].flip_char()
-	funky_boys[0].position = Vector2(700, 500)
+	funky_boys[0].position = Vector2(700, 530)
 	funky_boys[1].position = Vector2(300, 500)
 	
 	var voices = [Conductor.vocals, Conductor.vocals_opp, 'Voices', 'VoicesOpp']
@@ -118,11 +122,11 @@ func _ready():
 	tab('Song', 'Song').text = SONG.song
 	tab('Song', 'Speed').value = SONG.speed
 	
-	strums = $StrumLine/Left.get_strums()
-	strums.append_array($StrumLine/Right.get_strums())
+	strums = $ChartLine/Left.get_strums()
+	strums.append_array($ChartLine/Right.get_strums())
 	
-	$StrumLine/IconL.position.x = OFF + 130 #idk if this is centered but fuck you
-	$StrumLine/IconR.position.x = OFF + 290
+	#$ChartLine/IconL.position.x = 166 #idk if this is centered but fuck you
+	#$ChartLine/IconR.position.x = 325
 	
 	exist_chars.push_back(SONG.player1)
 	exist_chars.push_back(SONG.player2)
@@ -150,8 +154,8 @@ func _ready():
 	set_dropdown(tab('Song', 'GF'), realgf)
 	
 	var chars = [JsonHandler.get_character(SONG.player2), JsonHandler.get_character(SONG.player1)]
-	$StrumLine/IconL.change_icon(chars[0].healthicon if chars[0] != null else 'face')
-	$StrumLine/IconR.change_icon(chars[1].healthicon if chars[1] != null else 'face', true)
+	$ChartLine/IconL.change_icon(chars[0].healthicon if chars[0] != null else 'face')
+	$ChartLine/IconR.change_icon(chars[1].healthicon if chars[1] != null else 'face', true)
 	
 	$ChartUI/SongProgress/Length.text = Game.to_time(Conductor.song_length)
 	
@@ -187,31 +191,31 @@ func _ready():
 	add_child(next_grid)
 	move_child(next_grid, get_node('Notes').get_index())
 	#region | event grids
-	prev_e_grid = NoteGrid.new(vec_size, Vector2(GRID_SIZE, GRID_SIZE * 16), [], true)
-	prev_e_grid.position.x += OFF / 2.0
-	prev_e_grid.position.y = grid.position.y - grid.height
-	prev_e_grid.modulate = Color.DIM_GRAY
-	add_child(prev_e_grid)
-	move_child(prev_e_grid, get_node('Notes').get_index())
+	#prev_e_grid = NoteGrid.new(vec_size, Vector2(GRID_SIZE, GRID_SIZE * 16), [], true)
+	#prev_e_grid.position.x += OFF / 2.0
+	#prev_e_grid.position.y = grid.position.y - grid.height
+	#prev_e_grid.modulate = Color.DIM_GRAY
+	#add_child(prev_e_grid)
+	#move_child(prev_e_grid, get_node('Notes').get_index())
 	
 	event_grid = NoteGrid.new(vec_size, Vector2(GRID_SIZE, GRID_SIZE * 16), [], true)
 	event_grid.position.x += OFF / 2.0
 	add_child(event_grid)
 	move_child(event_grid, get_node('Notes').get_index())
 	
-	next_e_grid = NoteGrid.new(vec_size, Vector2(GRID_SIZE, GRID_SIZE * 16), [], true)
-	next_e_grid.position.x += OFF / 2.0
-	next_e_grid.position.y = grid.position.y + grid.height
-	next_e_grid.modulate = Color.DIM_GRAY
-	add_child(next_e_grid)
-	move_child(next_e_grid, get_node('Notes').get_index())
+	#next_e_grid = NoteGrid.new(vec_size, Vector2(GRID_SIZE, GRID_SIZE * 16), [], true)
+	#next_e_grid.position.x += OFF / 2.0
+	#next_e_grid.position.y = grid.position.y + grid.height
+	#next_e_grid.modulate = Color.DIM_GRAY
+	#add_child(next_e_grid)
+	#move_child(next_e_grid, get_node('Notes').get_index())
 	#endregion
 	selected = ColorRect.new()
 	selected.custom_minimum_size = vec_size
 	$Notes.add_child(selected)
 	$Notes.move_child(selected, 0)
 	
-	$StrumLine/Line/Square.modulate = quant_colors[cur_quant]
+	$ChartLine/Line/Square.modulate = quant_colors[cur_quant]
 	update_text()
 	tab('Chart', 'ToggleGrid').button_pressed = Prefs.chart_grid
 	_toggle_grid(tab('Chart', 'ToggleGrid').button_pressed) # update the visibility before we get goin
@@ -234,16 +238,16 @@ func _process(delta):
 		bg_colors[1] = Color(randf(), randf(), randf())
 	$BG.modulate = bg_colors[0].lerp(bg_colors[1], time_lerped / 2.0)
 	
-	$StrumLine/TimeTxt.text = str(floor(Conductor.song_pos))
+	$ChartLine/TimeTxt.text = str(floor(Conductor.song_pos))
 	#var strum_y = round(get_y_from_time(fmod(Conductor.song_pos - get_section_time(), Conductor.step_crochet * 16.0)))
-	$StrumLine.position.y = round(get_y_from_time(fmod(Conductor.song_pos - get_section_time(), Conductor.step_crochet * 16.0)))
+	$ChartLine.position.y = round(get_y_from_time(fmod(Conductor.song_pos - get_section_time(), Conductor.step_crochet * 16.0)))
 	
 	$ChartUI/SongProgress/Time.text = Game.to_time(Conductor.song_pos)
 	$ChartUI/SongProgress.value = abs(Conductor.song_pos / Conductor.song_length) * 100.0
 	
-	var z = 1
+	var z = 1 #DEBUG, remove later
 	$Cam.zoom = Vector2(z, z)
-	$Cam.position = $StrumLine.position + Vector2(450, 50) # grid.position + Vector2(grid.width, grid.height / 2)
+	$Cam.position = $ChartLine.position + Vector2(380, 50) # grid.position + Vector2(grid.width, grid.height / 2)
 	$BG.position = $Cam.position
 	
 	var audios = {'Inst' = Conductor.inst, 'Voices' = Conductor.vocals, 'VoicesOpp' = Conductor.vocals_opp}
@@ -277,10 +281,10 @@ func _process(delta):
 	selected.position.y = y_pos
 	#for arr:Array in [prev_notes, cur_notes, next_notes, cur_events]:
 	#	for i:BasicNote in arr:
-			#print($StrumLine.position.y - i.position.y)
-			# ($StrumLine.position.y - i.position.y < 500)
-			# i.visible = ($StrumLine.position.y - i.position.y < 500) and ($StrumLine.position.y - i.position.y > -500)
-	#		if i.spawned and ($StrumLine.position.y - i.position.y < 500): #and ($StrumLine.position.y - i.position.y > -500):
+			#print($ChartLine.position.y - i.position.y)
+			# ($ChartLine.position.y - i.position.y < 500)
+			# i.visible = ($ChartLine.position.y - i.position.y < 500) and ($ChartLine.position.y - i.position.y > -500)
+	#		if i.spawned and ($ChartLine.position.y - i.position.y < 500): #and ($ChartLine.position.y - i.position.y > -500):
 	#			arr.remove_at(arr.find(i))
 	#			$Notes.remove_child(i)
 	#			i.queue_free()
@@ -332,13 +336,13 @@ func play_strum(note):
 	
 		funky_boys[0 if dir > 3 else 1].sing(note.dir, '', !note.is_sustain)
 	elif note is EventNote:
-		$StrumLine/EventStrum.play_anim('confirm', true)
-		$StrumLine/EventStrum.reset_timer = 0.15
+		$ChartLine/EventStrum.play_anim('confirm', true)
+		$ChartLine/EventStrum.reset_timer = 0.15
 	
 var bg_tween:Tween
 func beat_hit(beat:int) -> void:
-	$StrumLine/IconL.bump(0.6)
-	$StrumLine/IconR.bump(0.6)
+	$ChartLine/IconL.bump(0.6)
+	$ChartLine/IconR.bump(0.6)
 	
 	if beat % 2 == 0:
 		for i in funky_boys:
@@ -575,7 +579,7 @@ var last_updated_sec:int = -1
 func update_grids(skip_remake:bool = false, only_current:bool = false) -> void:
 	Game.remove_all([prev_notes, cur_notes, next_notes, cur_events], $Notes)
 	
-	$StrumLine/Highlight.position = ($StrumLine/IconR.position if SONG.notes[cur_section].mustHitSection else $StrumLine/IconL.position) - Vector2(37.5, 37.5)
+	$ChartLine/Highlight.position = ($ChartLine/IconR.position if SONG.notes[cur_section].mustHitSection else $ChartLine/IconL.position) - Vector2(37.5, 37.5)
 	if SONG.notes[cur_section].has('changeBPM') and SONG.notes[cur_section].changeBPM:
 		Conductor.bpm = max(SONG.notes[cur_section].bpm, 1)
 	else:
@@ -586,12 +590,12 @@ func update_grids(skip_remake:bool = false, only_current:bool = false) -> void:
 				last_bpm = max(SONG.notes[i].bpm, 1)
 		Conductor.bpm = last_bpm
 
-	$StrumLine/BPMTxt.text = str(Conductor.bpm) +' BPM'
+	$ChartLine/BPMTxt.text = str(Conductor.bpm) +' BPM'
 	
 	prev_grid.visible = cur_section > 0
-	prev_e_grid.visible = prev_grid.visible
+	#prev_e_grid.visible = prev_grid.visible
 	next_grid.visible = cur_section < SONG.notes.size() - 1
-	next_e_grid.visible = next_grid.visible
+	#next_e_grid.visible = next_grid.visible
 	
 	if cur_section > 0 and prev_grid.visible:
 		var last_sec = SONG.notes[cur_section - 1]
@@ -754,7 +758,7 @@ class EventNote extends Note:
 	func _init(event:EventData):
 		is_sustain = false # just in case
 		label = Label.new()
-		label.add_theme_font_override('font', load('res://assets/fonts/vcr.ttf'))
+		label.add_theme_font_override('font', ResourceLoader.load('res://assets/fonts/vcr.ttf', 'FontFile'))
 		label.add_theme_font_size_override('font_size', 15)
 		label.add_theme_constant_override('outline_size', 5)
 		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
@@ -766,7 +770,7 @@ class EventNote extends Note:
 
 		chart_note = true
 		note = Sprite2D.new()
-		note.texture = load('res://assets/images/ui/event.png')
+		note.texture = ResourceLoader.load('res://assets/images/ui/event.png')
 		add_child(note)
 		if event != null:
 			ev_name = event.event
