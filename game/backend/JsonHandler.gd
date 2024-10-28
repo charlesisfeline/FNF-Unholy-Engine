@@ -1,25 +1,23 @@
 extends Node2D;
 
-var base_diffs:Array[String] = ['easy', 'normal', 'hard']
+const base_diffs:Array[String] = ['easy', 'normal', 'hard']
 var song_diffs:Array = []
 var get_diff:String
 
-var charted:bool = false
 var _SONG:Dictionary = {} # change name of this to like SONG_DATA or something
-var song_meta = null
+var song_meta:Dictionary = {}
+var song_variant:String = '' # for v slice (erect, pico mix and whatnot)
 
 var chart_notes:Array = [] # keep loaded chart and events for restarting songs
 var song_events:Array[EventData] = []
-var old_notes:Array = []
-var old_events:Array[EventData] = []
 
 var parse_type:String = ''
-func parse_song(song:String, diff:String, auto_create:bool = false, type:String = 'psych', split:bool = false):
+func parse_song(song:String, diff:String, variant:String = '', type:String = 'psych', auto_create:bool = true):
 	_SONG.clear()
 	
 	song = Game.format_str(song)
-	if ResourceLoader.exists('res://assets/songs/'+ song +'/chart.json'):#\
-		#FileAccess.file_exists('res://assets/songs/'+ song +'/metadata.json')
+	song_variant = ''
+	if ResourceLoader.exists('res://assets/songs/'+ song +'/chart'+ song_variant +'.json'):
 		type = 'v_slice'
 	
 	var parsed_song
@@ -32,14 +30,15 @@ func parse_song(song:String, diff:String, auto_create:bool = false, type:String 
 		#'osu'     : parsed_song = osu(song)
 		#_: parsed_song = psych(song)
 	_SONG = parsed_song
-	if split:
-		auto_create = false
-		reform_parts(song)
+	#if split:
+	#	auto_create = false
+	#	reform_parts(song)
 		
-	if ResourceLoader.exists('res://assets/songs/'+ song +'/metadata.json'):
-		song_meta = JSON.parse_string(FileAccess.open('res://assets/songs/'+ song +'/metadata.json', FileAccess.READ).get_as_text())
-		print(song_meta)
-		if type == 'v_slice':
+	if parse_type == 'v_slice':
+		var meta_path:String = 'res://assets/songs/'+ song +'/metadata'+ song_variant +'.json'
+		if ResourceLoader.exists(meta_path):
+			song_meta = JSON.parse_string(FileAccess.open(meta_path, FileAccess.READ).get_as_text())
+			print('Loaded meta: '+ meta_path)
 			_SONG.speed = _SONG.scrollSpeed[diff] if _SONG.scrollSpeed.has(diff) else _SONG.scrollSpeed.default
 			_SONG.player1 = song_meta.playData['characters'].player
 			_SONG.gfVersion = song_meta.playData['characters'].girlfriend
@@ -63,7 +62,9 @@ func psych(song:String) -> Dictionary:
 	parse_type = 'psych'
 	var json = you_WILL_get_a_json(song)
 	var parsed = JSON.parse_string(json.get_as_text())
-	return parsed.song # i dont want to have to do no SONG.song.bpm or something
+	if parsed.has('song') and parsed.song is Dictionary:
+		parsed = parsed.song
+	return parsed # i dont want to have to do no SONG.song.bpm or something
 
 #func fps_plus(song:String): pass
 #func maru(song:String): pass
@@ -98,7 +99,7 @@ func you_WILL_get_a_json(song:String) -> FileAccess:
 	var returned:String
 	
 	if parse_type == 'v_slice':
-		returned = path.replace('charts/', '') + 'chart.json'
+		returned = path.replace('charts/', '') +'chart'+ song_variant +'.json'
 	else:
 		if !ResourceLoader.exists(path + get_diff +'.json'):
 			printerr(song +' has no '+ get_diff +'.json')
@@ -110,7 +111,7 @@ func you_WILL_get_a_json(song:String) -> FileAccess:
 	#if dir_files.has(get_diff):
 	#else:
 	#	printerr('COULD NOT FIND JSON: "' + song + '/' + get_diff + '.json"')
-	print(returned)
+	print('Loaded json: '+ returned)
 	return FileAccess.open(returned, FileAccess.READ)
 
 func generate_chart(data, keep_loaded:bool = true) -> Array:

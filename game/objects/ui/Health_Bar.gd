@@ -18,7 +18,7 @@ var fill_mode:int = 1:
 	set(new_fill):
 		fill_mode = clampi(new_fill, 0, 3)
 		$Bar.fill_mode = fill_mode
-		
+
 @export var left_color:Color = Color.RED:
 	set(new): 
 		left_color = new

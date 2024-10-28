@@ -5,12 +5,12 @@ signal countdown_tick(tick:int) # 0 = 'three', 1 = 'two', 2 = 'one', 3 = 'go', 4
 signal song_start # technically countdown tick 4 is song start but why would you use that smh
 
 # probably gonna move some note shit in here
-@onready var mark:Sprite2D = $Mark
 @onready var score_txt:Label = $Score_Txt
 @onready var time_bar:HealthBar = $TimeBar
 @onready var health_bar:HealthBar = $HealthBar
 @onready var icon_p1:Icon = $HealthBar/IconP1
 @onready var icon_p2:Icon = $HealthBar/IconP2
+@onready var mark:Sprite2D = $HealthBar/Mark
 
 @onready var player_group:Strum_Line = $Strum_Group/Player
 @onready var opponent_group:Strum_Line = $Strum_Group/Opponent
@@ -51,8 +51,8 @@ func _ready():
 	strums.append_array(opponent_strums)
 	strums.append_array(player_strums)
 	
-	var downscroll = Prefs.downscroll
-	var middscroll = Prefs.middlescroll
+	var downscroll = Prefs.scroll_type == 'down'
+	var middscroll = Prefs.scroll_type == 'middle' # funny
 	#var spltscroll = Prefs.splitscroll
 	
 	# i am stupid they are a group i dont have to set the strums position manually just the group y pos
@@ -61,9 +61,42 @@ func _ready():
 	
 	for i in strums: i.downscroll = downscroll
 	
-	if middscroll:
-		time_bar.position.x -= 400
-		player_group.position.x = (Game.screen[0] / 2) - 220
+	var can_center:bool = Prefs.center_strums
+	match Prefs.scroll_type:
+		'middle':
+			can_center = true
+			var lol = [180, 90, 270, 0]
+			for i in player_strums.size():
+				player_strums[i].scroll = lol[i]
+		'left', 'right':
+			can_center = false
+			var scr:Array[int] = [0, 180]
+			var x_pos:Array = [Game.screen[0] / 2, Game.screen[0] / 2]
+			if Prefs.scroll_type == 'right': 
+				scr.reverse()
+				x_pos = [Game.screen[0] - 120, 120]
+				opponent_group.modulate = Color(0.2, 0.2, 0.2, 0.4)
+			
+			player_group.position = Vector2(x_pos[0] + 60, 200)
+			opponent_group.position = Vector2(x_pos[1] - 60, 200)
+			
+			for i in strums.size():
+				strums[i].position = Vector2(0, 110 * strums[i].dir)
+				strums[i].scroll = scr[(0 if i > 3 else 1)]
+			
+		'split':
+			health_bar.scale.x = 0.8
+			for i in strums.size():
+				if (strums[i].dir > 1 and i > 3) or (i <= 3 and strums[i].dir < 2):
+					strums[i].scroll = -strums[i].scroll
+					strums[i].position.y = 560
+		
+	if can_center:
+		time_bar.position.x = 214
+		player_group.position.x = (Game.screen[0] / 2) - 180
+		if Prefs.scroll_type == 'middle':
+			player_group.position.y = (Game.screen[1] / 2) - 40
+			
 		opponent_group.modulate.a = 0.4
 		opponent_group.scale = Vector2(0.7, 0.7)
 		opponent_group.z_index = -1
@@ -82,8 +115,8 @@ func _ready():
 		
 	mark.texture = load('res://assets/images/ui/skins/'+ cur_skin +'/auto.png')
 	mark.scale = SKIN.strum_scale
-	mark.position = health_bar.position + Vector2(330, -5)
-	mark.z_index = -2
+	#mark.position = health_bar.position + Vector2(330, -5)
+	#mark.z_index = -2
 
 var hp:float = 50.0:
 	set(val): hp = clampf(val, 0, 100)
@@ -92,7 +125,7 @@ func _process(delta):
 	if finished_countdown:
 		time_bar.value = (abs(Conductor.song_pos / Conductor.song_length) * 100.0)
 		$Text.text = str(Game.to_time(abs((Conductor.song_length - Conductor.song_pos) / Conductor.playback_rate)))
-	$Text.position = time_bar.position - Vector2(20, 30)
+	$Text.position = time_bar.position - Vector2($Text.size.x / 2, 30)
 		
 	health_bar.value = lerpf(health_bar.value, hp, delta * 8)
 

@@ -57,7 +57,7 @@ func _ready():
 		var it_exists = ResourceLoader.exists('res://assets/data/characters/'+ try +'.json')
 		SONG.player1 = try if it_exists else 'bf-girl'
 
-	Conductor.load_song(SONG.song)
+	Conductor.load_song(SONG.song, JsonHandler.song_variant)
 	Conductor.bpm = SONG.bpm
 	
 	Conductor.paused = false
@@ -113,7 +113,7 @@ func _ready():
 	var has_group = stage.has_node('CharGroup')
 	var add:Callable = stage.get_node('CharGroup').add_child if has_group else add_child
 	
-	gf = Character.new(stage.gf_pos, 'gf-king') #gf_ver
+	gf = Character.new(stage.gf_pos, gf_ver)
 	if gf.speaker_data.keys().size() > 0:
 		var _data = gf.speaker_data
 
@@ -143,7 +143,6 @@ func _ready():
 					movin.call(new, i[4])
 				speaker.addons.append(new)
 				
-	#print(get_tree_string_pretty())
 	add.call(gf)
 	
 	if gf.cur_char.to_lower() == 'pico-speaker' and cur_stage.contains('tank'):
@@ -159,6 +158,18 @@ func _ready():
 	boyfriend = Character.new(stage.bf_pos, SONG.player1, true)
 	add.call(boyfriend)
 	
+	#create_tween().tween_property(gf, "scale:x", 1.5, 1)
+	#create_tween().tween_property(gf, "scale:y", 0.05, 1)
+	#create_tween().tween_property(gf, "position:x", gf.position.x - (gf.width / 3), 1)
+	#create_tween().tween_property(gf, "position:y", gf.position.y + gf.height, 1)
+
+	
+	#var lol = create_tween().tween_property(boyfriend, "position:y", (stage.bf_pos.y + 65) + gf.height / 1.05, 1)
+	#lol.finished.connect(func(): 
+	#	Audio.play_sound('fnf_loss_cut'))
+	
+	
+	
 	ui.icon_p1.change_icon(boyfriend.icon, true)
 	ui.icon_p2.change_icon(dad.icon)
 	
@@ -166,7 +177,7 @@ func _ready():
 	ui.player_group.singer = boyfriend
 	ui.opponent_group.singer = dad
 	
-	if cur_stage.contains('school'):
+	if cur_stage.begins_with('school'):
 		cur_skin = 'pixel'
 	if cur_stage == 'limo': # lil dumb...
 		remove_child(gf)
@@ -206,9 +217,6 @@ func _ready():
 	
 	Conductor.beat_hit.connect(stage.beat_hit)
 	
-	#ui.player_group.set_style('pixel')
-	#for i in ui.strums.size():
-	#	if i % 2 == 0: ui.strums[i].load_skin('pixel')
 	ui.start_countdown(true)
 	
 	if JsonHandler.parse_type == 'v_slice': event_hit(EventData.new(
@@ -271,31 +279,27 @@ func _process(delta):
 			if note.spawned:
 				note.follow_song_pos(ui.player_strums[note.dir] if note.must_press else ui.opponent_strums[note.dir])
 				if note.is_sustain:
-					if note.must_press:
-						if note.can_hit and !note.was_good_hit:
-							#var check = (auto_play or Input.is_action_pressed(key_names[note.dir]))
+					if note.can_hit and !note.was_good_hit:
+						if note.must_press:
 							note.holding = ((auto_play and note.should_hit) or Input.is_action_pressed(key_names[note.dir]))
 							good_sustain_press(note, delta)
-						if !auto_play and note.strum_time < Conductor.song_pos - (300 / note.speed) \
-							and !note.holding and note.should_hit: note_miss(note)
-					else:
-						if note.can_hit and !note.was_good_hit:
+							if !auto_play and note.strum_time < Conductor.song_pos - (300 / note.speed) \
+								and !note.holding and note.should_hit: note_miss(note)
+						else:
 							opponent_sustain_press(note)
-					
+		
 					if note.temp_len <= 0: kill_note(note)
-
 				else:
-					if note.must_press:
-						if auto_play and note.strum_time <= Conductor.song_pos and note.should_hit:
-							good_note_hit(note)
-						if !auto_play and note.strum_time < Conductor.song_pos - (300 / note.speed) and !note.was_good_hit:
-							if note.should_hit:
-								note_miss(note)
-							else:
-								kill_note(note)
-					else:
-						if note.was_good_hit:
+					if note.strum_time <= Conductor.song_pos:
+						if note.must_press:
+							if auto_play and note.should_hit:
+								good_note_hit(note)
+							if !auto_play and note.strum_time < Conductor.song_pos - (300 / note.speed) and !note.was_good_hit:
+								var note_func = note_miss if note.should_hit else kill_note
+								note_func.call(note)
+						else:
 							opponent_note_hit(note)
+							
 	if events.size() != 0:
 		for event in events:
 			if event.strum_time <= Conductor.song_pos:
@@ -399,14 +403,6 @@ func song_end() -> void:
 		
 		if save_data[0] > saved_score:
 			HighScore.set_score(SONG.song, JsonHandler.get_diff, save_data)
-		#var scores = ConfigFile.new()
-		#scores.load('user://highscores.cfg')
-		#var to_save = scores.get_value('Song Scores', Game.format_str(SONG.song))
-		#if to_save[JsonHandler.get_diff] == [0, 0, 'N/A'] or score > to_save[JsonHandler.get_diff][0]: 
-		#	to_save[JsonHandler.get_diff] = [score, ui.accuracy, ui.fc]
-
-		#	scores.set_value('Song Scores', Game.format_str(SONG.song), to_save)
-		#	scores.save('user://highscores.cfg')
 	
 	#if auto_play:
 	#	refresh(false)
@@ -469,8 +465,8 @@ func event_hit(event:EventData) -> void:
 		'Add Camera Zoom':
 			var ev_zoom = [float(event.values[0]), float(event.values[1])]
 
-			var zoom_ui = 0.03 #if is_nan(ev_zoom[0]) else ev_zoom[0] / 2.2
-			var zoom_game = 0.06 #if is_nan(ev_zoom[0]) else ev_zoom[0] / 2.2
+			var zoom_ui = 0.03 if is_nan(ev_zoom[0]) else ev_zoom[0] / 2.2
+			var zoom_game = 0.06 if is_nan(ev_zoom[1]) else ev_zoom[1] / 2.2
 			
 			ui.zoom += zoom_ui
 			cam.zoom += Vector2(zoom_game, zoom_game)

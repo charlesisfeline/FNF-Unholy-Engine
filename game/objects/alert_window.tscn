@@ -1,0 +1,33 @@
+[gd_scene load_steps=3 format=3 uid="uid://c4168g031gyyo"]
+
+[ext_resource type="Texture2D" uid="uid://kedvvobodqgv" path="res://assets/images/ui/skins/default/notes/blue.png" id="1_cof8e"]
+[ext_resource type="Script" path="res://game/objects/ui/Alert_Window.gd" id="1_o5qc4"]
+
+[node name="Window" type="Window"]
+title = "ERROR!"
+position = Vector2i(8, 36)
+size = Vector2i(300, 150)
+transient = true
+transient_to_focused = true
+unresizable = true
+min_size = Vector2i(300, 150)
+keep_title_visible = true
+script = ExtResource("1_o5qc4")
+
+[node name="Icon" type="Sprite2D" parent="."]
+position = Vector2(50, 65)
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("1_cof8e")
+
+[node name="Text" type="RichTextLabel" parent="."]
+custom_minimum_size = Vector2(200, 100)
+offset_left = 85.0
+offset_top = 5.0
+offset_right = 285.0
+offset_bottom = 143.0
+bbcode_enabled = true
+text = "INFO!! INFO!! INFO!! INFO!! INFO!! INFO!!INFO!!INFO!!INFO!!INFO!!INFO!!INFO!!INFO!!INFO!!INFO!!INFO!!INFO!!INFO!!INFO!!INFO!!INFO!!INFO!!"
+fit_content = true
+
+[connection signal="about_to_popup" from="." to="." method="_on_about_to_popup"]
+[connection signal="close_requested" from="." to="." method="_on_close_requested"]

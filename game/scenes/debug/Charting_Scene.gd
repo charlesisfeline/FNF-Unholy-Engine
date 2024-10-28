@@ -87,7 +87,7 @@ func _ready():
 	Game.set_mouse_visibility(true)
 	Conductor.reset()
 	if JsonHandler.chart_notes.is_empty(): 
-		JsonHandler.parse_song('bopeebo', 'hard', true)
+		JsonHandler.parse_song('bopeebo', 'hard')
 	SONG = JsonHandler._SONG
 	events = JsonHandler.song_events
 	

@@ -1,13 +1,19 @@
 extends Node2D
 
-var best_scores = ConfigFile.new()
+const EFFECTS:String = '[center][wave]' # effects for the "variant" text
+
 @onready var order = FileAccess.open('res://assets/data/weeks/week-order.txt', FileAccess.READ).get_as_text().split('\n')
 var added_songs:Array[String] = [] # a list of all the song names, so no dupes are added
 var added_weeks:Array[String] = [] # same but for week jsons
 
-var diff_list = JsonHandler.base_diffs
+var diff_list:Array = JsonHandler.base_diffs
 var diff_int:int = 1
 var diff_str:String = 'normal'
+
+# need a week json in order to use these
+var variant_list:Array = []
+var vari_int:int = 0
+var variant_str:String = ''
 
 var last_loaded:Dictionary = {song = '', diff = ''}
 var cur_song:int = 0
@@ -43,7 +49,7 @@ func _ready():
 	for song in DirAccess.get_directories_at('res://assets/songs'):
 		add_song(FreeplaySong.new([song, 'bf', [100, 100, 100]]))
 	
-	HighScore.init_save()
+	#HighScore.init_save()
 	#update_save() # changed who it works
 
 	if JsonHandler._SONG.has('song'):
@@ -118,6 +124,17 @@ func change_diff(amount:int = 0) -> void:
 	actual_score = HighScore.get_score(added_songs[cur_song], diff_str)
 	$SongInfo/Difficulty.text = text
 
+func change_variation(amount:int = 0) -> void:
+	if variant_list.size() <= 1: 
+		print('No variations to change')
+		return
+		
+	vari_int = wrapi(vari_int + amount, 0, variant_list.size())
+	variant_str = variant_list[vari_int]
+	$SongInfo/VariantTxt.text = EFFECTS + variant_str
+	
+	pass
+
 func _unhandled_key_input(event):
 	var shifty = Input.is_key_pressed(KEY_SHIFT)
 	var diff:int = 4 if shifty else 1
@@ -141,9 +158,9 @@ func _unhandled_key_input(event):
 		Audio.stop_music()
 		Conductor.reset()
 		if last_loaded.song != songs[cur_song].text or last_loaded.diff != diff_str:
-			JsonHandler.parse_song(songs[cur_song].text, diff_str, true)
+			JsonHandler.parse_song(songs[cur_song].text, diff_str)
 		JsonHandler.song_diffs = songs[cur_song].diff_list
-		Game.switch_scene('play_scene')
+		Game.switch_scene('Play_Scene')
 	
 func update_save() -> void: # update the file with any new songs/difficulties
 	#NOTE rather than go over every single song every time you enterr freeplay 
@@ -177,12 +194,14 @@ func update_save() -> void: # update the file with any new songs/difficulties
 class FreeplaySong extends Alphabet:
 	var song:String = 'Tutorial'
 	var diff_list:Array = JsonHandler.base_diffs
+	var variants:Array = []
 	var bg_color:Color = Color.WHITE
 	var icon:String = 'face'
 
-	func _init(info, diffs:Array = []):
-		if diffs.size() > 0:
-			diff_list = diffs
+	func _init(info, diffs:Array = [], vars:Array = []):
+		if vars.size() > 0: variants = vars
+		if diffs.size() > 0: diff_list = diffs
+		
 		self.song = info[0]
 		self.icon = info[1]
 		self.bg_color = Color(info[2][0] / 255.0, info[2][1] / 255.0, info[2][2] / 255.0)

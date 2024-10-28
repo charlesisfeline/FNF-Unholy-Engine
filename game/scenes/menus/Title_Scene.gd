@@ -87,6 +87,8 @@ func _process(delta):
 	
 	if Conductor.song_started:
 		Conductor.song_pos += (1000 * delta)
+		if abs(Conductor.song_pos - Audio.pos) < 10:
+			Conductor.song_pos = Audio.pos
 	#Conductor.song_pos = Audio.pos #im lazy dont judge me
 	
 	if !accepted:

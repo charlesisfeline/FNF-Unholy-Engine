@@ -24,7 +24,7 @@ func _ready():
 
 func _process(delta):
 	if Player.stream != null and Player.playing:
-		pos += delta * 1000
+		pos = Player.get_playback_position() * 1000.0
 
 func set_music(new_music:String, vol:float = 1, looped:bool = true): # set the music without auto playing it
 	var path:String = 'assets/music/'+ new_music +'.ogg'

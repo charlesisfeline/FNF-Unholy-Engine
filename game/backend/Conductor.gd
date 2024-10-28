@@ -72,7 +72,7 @@ func _ready():
 	vocals.bus = 'Vocals'
 	vocals_opp.bus = 'Vocals'
 	
-func load_song(song:String = '') -> void:
+func load_song(song:String = '', variant:String = '') -> void:
 	if song.is_empty():
 		printerr('Conductor.load_song: NO SONG ENTERED')
 		song = 'tutorial' #DirAccess.get_directories_at('res://assets/songs')[0]
@@ -80,9 +80,12 @@ func load_song(song:String = '') -> void:
 	song = Game.format_str(song)
 	var path:String = 'res://assets/songs/'+ song +'/audio/%s.ogg' # myehh
 
-	var suffix:String = '-'+ JsonHandler._SONG.variant if JsonHandler._SONG.has('variant') else ''
+	var suffix:String = variant
+	if JsonHandler._SONG.has('variant'):
+		suffix += ('-'+ JsonHandler._SONG.variant)
 
 	#vocals2.stream = load('res://assets/songs/darnell/audio/Voices-player.ogg')
+	
 	if ResourceLoader.exists(path % ['Inst'+ suffix]):
 		inst.stream = load(path % ['Inst'+ suffix])
 		song_length = inst.stream.get_length() * 1000.0
@@ -100,7 +103,7 @@ func _process(delta):
 	if paused: return
 
 	if song_loaded:
-		song_pos = song_pos + (1000 * delta) * playback_rate #AudioServer.get_time_since_last_mix()
+		song_pos += (1000 * delta) * playback_rate
 	
 	if song_pos > 0:
 		if !song_started: 
@@ -111,7 +114,11 @@ func _process(delta):
 			beat_time += crochet
 			cur_beat += 1
 			beat_hit.emit(cur_beat)
+			
 			var beats:int = 4
+			#if Game.scene.SONG.notes[cur_section].has('sectionBeats'):
+			#	beats = Game.scene.SONG.notes[cur_section].sectionBeats
+				
 			if cur_beat % beats == 0:
 				cur_section += 1
 				section_hit.emit(cur_section)
@@ -159,6 +166,9 @@ func start(at_point:float = -1) -> void:
 	if at_point != -1:
 		song_pos = absf(at_point) / 1000.0
 	for_all_audio('play', song_pos)
+
+func set_pos(new_pos:float):
+	pass
 
 func for_all_audio(do:String, arg = null, is_var:bool = false) -> void:
 	for audio in [inst, vocals, vocals_opp]:

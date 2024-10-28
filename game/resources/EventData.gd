@@ -18,6 +18,7 @@ func _init(new_event, type:String = 'psych'):
 			'v_slice':
 				strum_time = new_event.t
 				event = new_event.e
-				for i in new_event.v.keys():
-					values.append({'char' = new_event.v[i]})
+				if new_event.v is Dictionary:
+					for i in new_event.v.keys():
+						values.append({'char' = new_event.v[i]})
 				print([event, strum_time, values])

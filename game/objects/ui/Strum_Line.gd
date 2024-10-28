@@ -23,7 +23,9 @@ func _ready():
 	for i in 4: # i can NOT be bothered to position these mfs manually
 		var cur_strum:Strum = get_strums()[i]
 		cur_strum.dir = (i % 4)
-		cur_strum.downscroll = Prefs.downscroll
+		if Prefs.scroll_type == 'down':
+			cur_strum.scroll = -90
+		#cur_strum.downscroll = Prefs.scroll_type == 'down'
 		cur_strum.is_player = !is_cpu
 		cur_strum.position.x = spacing * (i % 4)
 		INIT_POS[i] = cur_strum.position
@@ -70,7 +72,7 @@ func spawn_splash(strum:Strum) -> void:
 		
 	var new_splash:AnimatedSprite2D = SPLASH.instantiate()
 	new_splash.strum = strum
-	new_splash.speed_scale = 1.0 / (Conductor.step_crochet / 100.0)
+	#new_splash.speed_scale = 1.0 / (Conductor.step_crochet / 100.0)
 	new_splash.on_anim_finish = func():
 		#new_splash.on_anim_finish = func():
 		total_splash.remove_at(total_splash.find(new_splash))

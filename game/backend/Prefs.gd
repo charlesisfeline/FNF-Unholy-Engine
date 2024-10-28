@@ -4,9 +4,8 @@ var saved_prefs:ConfigFile = ConfigFile.new()
 ## GAMEPLAY ##
 var auto_play:bool = false
 var ghost_tapping:bool = true
-var downscroll:bool = false
-var middlescroll:bool = false
-
+var scroll_type:String = 'up'
+var center_strums:bool = false
 var legacy_score:bool = false
 
 var saved_volume:float = 1.0
@@ -32,8 +31,7 @@ var basic_play:bool = false
 var allow_rpc:bool = true:
 	set(allow): 
 		allow_rpc = allow
-		if allow: Discord.init_discord()
-		else: Discord.clear()
+		Discord.update(false, !allow)
 var note_splashes:String = 'both'
 var splash_sprite:String = 'haxe'
 var behind_strums:bool = false
@@ -43,8 +41,7 @@ var chart_grid:bool = true
 var daniel:bool = false: # if you switch too much, it'll break lol
 	set(dani): 
 		daniel = dani
-		Discord.clear()
-		Discord.init_discord()
+		Discord.update(true)
 
 ## KEYBINDS ##
 var note_keys:Array = [
@@ -57,9 +54,9 @@ var ui_keys:Array = [
 ]
 
 func _ready():
+	Discord.init_discord()
 	check_prefs()
 	set_keybinds()
-	Discord.init_discord()
 	DebugInfo.volume = saved_volume
 
 func set_keybinds() -> void:

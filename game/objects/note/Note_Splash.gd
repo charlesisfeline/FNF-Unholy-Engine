@@ -6,7 +6,7 @@ const COL = ['purple', 'blue', 'green', 'red']
 var on_anim_finish:Callable = func(): queue_free() # if used, set this before you add it with add_child
 
 var _info:Dictionary = {
-	'base'    = ['note',    [1, 2], 0.8],
+	'base'    = ['note',    [1, 2], 0.75],
 	'haxe'    = ['haxe',    [],     0.65],
 	'forever' = ['forever', [1, 2], 1]
 }

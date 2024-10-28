@@ -47,6 +47,22 @@ text = "< NORMAL >"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="VariantTxt" type="RichTextLabel" parent="SongInfo"]
+clip_contents = false
+offset_left = 938.0
+offset_top = 71.0
+offset_right = 1276.0
+offset_bottom = 171.0
+theme_override_constants/outline_size = 4
+theme_override_fonts/normal_font = ExtResource("3_vuq8a")
+theme_override_font_sizes/normal_font_size = 50
+bbcode_enabled = true
+text = "[center][wave]NORMAL"
+fit_content = true
+autowrap_mode = 0
+deselect_on_focus_loss_enabled = false
+drag_and_drop_selection_enabled = false
+
 [node name="PlaybackInfo" type="CanvasLayer" parent="."]
 visible = false
 

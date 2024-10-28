@@ -138,7 +138,7 @@ func _ready():
 		
 		if !chart_note:
 			resize_hold(true)
-			if Prefs.downscroll: hold_group.scale.y = -1
+			#if Prefs.scroll_type == 'down': hold_group.scale.y = -1
 			if Prefs.behind_strums: hold_group.z_index = -1
 	else:
 		if ResourceLoader.exists(tex_path +'.res'):
@@ -193,10 +193,10 @@ func follow_song_pos(strum:Strum) -> void:
 		return
 		
 	#var snap:float = 40 / (randf_range(1.0, 12.0) / 16.0)
-	var pos:float = (0.45 * (Conductor.song_pos - strum_time) * speed) #/ Conductor.playback_rate# + offset_y
+	var pos:float = -(0.45 * (Conductor.song_pos - strum_time) * speed) #/ Conductor.playback_rate# + offset_y
 	#pos = floor(pos / snap) * snap
 	
-	if !strum.downscroll: pos *= -1
+	#if !strum.downscroll: pos *= -1
 	
 	if skin.cur_skin != strum.skin.cur_skin: load_skin(strum.skin.cur_skin)
 	position.x = strum.position.x + (pos * cos(strum.scroll * PI / 180))

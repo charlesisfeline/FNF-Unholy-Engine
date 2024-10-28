@@ -1,17 +1,13 @@
 class_name Alphabet; extends Control;
 
-## The way the text visually scrolls (If Alignment is CENTER, Scroll changes nothing)
+## The way the text visually scrolls (If Align is CENTER, Scroll changes nothing)
 enum Scroll {
 	LEFT_TO_RIGHT = 1,
 	CENTER = 0,
 	RIGHT_TO_LEFT = -1
 }
 ## The way the text lines up
-enum Alignment {
-	LEFT,
-	CENTER,
-	RIGHT
-}
+enum Align {LEFT, CENTER, RIGHT}
 
 var all_letters:Array[Letter] = []
 var color:Color = Color(0, 0, 0, 0):
@@ -41,7 +37,8 @@ var y_diff:int = 65
 
 @export var is_menu:bool = false
 @export var scroll_dir:Scroll = Scroll.LEFT_TO_RIGHT
-#@export var alignment:Alignment = Alignment.LEFT
+#@export var alignment:Align = Align.LEFT
+
 var lock:Vector2 = Vector2.INF
 var target_y:int = 0
 var screen_offset:int = 100
@@ -68,8 +65,7 @@ func make_text(tx:String) -> void:
 	
 	var cur_loop:int = 0
 	for i in tx.split():
-		var is_space = (i == ' ')
-		if is_space: spaces += 1
+		if (i == ' '): spaces += 1
 		if i == '\n': rows += 1
 		
 		if spaces != 0: offsets.x += (x_diff * spaces)
@@ -111,6 +107,7 @@ func _process(delta):
 		#var x_pos:float = Game.screen[0] / 2.0 - width / 2.0
 		#Vector2(((target_y * 35 * (remap_y * 5)) * scroll_dir) + 100,\
 		var would_be = Vector2((target_y * spacing.x * scroll_dir) + screen_offset, (remap_y * spacing.y) + (Game.screen[0] * 0.28))
+				
 		var scroll:Vector2 = Vector2(
 			lock.x if lock.x != INF else lerpf(position.x, would_be.x, (delta / 0.16)),
 			lock.y if lock.y != INF else lerpf(position.y, would_be.y, (delta / 0.16))
@@ -164,16 +161,21 @@ class Letter extends AnimatedSprite2D:
 	var id:int = 0
 	var row:int = 0
 	
+	var cool_offset:Vector2 = Vector2.ZERO
+	var align_offset:Vector2 = Vector2.ZERO
+	
 	var _width = 0: 
-		get: return get_thing('width')
+		get: return get_dimension(false)
 	var _height = 0: 
-		get: return get_thing('height')
+		get: return get_dimension(true)
 	
 	func _init(pos:Vector2, char:String, id:int, row:int):
 		self.position = pos; self.char = char;
 		self.id = id; self.row = row;
 		
-	func get_thing(the:String):
-		if sprite_frames == null or !sprite_frames.has_animation(char): return 47.0 if the == 'width' else 65.0
-		if the == 'width': return sprite_frames.get_frame_texture(char, 0).get_width()
-		if the == 'height': return sprite_frames.get_frame_texture(char, 0).get_height()
+	func get_dimension(other:bool = false) -> float:
+		var to_return:float = 65.0 if other else 47.0
+		if sprite_frames != null and sprite_frames.has_animation(char):
+			if other: to_return = sprite_frames.get_frame_texture(char, 0).get_height()
+			else: to_return = sprite_frames.get_frame_texture(char, 0).get_width()
+		return to_return

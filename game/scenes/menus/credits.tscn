@@ -1,8 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://dpdpq5qvi21gx"]
+[gd_scene load_steps=6 format=3 uid="uid://dpdpq5qvi21gx"]
 
 [ext_resource type="Texture2D" uid="uid://cpmw74f4madb6" path="res://assets/images/menuDesat.png" id="1_40jmt"]
 [ext_resource type="Script" path="res://game/scenes/menus/Credits.gd" id="1_xumlj"]
 [ext_resource type="Texture2D" uid="uid://c2r5ulxx1lb0t" path="res://assets/images/menuDark.png" id="3_dk6m8"]
+[ext_resource type="SpriteFrames" uid="uid://l7ix7jvj204r" path="res://assets/images/cow.res" id="4_24eg7"]
+[ext_resource type="FontFile" uid="uid://dnssbi7hjccim" path="res://assets/fonts/vcr.ttf" id="5_g0bmv"]
 
 [node name="Credits" type="Node2D"]
 script = ExtResource("1_xumlj")
@@ -14,8 +16,34 @@ texture = ExtResource("1_40jmt")
 [node name="BG2" type="Polygon2D" parent="."]
 position = Vector2(-2, -5)
 texture = ExtResource("3_dk6m8")
-polygon = PackedVector2Array(845, -2, 456, 737, 887, 737, 1284, 736, 1285, 372, 1285, -2)
+polygon = PackedVector2Array(622, -2, 290, 735, 887, 737, 1284, 736, 1285, 372, 1285, -2)
 
 [node name="CreditImage" type="Sprite2D" parent="."]
 position = Vector2(985, 365)
 scale = Vector2(0.6, 0.6)
+
+[node name="cow" type="AnimatedSprite2D" parent="."]
+visible = false
+position = Vector2(854, 324)
+sprite_frames = ExtResource("4_24eg7")
+animation = &"cow"
+
+[node name="DetailsBox" type="ColorRect" parent="."]
+offset_left = 470.0
+offset_top = 595.0
+offset_right = 1223.0
+offset_bottom = 699.0
+color = Color(0.501407, 0.501406, 0.501406, 0.627451)
+
+[node name="Quote" type="Label" parent="."]
+offset_left = 471.0
+offset_top = 511.0
+offset_right = 1224.0
+offset_bottom = 597.0
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = ExtResource("5_g0bmv")
+theme_override_font_sizes/font_size = 30
+text = "\"I'm a quote!\""
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
