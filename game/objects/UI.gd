@@ -95,7 +95,7 @@ func _ready():
 		time_bar.position.x = 214
 		player_group.position.x = (Game.screen[0] / 2) - 180
 		if Prefs.scroll_type == 'middle':
-			player_group.position.y = (Game.screen[1] / 2) - 40
+			player_group.position.y = (Game.screen[1] / 2) - 50
 			
 		opponent_group.modulate.a = 0.4
 		opponent_group.scale = Vector2(0.7, 0.7)
