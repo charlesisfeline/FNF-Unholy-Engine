@@ -15,7 +15,7 @@ var variant_list:Array = []
 var vari_int:int = 0
 var variant_str:String = ''
 
-var last_loaded:Dictionary = {song = '', diff = ''}
+var last_loaded:Dictionary = {song = '', diff = '',  variant = ''}
 var cur_song:int = 0
 var songs:Array[FreeplaySong] = []
 var icons:Array[Icon] = []
@@ -29,8 +29,12 @@ func _ready():
 			added_weeks.append(file.strip_edges())
 			var week_file = JsonHandler.parse_week(file)
 			var d_list = week_file.difficulties if week_file.has('difficulties') else []
+			var v_list = {}
+			if 'variants' in week_file:
+				v_list = week_file.variants
+					
 			for song in week_file.songs:
-				add_song(FreeplaySong.new(song, d_list))
+				add_song(FreeplaySong.new(song, d_list, v_list))
 	
 	# you dont need a json to add songs, without one itll only have base 3 diffs, no color, and a bf icon
 	var weeks_to_add = []
@@ -54,6 +58,9 @@ func _ready():
 
 	if JsonHandler._SONG.has('song'):
 		last_loaded.song = Game.format_str(JsonHandler._SONG.song)
+		if JsonHandler.song_root != '':
+			last_loaded.song = JsonHandler.song_root
+			last_loaded.variant = JsonHandler.song_variant
 		last_loaded.diff = JsonHandler.get_diff
 		cur_song = added_songs.find(last_loaded.song)
 	
@@ -108,32 +115,34 @@ func update_list(amount:int = 0) -> void:
 	col_tween.tween_property($MenuBG, 'modulate', songs[cur_song].bg_color, 0.3)
 	
 	diff_list = songs[cur_song].diff_list
+	variant_list = songs[cur_song].variants.keys()
+	change_variant()
 	change_diff()
-	
+
 	for i in songs.size():
 		var item = songs[i]
 		item.target_y = i - cur_song
 		item.modulate.a = (1.0 if i == cur_song else 0.6)
 
 func change_diff(amount:int = 0) -> void:
-	#diff_list = JsonHandler.get_diffs #something for later i suppose
-	diff_int = wrapi(diff_int + amount, 0, diff_list.size())
-	diff_str = diff_list[diff_int]
+	var use_list = songs[cur_song].variants[variant_str] if songs[cur_song].variants.size() > 1 else diff_list
+	print(use_list)
+	diff_int = wrapi(diff_int + amount, 0, use_list.size())
+	diff_str = use_list[diff_int]
 	var text = '< '+ diff_str.to_upper() +' >'
-	if diff_list.size() == 1: text = text.replace('<', ' ').replace('>', ' ')
+	if use_list.size() == 1: text = text.replace('<', ' ').replace('>', ' ')
 	actual_score = HighScore.get_score(added_songs[cur_song], diff_str)
 	$SongInfo/Difficulty.text = text
 
-func change_variation(amount:int = 0) -> void:
-	if variant_list.size() <= 1: 
+func change_variant(amount:int = 0) -> void:
+	if variant_list.size() <= 1:
 		print('No variations to change')
 		return
-		
 	vari_int = wrapi(vari_int + amount, 0, variant_list.size())
 	variant_str = variant_list[vari_int]
-	$SongInfo/VariantTxt.text = EFFECTS + variant_str
-	
-	pass
+	$SongInfo/VariantTxt.text = EFFECTS + variant_str.to_upper()
+	diff_int = 0
+	change_diff()
 
 func _unhandled_key_input(event):
 	var shifty = Input.is_key_pressed(KEY_SHIFT)
@@ -145,10 +154,13 @@ func _unhandled_key_input(event):
 		print('Erasing '+ ('all' if shifty else diff_str) +' | '+ songs[cur_song].text)
 		HighScore.clear_score(songs[cur_song].text, diff_str, shifty)
 		update_list()
+		
 	if is_pressed.call('menu_down') : update_list(diff)
 	if is_pressed.call('menu_up')   : update_list(-diff)
 	if is_pressed.call('menu_left') : change_diff(-1)
 	if is_pressed.call('menu_right'): change_diff(1)
+	if Input.is_key_pressed(KEY_CTRL):
+		change_variant(1)
 	
 	if Input.is_action_just_pressed('back'):
 		Audio.play_sound('cancelMenu')
@@ -157,8 +169,9 @@ func _unhandled_key_input(event):
 	if Input.is_action_just_pressed('accept'):
 		Audio.stop_music()
 		Conductor.reset()
-		if last_loaded.song != songs[cur_song].text or last_loaded.diff != diff_str:
-			JsonHandler.parse_song(songs[cur_song].text, diff_str)
+		if last_loaded.song != songs[cur_song].text or last_loaded.diff != diff_str\
+		  or last_loaded.variant != variant_str:
+			JsonHandler.parse_song(songs[cur_song].text, diff_str, variant_str)
 		JsonHandler.song_diffs = songs[cur_song].diff_list
 		Game.switch_scene('Play_Scene')
 	
@@ -194,13 +207,16 @@ func update_save() -> void: # update the file with any new songs/difficulties
 class FreeplaySong extends Alphabet:
 	var song:String = 'Tutorial'
 	var diff_list:Array = JsonHandler.base_diffs
-	var variants:Array = []
+	var variants:Dictionary = {'normal': diff_list}
 	var bg_color:Color = Color.WHITE
 	var icon:String = 'face'
 
-	func _init(info, diffs:Array = [], vars:Array = []):
-		if vars.size() > 0: variants = vars
+	func _init(info, diffs:Array = [], vars:Dictionary = {}):
 		if diffs.size() > 0: diff_list = diffs
+		if vars.size() > 0: 
+			for i:String in vars.keys():
+				var var_diffs:Array = vars[i]
+				variants[i] = var_diffs if !var_diffs.is_empty() else diff_list
 		
 		self.song = info[0]
 		self.icon = info[1]

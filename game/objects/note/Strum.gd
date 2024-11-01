@@ -13,7 +13,7 @@ var skin:SkinInfo = SkinInfo.new()
 @export var dir:int = 0:
 	set(new_dir): 
 		dir = new_dir
-		play_anim('static')
+		play_anim(animation.split('_')[1])
 @export var scroll:float = 90.0
 
 var anim_timer:float = 0.0 # used for confirm anim looping on sustains

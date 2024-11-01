@@ -1,5 +1,6 @@
 extends Node2D
 
+const OPT_MENU = preload('res://game/scenes/menus/options_menu.tscn')
 var this = Game.scene
 @export var option_list:Array[String] = ['Resume', 'Restart Song', 'Change Difficulty', 'Options', 'Exit To Menu']
 var options = []
@@ -79,6 +80,11 @@ func _process(_delta):
 				'Change Difficulty':
 					in_diff = true
 					toggle_diff_select(true)
+				'Options':
+					Audio.play_sound('cancelMenu')
+					#var wah = OPT_MENU.instantiate()
+					#wah.from_play = true
+					#add_child(wah)
 				'Exit To Menu':
 					close()
 					Conductor.reset()

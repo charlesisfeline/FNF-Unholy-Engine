@@ -57,7 +57,7 @@ func _ready():
 		var it_exists = ResourceLoader.exists('res://assets/data/characters/'+ try +'.json')
 		SONG.player1 = try if it_exists else 'bf-girl'
 
-	Conductor.load_song(SONG.song, JsonHandler.song_variant)
+	Conductor.load_song(SONG.song)
 	Conductor.bpm = SONG.bpm
 	
 	Conductor.paused = false
@@ -113,7 +113,7 @@ func _ready():
 	var has_group = stage.has_node('CharGroup')
 	var add:Callable = stage.get_node('CharGroup').add_child if has_group else add_child
 	
-	gf = Character.new(stage.gf_pos, gf_ver)
+	gf = Character.new(stage.gf_pos, gf_ver) #'gf-king'
 	if gf.speaker_data.keys().size() > 0:
 		var _data = gf.speaker_data
 
@@ -167,8 +167,6 @@ func _ready():
 	#var lol = create_tween().tween_property(boyfriend, "position:y", (stage.bf_pos.y + 65) + gf.height / 1.05, 1)
 	#lol.finished.connect(func(): 
 	#	Audio.play_sound('fnf_loss_cut'))
-	
-	
 	
 	ui.icon_p1.change_icon(boyfriend.icon, true)
 	ui.icon_p2.change_icon(dad.icon)
@@ -294,8 +292,8 @@ func _process(delta):
 						if note.must_press:
 							if auto_play and note.should_hit:
 								good_note_hit(note)
-							if !auto_play and note.strum_time < Conductor.song_pos - (300 / note.speed) and !note.was_good_hit:
-								var note_func = note_miss if note.should_hit else kill_note
+							if note.strum_time < Conductor.song_pos - (300 / note.speed) and !note.was_good_hit:
+								var note_func = note_miss if note.should_hit and !auto_play else kill_note
 								note_func.call(note)
 						else:
 							opponent_note_hit(note)
@@ -397,12 +395,20 @@ func try_death() -> void:
 	add_child(death_screen)
 
 func song_end() -> void:
-	if should_save:
+	if should_save  and JsonHandler.song_variant == '':
 		var save_data = [score, ui.accuracy, misses, ui.fc, combo]
 		var saved_score = HighScore.get_score(SONG.song, JsonHandler.get_diff)
 		
 		if save_data[0] > saved_score:
 			HighScore.set_score(SONG.song, JsonHandler.get_diff, save_data)
+		#var scores = ConfigFile.new()
+		#scores.load('user://highscores.cfg')
+		#var to_save = scores.get_value('Song Scores', Game.format_str(SONG.song))
+		#if to_save[JsonHandler.get_diff] == [0, 0, 'N/A'] or score > to_save[JsonHandler.get_diff][0]: 
+		#	to_save[JsonHandler.get_diff] = [score, ui.accuracy, ui.fc]
+
+		#	scores.set_value('Song Scores', Game.format_str(SONG.song), to_save)
+		#	scores.save('user://highscores.cfg')
 	
 	#if auto_play:
 	#	refresh(false)
@@ -493,13 +499,11 @@ func event_hit(event:EventData) -> void:
 			var new_speed = int(event.values[0])
 			gf.dance_beat = new_speed if new_speed != null else 1
 		'FocusCamera':
-			move_cam(event.values[0].char == 0)
-			pass
-			#new_char = Character.new(char.position, event.values[1], char == boyfriend)
-			#remove_child(char)
-			#char.queue_free()
+			var char_int = event.values[0] # a little fix
+			if event.values[0] is Dictionary:
+				char_int = char_int.char
+			move_cam(int(char_int) == 0)
 			
-			#char = new_char
 		_: false
 
 func good_note_hit(note:Note) -> void:
@@ -607,8 +611,9 @@ func note_miss(note:Note) -> void:
 
 		kill_note(note)
 	
-	pop_up_combo('miss', ('000' if combo >= 5 else ''), true)
-	if combo >= 10: gf.play_anim('sad')
+	var be_sad:bool = combo >= 10
+	pop_up_combo('miss', ('000' if be_sad else ''), true)
+	if be_sad: gf.play_anim('sad')
 	#if combo >= 5: pop_up_combo('', '000', true)
 		
 	combo = 0

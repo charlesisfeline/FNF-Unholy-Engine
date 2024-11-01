@@ -147,7 +147,38 @@ func _ready():
 			note.play(COLORS[dir])
 		else:
 			note = Sprite2D.new()
-			note.texture = load(tex_path + COLORS[dir] +'.png')
+			note.texture = load(tex_path + COLORS[dir] +'.png') #load('res://assets/images/ui/skins/default/notes/quant/note.png')
+			"note.rotation = deg_to_rad([0, 270, 90, 180][dir])  #[0, 270, 90, 180] #[270, 180, 0, 90]
+			var shade = ShaderMaterial.new()
+			shade.shader = load('res://game/resources/shaders/RGB.gdshader')
+			note.material = shade
+			var colors:Array[Color] = [Color(), Color.WHITE, Color()]
+			var funny = roundi(Conductor.bpm * strum_time / 1000 / 60 * 48)
+			
+			var avail_quants:Dictionary = {
+				4: [Color(1, 0, 0), Color(0.5, 0, 0)],
+				8: [Color(0, 0, 1), Color(0, 0, 0.5)],
+				12: [Color(0.5, 0, 0.5), Color(0.25, 0, 25)],
+				16: [Color(0, 1, 0), Color(0, 0.5, 0)],
+				24: [Color(1, 0.75, 0.79), Color(0.5, 0.37, 0.5)],
+				32: [Color(1, 1, 0), Color(0.5, 0.5, 0)],
+				48: [Color(0.00, 1.00, 1.00), Color(0.00, 0.5, 0.5)],
+				64: [Color(0.00, 0.77, 0.00), Color(0.00, 0.38, 0.00)],
+				96: [Color(1.00, 0.60, 0.60), Color(0.5, 0.30, 0.30)],
+				128: [Color(0.60, 0.60, 1.00), Color(0.30, 0.30, 0.5)]
+			}
+			
+			for i in avail_quants.keys():
+				if funny % (192 / int(i)) == 0:
+					colors[0] = avail_quants[i][0]
+					colors[2] = avail_quants[i][1]
+					break
+					
+			note.material.set_shader_parameter('red', colors[0])
+			note.material.set_shader_parameter('green', colors[1])
+			note.material.set_shader_parameter('blue', colors[2])
+			note.material.set_shader_parameter('mult', 1.0)
+			"
 		add_child(note)
 		
 		if unknown:
@@ -243,7 +274,7 @@ func copy_from(item) -> void:
 
 func convert_type(t:String) -> String:
 	match t.to_lower().strip_edges():
-		'alt animation', 'true': return 'Alt'
+		'alt animation', 'true', 'mom': return 'Alt'
 		'no animation': return 'No Anim'
 		'gf sing': return 'GF'
 		'hurt note', 'markov note', 'ebola': return 'Hurt'

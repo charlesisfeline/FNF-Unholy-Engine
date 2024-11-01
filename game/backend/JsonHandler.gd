@@ -6,7 +6,8 @@ var get_diff:String
 
 var _SONG:Dictionary = {} # change name of this to like SONG_DATA or something
 var song_meta:Dictionary = {}
-var song_variant:String = '' # for v slice (erect, pico mix and whatnot)
+var song_variant:String = '' # (erect, pico mix and whatnot)
+var song_root:String = ''
 
 var chart_notes:Array = [] # keep loaded chart and events for restarting songs
 var song_events:Array[EventData] = []
@@ -14,9 +15,18 @@ var song_events:Array[EventData] = []
 var parse_type:String = ''
 func parse_song(song:String, diff:String, variant:String = '', type:String = 'psych', auto_create:bool = true):
 	_SONG.clear()
+	song_root = ''
+	song_variant = ''
+
+	if !variant.is_empty(): 
+		if variant != 'normal' and !variant.begins_with('-'):
+			variant = '-'+ variant
+			song_root = Game.format_str(song)
+		else:
+			variant = ''
 	
 	song = Game.format_str(song)
-	song_variant = ''
+	song_variant = variant
 	if ResourceLoader.exists('res://assets/songs/'+ song +'/chart'+ song_variant +'.json'):
 		type = 'v_slice'
 	
@@ -43,7 +53,7 @@ func parse_song(song:String, diff:String, variant:String = '', type:String = 'ps
 			_SONG.player1 = song_meta.playData['characters'].player
 			_SONG.gfVersion = song_meta.playData['characters'].girlfriend
 			_SONG.player2 = song_meta.playData['characters'].opponent
-			_SONG.stage = song_meta.playData.stage
+			_SONG.stage = stage_to(song_meta.playData.stage)
 			_SONG.song = song_meta.songName
 			_SONG.bpm = song_meta.timeChanges[0].bpm
 			
@@ -113,6 +123,19 @@ func you_WILL_get_a_json(song:String) -> FileAccess:
 	#	printerr('COULD NOT FIND JSON: "' + song + '/' + get_diff + '.json"')
 	print('Loaded json: '+ returned)
 	return FileAccess.open(returned, FileAccess.READ)
+
+func stage_to(stage:String):
+	match stage.replace('Erect', ''):
+		'spookyMansion': return 'spooky'
+		'limoRide': return 'limo'
+		'phillyTrain': return 'philly'
+		'phillyStreets': return 'philly-streets'
+		'mallXmas': return 'mall'
+		'mallXmasEvil': return 'mall-evil'
+		'school': return 'school'
+		'schoolEvil': return 'school-evil'
+		'tankmanBattlefield': return 'tank'
+		_: return 'stage'
 
 func generate_chart(data, keep_loaded:bool = true) -> Array:
 	if data == null: 

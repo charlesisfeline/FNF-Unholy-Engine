@@ -12,7 +12,8 @@
 	],
 	"weekBackground": "christmas",
 
-	"difficulties": ["easy", "normal", "hard", "erect", "nightmare"],
+	"variants": {"erect": ["erect", "nightmare"], "pico": []},
+	
 	"storyName": "RED SNOW",
 	"weekBefore": "week4",
 	"weekName": "Week 5",

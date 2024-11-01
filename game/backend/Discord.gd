@@ -5,6 +5,7 @@ var can_rpc:bool = true
 var _info = {
 	'true' : {id = 1227081103932657664, l_img = 'daniel', l_txt = 'I LOVE DANIEL'},
 	'false': {id = 1225971084998737952, l_img = 'deedee_phantonm', l_txt = 'out here unholy-ing baby'}
+	#'false': {id = 1225971084998737952, l_img = 'deedee_phantonm', l_txt = 'out here unholy-ing baby'}
 }
 
 var last_presence:Array[String] = ['Nutthin', 'Check it'] # hold the actual presence text, so it can swap

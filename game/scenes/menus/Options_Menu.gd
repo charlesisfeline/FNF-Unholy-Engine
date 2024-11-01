@@ -35,6 +35,7 @@ var visuals = [
 ]
 #var controls = []
 
+var from_play:bool = false
 var cur_option:int = 0
 var sub_option:int = 0
 var in_sub:bool = false
@@ -83,7 +84,10 @@ func _unhandled_key_input(event:InputEvent) -> void:
 			
 		if Input.is_action_just_pressed('back'):
 			Audio.play_sound('cancelMenu')
-			Game.switch_scene('menus/main_menu')
+			if from_play:
+				queue_free()
+			else:
+				Game.switch_scene('menus/main_menu')
 		
 		if Input.is_action_just_pressed("accept"):
 			show_catagory(catagories[cur_option].to_lower())

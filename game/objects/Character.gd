@@ -185,12 +185,13 @@ func dance(forced:bool = false) -> void:
 
 func sing(dir:int = 0, suffix:String = '', reset:bool = true) -> void:
 	hold_timer = 0
-
 	if sing_timer == 0:
 		sing_timer = 0 if reset else Conductor.step_crochet / 1000.0
+		if !has_anim(sing_anims[dir] + suffix): 
+			printerr('No sing anim ['+ (sing_anims[dir] + suffix) +'] on '+ cur_char)
+			suffix = ''
 		play_anim(sing_anims[dir] + suffix, true)
 		#frame = 4
-
 
 func flip_char() -> void:
 	scale.x *= -1

@@ -11,6 +11,7 @@
 		"gf"
 	],
 	"weekBackground": "school",
+	"variants": {"erect": ["erect", "nightmare"]},
 
 	"storyName": "hating simulator ft. moawling",
 	"weekBefore": "week5",

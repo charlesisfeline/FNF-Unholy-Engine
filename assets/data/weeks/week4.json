@@ -11,6 +11,7 @@
 		"gf"
 	],
 	"weekBackground": "limo",
+	"variants": {"erect": ["erect", "nightmare"]},
 
 	"storyName": "MOMMY MUST MURDER",
 	"weekBefore": "week3",

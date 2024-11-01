@@ -19,6 +19,11 @@ func _init(new_event, type:String = 'psych'):
 				strum_time = new_event.t
 				event = new_event.e
 				if new_event.v is Dictionary:
+					var temp_vals:Dictionary = {}
 					for i in new_event.v.keys():
-						values.append({'char' = new_event.v[i]})
+						temp_vals[i] = new_event.v[i]
+					values.append(temp_vals)
+				else:
+					values.append(new_event.v)
+				
 				print([event, strum_time, values])

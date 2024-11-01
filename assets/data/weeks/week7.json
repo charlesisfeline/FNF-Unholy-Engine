@@ -16,6 +16,8 @@
 		113,
 		253
 	],
+	
+	"variants": {"erect": ["erect", "nightmare"], "pico": []},
 	"hideStoryMode": false,
 	"weekBefore": "week6",
 	"startUnlocked": true

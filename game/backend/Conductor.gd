@@ -79,7 +79,11 @@ func load_song(song:String = '', variant:String = '') -> void:
 	
 	song = Game.format_str(song)
 	var path:String = 'res://assets/songs/'+ song +'/audio/%s.ogg' # myehh
-
+	if JsonHandler.song_variant != '':
+		var inf = [JsonHandler.song_root, JsonHandler.song_variant.substr(1)]
+		path = 'res://assets/songs/'+ inf[0] +'/audio/'+ inf[1] +'/%s.ogg'
+	
+	print(path % 'Inst')
 	var suffix:String = variant
 	if JsonHandler._SONG.has('variant'):
 		suffix += ('-'+ JsonHandler._SONG.variant)
@@ -116,8 +120,9 @@ func _process(delta):
 			beat_hit.emit(cur_beat)
 			
 			var beats:int = 4
-			#if Game.scene.SONG.notes[cur_section].has('sectionBeats'):
-			#	beats = Game.scene.SONG.notes[cur_section].sectionBeats
+			if Game.scene.get('SONG') != null and Game.scene.SONG.has('notes') and JsonHandler.parse_type != 'v_slice':
+				if 'sectionBeats' in Game.scene.SONG.notes[cur_section]:
+					beats = Game.scene.SONG.notes[cur_section].sectionBeats
 				
 			if cur_beat % beats == 0:
 				cur_section += 1

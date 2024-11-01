@@ -95,7 +95,7 @@ func _ready():
 		time_bar.position.x = 214
 		player_group.position.x = (Game.screen[0] / 2) - 180
 		if Prefs.scroll_type == 'middle':
-			player_group.position.y = (Game.screen[1] / 2) - 50
+			player_group.position.y = (Game.screen[1] / 2) - 55
 			
 		opponent_group.modulate.a = 0.4
 		opponent_group.scale = Vector2(0.7, 0.7)
@@ -124,8 +124,11 @@ var hp:float = 50.0:
 func _process(delta):
 	if finished_countdown:
 		time_bar.value = (abs(Conductor.song_pos / Conductor.song_length) * 100.0)
-		$Text.text = str(Game.to_time(abs((Conductor.song_length - Conductor.song_pos) / Conductor.playback_rate)))
-	$Text.position = time_bar.position - Vector2($Text.size.x / 2, 30)
+		$Elasped.text = str(Game.to_time(floor(Conductor.song_pos / Conductor.playback_rate)))
+		$Left.text = str(Game.to_time(abs(floor((Conductor.song_length - Conductor.song_pos) / Conductor.playback_rate))))
+
+	$Elasped.position = time_bar.position - Vector2($Elasped.size.x / 2, 30)
+	$Left.position = time_bar.position - Vector2($Left.size.x / 2, -10)
 		
 	health_bar.value = lerpf(health_bar.value, hp, delta * 8)
 
@@ -138,7 +141,7 @@ func update_score_txt() -> void:
 	if Game.scene.get('score') != null:
 		var stuff = [Game.scene.score, get_acc(), Game.scene.misses]
 		score_txt.text = 'Score: %s / Accuracy: [%s] \\ Misses: %s' % stuff
-	#$Talley.text = '
+	#$Tally.text = '
 	#[color=purple]Epics: '+ str(hit_count['epic']) +'
 	#[color=cyan]Sicks: '+ str(hit_count['sick']) +'
 	#[color=green]Goods: '+ str(hit_count['good']) +'

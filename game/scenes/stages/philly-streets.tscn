@@ -1,6 +1,89 @@
-[gd_scene load_steps=2 format=3 uid="uid://b1aps5umea8ha"]
+[gd_scene load_steps=11 format=3 uid="uid://b1aps5umea8ha"]
 
 [ext_resource type="Script" path="res://game/scenes/stages/philly-streets.gd" id="1_gj0t7"]
+[ext_resource type="Script" path="res://game/objects/ScrollSprite.gd" id="2_oc14b"]
+[ext_resource type="Texture2D" uid="uid://c5gqsyh3kj73c" path="res://assets/images/stages/philly-streets/skybox.png" id="3_qsx48"]
+[ext_resource type="Texture2D" uid="uid://cn72yqpp04cg" path="res://assets/images/stages/philly-streets/skyline.png" id="4_gs54s"]
+[ext_resource type="Texture2D" uid="uid://2ocv1kknnm1j" path="res://assets/images/stages/philly-streets/foregroundCity.png" id="5_jhuvl"]
+[ext_resource type="Texture2D" uid="uid://dcmnt4rs0ma6h" path="res://assets/images/stages/philly-streets/construction.png" id="6_lmxlh"]
+[ext_resource type="Texture2D" uid="uid://j6b1xmscmlf8" path="res://assets/images/stages/philly-streets/highwayLights.png" id="7_2j37a"]
+[ext_resource type="Texture2D" uid="uid://bhguloi17x5qi" path="res://assets/images/stages/philly-streets/highway.png" id="8_yyosp"]
+[ext_resource type="Texture2D" uid="uid://cr4mbsiwg36b7" path="res://assets/images/stages/philly-streets/smog.png" id="9_y50c5"]
+[ext_resource type="Texture2D" uid="uid://do02w5dqgativ" path="res://assets/images/stages/philly-streets/foreground.png" id="10_rdxjr"]
 
 [node name="philly-streets" type="Node2D"]
 script = ExtResource("1_gj0t7")
+
+[node name="Skybox" type="Node2D" parent="."]
+position = Vector2(-650, -375)
+script = ExtResource("2_oc14b")
+scroll_factor = Vector2(0.1, 0.1)
+
+[node name="Sprite" type="Sprite2D" parent="Skybox"]
+scale = Vector2(0.65, 0.65)
+texture = ExtResource("3_qsx48")
+centered = false
+
+[node name="Skyline" type="Node2D" parent="."]
+position = Vector2(-545, -273)
+script = ExtResource("2_oc14b")
+scroll_factor = Vector2(0.2, 0.2)
+
+[node name="Sprite" type="Sprite2D" parent="Skyline"]
+texture = ExtResource("4_gs54s")
+centered = false
+
+[node name="FGCity" type="Node2D" parent="."]
+position = Vector2(625, 94)
+script = ExtResource("2_oc14b")
+scroll_factor = Vector2(0.3, 0.3)
+
+[node name="Sprite" type="Sprite2D" parent="FGCity"]
+texture = ExtResource("5_jhuvl")
+centered = false
+
+[node name="Construction" type="Node2D" parent="."]
+script = ExtResource("2_oc14b")
+scroll_factor = Vector2(0.7, 1)
+
+[node name="Sprite" type="Sprite2D" parent="Construction"]
+texture = ExtResource("6_lmxlh")
+centered = false
+
+[node name="HighwayLights" type="Node2D" parent="."]
+position = Vector2(284, 305)
+
+[node name="Sprite" type="Sprite2D" parent="HighwayLights"]
+texture = ExtResource("7_2j37a")
+centered = false
+
+[node name="Highway" type="Node2D" parent="."]
+position = Vector2(139, 209)
+
+[node name="Sprite" type="Sprite2D" parent="Highway"]
+texture = ExtResource("8_yyosp")
+centered = false
+
+[node name="Smog" type="Node2D" parent="."]
+position = Vector2(-6, 245)
+script = ExtResource("2_oc14b")
+scroll_factor = Vector2(0.8, 1)
+
+[node name="Sprite" type="Sprite2D" parent="Smog"]
+texture = ExtResource("9_y50c5")
+centered = false
+
+[node name="Car1" type="Node2D" parent="."]
+
+[node name="Car2" type="Node2D" parent="."]
+
+[node name="Traffic" type="Node2D" parent="."]
+
+[node name="Foreground" type="Node2D" parent="."]
+
+[node name="Sprite" type="Sprite2D" parent="Foreground"]
+position = Vector2(88, 317)
+texture = ExtResource("10_rdxjr")
+centered = false
+
+[node name="Node2D12" type="Node2D" parent="."]
