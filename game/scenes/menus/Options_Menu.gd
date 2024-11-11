@@ -64,7 +64,7 @@ func _ready():
 	$Description/Text.text = 'Choose a Catagory'
 	update_scroll()
 
-func _unhandled_key_input(event:InputEvent) -> void:
+func _unhandled_key_input(_event:InputEvent) -> void:
 	if in_sub:
 		if Input.is_action_just_pressed('menu_up'): update_scroll(-1)
 		if Input.is_action_just_pressed('menu_down'): update_scroll(1)
@@ -92,7 +92,7 @@ func _unhandled_key_input(event:InputEvent) -> void:
 		if Input.is_action_just_pressed("accept"):
 			show_catagory(catagories[cur_option].to_lower())
 	
-func _process(delta):
+func _process(_delta):
 	#for i in main_text.size():
 		#var cata = main_text[i]
 		#cata.position.x = lerp(cata.position.x, cata.position.x + lerp_points[i], delta * 0.15)
@@ -116,33 +116,36 @@ func show_main() -> void:
 	#for i in main_text.size():
 	#	main_text[i].modulate.a = (1.0 if i == cur_option else 0.6)
 	
-func show_catagory(catagory:String) -> void:
+func show_catagory(_catagory:String) -> void:
 	Audio.play_sound('confirmMenu')
 	in_sub = true
 	sub_option = 0
-	update_scroll()
+	if catagories[cur_option].to_lower() != 'controls':
+		update_scroll()
+	else:
+		Game.switch_scene('menus/options/change_keybinds')
 
 	return
 	#main_text[cur_option].modulate.a = 0.8
 
 	#main_text[cur_option].position = Vector2(100, 100)
-	if catagory.to_lower() == 'controls':
-		Game.switch_scene('menus/options/change_keybinds')
-	else:
-		var loops:int = 0
-		for pref in get(catagory):
-			var desc = descriptions[pref[0]] if descriptions.has(pref[0]) else 'Missing Description'
-			var new_pref = Option.new(pref, desc)
-			new_pref.is_menu = true
-			new_pref.lock.y = 60 + (75 * loops)
-			new_pref.target_y = loops
+	#if catagory.to_lower() == 'controls':
+	#	Game.switch_scene('menus/options/change_keybinds')
+	#else:
+	#	var loops:int = 0
+	#	for pref in get(catagory):
+	#		var desc = descriptions[pref[0]] if descriptions.has(pref[0]) else 'Missing Description'
+	#		var new_pref = Option.new(pref, desc)
+	#		new_pref.is_menu = true
+	#		new_pref.lock.y = 60 + (75 * loops)
+	#		new_pref.target_y = loops
 			#var twen = create_tween()\
 			#.tween_property(new_pref, 'lock:x', 550, 0.3).set_trans(Tween.TRANS_CIRC).set_ease(Tween.EASE_OUT)
 			
-			$Options/List.add_child(new_pref)
-			pref_list.append(new_pref)
-			loops += 1
-		update_scroll()
+	#		$Options/List.add_child(new_pref)
+	#		pref_list.append(new_pref)
+	#		loops += 1
+	#	update_scroll()
 
 func update_scroll(diff:int = 0) -> void:
 	var array:Array = pref_list if in_sub else main_text
@@ -154,7 +157,7 @@ func update_scroll(diff:int = 0) -> void:
 	$Options/SelectBox.visible = in_sub
 	if in_sub:
 		$Description/Alert.visible = pref_list[sub_option].type == 'float'
-		var first_y = pref_list[sub_option].position.y
+		#var first_y = pref_list[sub_option].position.y
 		$Description/Text.text = pref_list[sub_option].description
 		var scroll_diff:int = 0
 		$Options/SelectBox.position.y = pref_list[sub_option].position.y - 60

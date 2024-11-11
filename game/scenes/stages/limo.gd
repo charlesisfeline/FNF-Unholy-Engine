@@ -15,7 +15,7 @@ func _ready():
 		$BGLimo/LimoDancers.add_child(new_dancer)
 		dancers.append(new_dancer)
 
-func beat_hit(beat:int) -> void:
+func beat_hit(_beat:int) -> void:
 	for dancer in dancers:
 		dancer.dance()
 	

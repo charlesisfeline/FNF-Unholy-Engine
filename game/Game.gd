@@ -123,8 +123,8 @@ func call_func(to_call:String, args:Array[Variant] = [], call_tree:bool = false)
 		if scene.has_method(to_call):
 			scene.callv(to_call, args)
 
-func format_str(str:String = '') -> String:
-	return str.to_lower().strip_edges().replace(' ', '-').replace('\'', '')
+func format_str(string:String = '') -> String:
+	return string.to_lower().strip_edges().replace(' ', '-').replace('\'', '')
 
 func round_d(num:float, digit:int) -> float: # bowomp
 	return round(num * pow(10.0, digit)) / pow(10.0, digit)
@@ -161,6 +161,6 @@ func to_time(secs:float, is_milli:bool = true, show_ms:bool = false) -> String:
 	
 	return time_part1
 
-func set_mouse_visibility(show:bool = true) -> void:
-	var vis = Input.MOUSE_MODE_VISIBLE if show else Input.MOUSE_MODE_HIDDEN
+func set_mouse_visibility(visiblilty:bool = true) -> void:
+	var vis = Input.MOUSE_MODE_VISIBLE if visiblilty else Input.MOUSE_MODE_HIDDEN
 	Input.mouse_mode = vis

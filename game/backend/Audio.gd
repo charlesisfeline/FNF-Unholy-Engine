@@ -22,7 +22,7 @@ func _ready():
 	if music.length() == 0 and !exclude.has(Game.scene.name):
 		play_music('freakyMenu')
 
-func _process(delta):
+func _process(_delta):
 	if Player.stream != null and Player.playing:
 		pos = Player.get_playback_position() * 1000.0
 

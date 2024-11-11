@@ -59,20 +59,20 @@ var mult_vocals:bool = false
 
 var inst = AudioStreamPlayer.new()
 var vocals = AudioStreamPlayer.new()
-#var vocals2 = AudioStreamPlayer.new()
+#var vocals_pic = AudioStreamPlayer.new()
 var vocals_opp = AudioStreamPlayer.new()
 
 var bpm_changes
 func _ready():
 	add_child(inst)
 	add_child(vocals)
-	#add_child(vocals2)
+	#add_child(vocals_pic)
 	add_child(vocals_opp)
 	inst.bus = 'Instrumental'
 	vocals.bus = 'Vocals'
 	vocals_opp.bus = 'Vocals'
 	
-func load_song(song:String = '', variant:String = '') -> void:
+func load_song(song:String = '') -> void:
 	if song.is_empty():
 		printerr('Conductor.load_song: NO SONG ENTERED')
 		song = 'tutorial' #DirAccess.get_directories_at('res://assets/songs')[0]
@@ -84,7 +84,7 @@ func load_song(song:String = '', variant:String = '') -> void:
 		path = 'res://assets/songs/'+ inf[0] +'/audio/'+ inf[1] +'/%s.ogg'
 	
 	print(path % 'Inst')
-	var suffix:String = variant
+	var suffix:String = ''
 	if JsonHandler._SONG.has('variant'):
 		suffix += ('-'+ JsonHandler._SONG.variant)
 
@@ -144,10 +144,9 @@ func _process(delta):
 					resync_audio()
 				
 func connect_signals() -> void: # connect all signals
-	if Game.scene.has_method('beat_hit'): beat_hit.connect(Game.scene.beat_hit)
-	if Game.scene.has_method('step_hit'): step_hit.connect(Game.scene.step_hit)
-	if Game.scene.has_method('section_hit'): section_hit.connect(Game.scene.section_hit)
-	if Game.scene.has_method('song_end'): song_end.connect(Game.scene.song_end)
+	for i in ['beat_hit', 'step_hit', 'section_hit', 'song_end']:
+		if Game.scene.has_method(i):
+			get(i).connect(Callable(Game.scene, i))
 	
 func check_resync(sound:AudioStreamPlayer) -> void: # ill keep this here for now
 	if absf(sound.get_playback_position() * 1000.0 - song_pos) > 20:
@@ -172,8 +171,8 @@ func start(at_point:float = -1) -> void:
 		song_pos = absf(at_point) / 1000.0
 	for_all_audio('play', song_pos)
 
-func set_pos(new_pos:float):
-	pass
+#func set_pos(new_pos:float):
+#	pass
 
 func for_all_audio(do:String, arg = null, is_var:bool = false) -> void:
 	for audio in [inst, vocals, vocals_opp]:

@@ -13,7 +13,7 @@ var break_text = [
 	'Damn, I can\'t funk like this', 'Time to touch some grass', 'Shittin rn keep it down'
 ]
 func _ready():
-	Discord.change_presence('Paused '+ this.SONG.song.capitalize() +' - '+ JsonHandler.get_diff.to_upper(), break_text.pick_random())
+	Discord.change_presence('Paused '+ this.SONG.song +' - '+ JsonHandler.get_diff.to_upper(), break_text.pick_random())
 	Conductor.paused = true
 	
 	$SongName.text = JsonHandler._SONG.song
@@ -106,10 +106,10 @@ func close() -> void:
 	get_tree().paused = false
 
 var hold_this = []
-func toggle_diff_select(show:bool = true):
+func toggle_diff_select(make_visible:bool = true):
 	if diffs.size() == 1: return # this shouldnt happen
-	cur_option = 0 if show else 2
-	if show:
+	cur_option = 0 if make_visible else 2
+	if make_visible:
 		while options.size() != 0:
 			remove_child(options[0])
 			options[0].queue_free()

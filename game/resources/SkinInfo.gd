@@ -10,6 +10,8 @@ var note_scale:Vector2 = Vector2(0.7, 0.7)
 var rating_scale:Vector2 = Vector2(0.7, 0.7)
 var num_scale:Vector2 = Vector2(0.5, 0.5)
 
+var note_width:float = 157.0
+
 var has_countdown:bool = true # there are countdown images for the skin
 var countdown_scale:Vector2 = Vector2(1, 1)
 

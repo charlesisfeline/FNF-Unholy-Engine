@@ -97,10 +97,10 @@ func _ready():
 	update_selection()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
+func _process(_delta):
 	pass
 
-func _unhandled_key_input(event:InputEvent) -> void:
+func _unhandled_key_input(_event:InputEvent) -> void:
 	if Input.is_action_just_pressed("accept"):
 		cred_group[cur_select].on_press.call()
 	if Input.is_action_just_pressed("back"):

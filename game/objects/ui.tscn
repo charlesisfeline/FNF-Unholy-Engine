@@ -1,9 +1,10 @@
-[gd_scene load_steps=7 format=3 uid="uid://c0w7bffyud3s7"]
+[gd_scene load_steps=8 format=3 uid="uid://c0w7bffyud3s7"]
 
 [ext_resource type="Script" path="res://game/objects/UI.gd" id="1_sa7x1"]
 [ext_resource type="PackedScene" uid="uid://cj2ryjlbhxh8b" path="res://game/objects/ui/strum_line.tscn" id="2_fxgad"]
 [ext_resource type="Texture2D" uid="uid://cggo31fhlo02s" path="res://assets/images/ui/skins/default/auto.png" id="4_1wnqx"]
 [ext_resource type="PackedScene" uid="uid://btb8naqubifyk" path="res://game/objects/ui/health_bar.tscn" id="7_e1wxe"]
+[ext_resource type="FontFile" uid="uid://bv2eeattl3ix7" path="res://assets/fonts/font.ttf" id="7_kc3eh"]
 [ext_resource type="FontFile" uid="uid://dnssbi7hjccim" path="res://assets/fonts/vcr.ttf" id="8_1567e"]
 [ext_resource type="Script" path="res://game/objects/ui/Icon.gd" id="8_ojola"]
 
@@ -72,6 +73,18 @@ position = Vector2(95, 55)
 [node name="Player" parent="Strum_Group" instance=ExtResource("2_fxgad")]
 position = Vector2(795, 55)
 is_cpu = false
+
+[node name="HitTime" type="Label" parent="Strum_Group/Player"]
+offset_left = -50.0
+offset_top = -35.0
+offset_right = 383.0
+offset_bottom = -7.0
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = ExtResource("7_kc3eh")
+theme_override_font_sizes/font_size = 22
+text = "0 ms"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Tally" type="RichTextLabel" parent="."]
 visible = false

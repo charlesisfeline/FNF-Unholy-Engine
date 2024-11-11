@@ -84,8 +84,8 @@ func get_list() -> Array:
 	#for i in list: print(i.name)
 	return list
 	
-func get_vsync_from_string(vsync:String = 'disabled') -> DisplayServer.VSyncMode:
-	match vsync: # hell if i know what all the v syncs do and look like
+func get_vsync_from_string(sync:String = 'disabled') -> DisplayServer.VSyncMode:
+	match sync: # hell if i know what all the v syncs do and look like
 		'enabled': return DisplayServer.VSYNC_ENABLED
 		'adapt': return DisplayServer.VSYNC_ADAPTIVE
 		'mailbox': return DisplayServer.VSYNC_MAILBOX

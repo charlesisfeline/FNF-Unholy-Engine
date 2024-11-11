@@ -7,7 +7,7 @@ func _ready():
 	
 	bf_cam_offset = Vector2(-50, -100)
 	
-func beat_hit(beat:int):
+func beat_hit(_beat:int):
 	for i in [$UpperBop/Sprite, $BottomBop, $Santa]:
 		i.play()
 		i.frame = 0

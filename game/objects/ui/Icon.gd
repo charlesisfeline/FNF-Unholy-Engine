@@ -37,9 +37,10 @@ func bump(to_scale:float = 1.2) -> void:
 	scale = Vector2(to_scale, to_scale)
 	
 func _process(delta):
-	scale.x = lerpf(default_scale, scale.x, exp(-delta * icon_speed))
-	scale.y = lerpf(default_scale, scale.y, exp(-delta * icon_speed))
-	
+	var scale_ratio:float = icon_speed / Conductor.step_crochet * 100.0
+
+	scale.x = lerpf(default_scale, scale.x, exp(-delta * scale_ratio))
+	scale.y = lerpf(default_scale, scale.y, exp(-delta * scale_ratio))
 	if follow_spr != null:
 		if follow_spr is HealthBar: # is healthbar or something
 			var bar_width:float = follow_spr.width
@@ -60,4 +61,4 @@ func _process(delta):
 		else:
 			position = follow_spr.position
 			position.x += follow_spr.width + 80
-			position.y += texture.get_height() / 5
+			position.y += texture.get_height() / 5.0

@@ -8,5 +8,5 @@ func _ready():
 	dad_pos.y = 20
 # nothing here yet
 # maybe once story mode eixsts
-func _process(delta):
-	pass
+#func _process(delta):
+#	pass

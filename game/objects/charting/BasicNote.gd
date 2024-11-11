@@ -79,11 +79,11 @@ var text:String:
 	get: return label.text
 	set(txt): label.text = txt
 	
-func _init(data = null, sustain:bool = false, in_chart:bool = false):
+func _init(data = null, sustain_:bool = false):
 	if data != null:
 		if data is Array: data = NoteData.new(data)
 		copy_from(data)
-		if sustain:
+		if sustain_:
 			is_sustain = true
 			parent = data
 
@@ -139,7 +139,7 @@ func _ready():
 		text = type.replace('Note', '') # purely visual
 		label.position -= Vector2(label.size.x * (30 * label.get_total_character_count()), -label.size.y * 1.5)
 		
-func _process(delta):
+func _process(_delta):
 	if !spawned: return
 	was_hit = strum_time <= Conductor.song_pos
 
@@ -159,7 +159,7 @@ func load_skin(skin) -> void:
 	else:
 		note.texture = load(tex_path +'.png')
 
-func resize_hold(update_control:bool = false, to_size:float = 0.0) -> void:
+func resize_hold(_update_control:bool = false, to_size:float = 0.0) -> void:
 	if !spawned: return
 	hold_group.size.y = to_size
 	#var rounded_scale = Game.round_d(skin.note_scale.y, 1)

@@ -56,7 +56,8 @@ func parse_song(song:String, diff:String, variant:String = '', type:String = 'ps
 			_SONG.stage = stage_to(song_meta.playData.stage)
 			_SONG.song = song_meta.songName
 			_SONG.bpm = song_meta.timeChanges[0].bpm
-			
+	
+	print('Got "'+ parse_type +'" Chart')
 	if auto_create:
 		generate_chart(_SONG)
 		#var thread = Thread.new()
@@ -69,11 +70,13 @@ func v_slice(song:String) -> Dictionary:
 	return JSON.parse_string(json.get_as_text())
 	
 func psych(song:String) -> Dictionary:
-	parse_type = 'psych'
+	parse_type = 'psych_v1'
 	var json = you_WILL_get_a_json(song)
 	var parsed = JSON.parse_string(json.get_as_text())
 	if parsed.has('song') and parsed.song is Dictionary:
 		parsed = parsed.song
+		parse_type = 'psych'
+
 	return parsed # i dont want to have to do no SONG.song.bpm or something
 
 #func fps_plus(song:String): pass

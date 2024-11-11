@@ -117,7 +117,7 @@ func load_char(new_char:String = 'bf') -> void:
 	set_stuff()
 	
 	if cur_char.contains('monster'): swap_sing('singLEFT', 'singRIGHT')
-	if (!is_player and json.flip_x) or (is_player and !json.flip_x):
+	if !is_player == json.flip_x:
 		flip_char()
 		
 	print('loaded '+ cur_char)
@@ -185,18 +185,32 @@ func dance(forced:bool = false) -> void:
 
 func sing(dir:int = 0, suffix:String = '', reset:bool = true) -> void:
 	hold_timer = 0
+	var to_sing:String = sing_anims[dir] + suffix
+	if !has_anim(to_sing): 
+		printerr('No sing anim ['+ to_sing +'] on '+ cur_char)
+		to_sing = sing_anims[dir]
+		
 	if sing_timer == 0:
-		sing_timer = 0 if reset else Conductor.step_crochet / 1000.0
-		if !has_anim(sing_anims[dir] + suffix): 
-			printerr('No sing anim ['+ (sing_anims[dir] + suffix) +'] on '+ cur_char)
-			suffix = ''
-		play_anim(sing_anims[dir] + suffix, true)
-		#frame = 4
+		sing_timer = 0.0 if reset else Conductor.step_crochet / 1000.0
+		
+		play_anim(to_sing, true)
+		#if is_player:
+		#	frame = 3
+		
+#	if reset:
+#		sing_timer = 0.0
+#		play_anim(to_sing, true)
+#	else:
+#		sing_timer += get_process_delta_time()
+#		if sing_timer >= ((2.0 / 24.0) - 0.01): #Conductor.step_crochet / 1000.0:
+#			play_anim(to_sing, true)
+#			sing_timer = 0.0
 
 func flip_char() -> void:
 	scale.x *= -1
 	position.x += width
 	focus_offsets.x -= width / 2
+	#if (!is_player and sing_anims[0] == 'singLEFT') or (is_player and sing_anims[0] == 'singRIGHT'):
 	swap_sing('singLEFT', 'singRIGHT')
 
 func swap_sing(anim1:String, anim2:String) -> void:
@@ -239,23 +253,22 @@ func set_stuff() -> void:
 	var anim:String = 'danceLeft' if dance_idle else 'idle'
 	if has_anim('deathStart') and !has_anim(anim): anim = 'deathStart' # if its a death char
 	if has_anim(anim):
-		var total:int = sprite_frames.get_frame_count(anim) - 1 # last anim is probably the most upright
+		#var total:int = sprite_frames.get_frame_count(anim) - 1 # last anim is probably the most upright
 		width = sprite_frames.get_frame_texture(anim, 0).get_width()
 		height = sprite_frames.get_frame_texture(anim, 0).get_height()
 
 func has_anim(anim:String) -> bool:
 	return sprite_frames.has_animation(anim) if sprite_frames != null else false
 
-func copy_char(char:Character) -> Character:
-	self.position = char.position
-	return Character.new(self.position, self.cur_char, self.is_player)
+static func dupe(duper:Character) -> Character:
+	return Character.new(duper.position, duper.cur_char, duper.is_player)
 
-static func get_closest(char:String = 'bf') -> String: # if theres no character named "pico-but-devil" itll just use "pico"
+static func get_closest(char_name:String = 'bf') -> String: # if theres no character named "pico-but-devil" itll just use "pico"
 	for file in DirAccess.get_files_at('res://assets/data/characters'):
 		file = file.replace('.json', '')
-		if file.to_lower().contains(char): return file
+		if file.to_lower().contains(char_name): return file
 		
-	for i in char.split('-'): # get more specific
+	for i in char_name.split('-'): # get more specific
 		for file in DirAccess.get_files_at('res://assets/data/characters'):
 			file = file.replace('.json', '')
 			if i.to_lower().contains(file): return file

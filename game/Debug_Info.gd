@@ -51,20 +51,23 @@ func _process(delta):
 			vol_tween = create_tween()
 			vol_tween.tween_property($Volume, 'position:y', -100, 0.12)
 	
-	var mem:String = String.humanize_size(OS.get_static_memory_usage())
-	var mem_peak:String = String.humanize_size(OS.get_static_memory_peak_usage())
 	$FPS.text = 'FPS: '+ str(Engine.get_frames_per_second())
 	if OS.is_debug_build():
-		$Other.text = 'Mem: '+ mem +' / '+ mem_peak +'\nPress (Debug 2) for more info'
+		var mem:String = String.humanize_size(OS.get_static_memory_usage())
+		var mem_peak:String = String.humanize_size(OS.get_static_memory_peak_usage())
+		
 		if Input.is_action_just_pressed('debug_2'):
 			debug_data = !debug_data
+			
+		var txt_add:String = 'Press (Debug 2) for more info'
+		$Other.text = 'Mem: %s / %s\n' % [mem, mem_peak]
 		if debug_data:
-			$Other.text += '\nNodes: '+ str(get_tree().get_node_count())
+			var other_data:Array = [get_tree().get_node_count(), '???', Performance.get_monitor(Performance.OBJECT_COUNT), Performance.get_monitor(Performance.TIME_PROCESS), Performance.get_monitor(Performance.RENDER_TOTAL_OBJECTS_IN_FRAME), Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME)]
 			if get_tree().current_scene != null:
-				$Other.text += '\nScene: '+ get_tree().current_scene.name
-			$Other.text += '\nAll Objs: '+ str(Performance.get_monitor(Performance.OBJECT_COUNT))
-			$Other.text += '\nFrm Delay: '+ str(Performance.get_monitor(Performance.TIME_PROCESS))
-			$Other.text += '\nTotal Draw Obj/Calls: '+ str(Performance.get_monitor(Performance.RENDER_TOTAL_OBJECTS_IN_FRAME)) +' / '+ str(Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME))
+				other_data[1] = get_tree().current_scene.name
+			txt_add = 'Nodes: %s\nScene: %s\nAll Objs: %s\nFrm Delay: %s\nTotal Draw Obj/Calls: %s / %s' % other_data
+		$Other.text += txt_add
+
 
 func _unhandled_key_input(_event):
 	pressed_key = true

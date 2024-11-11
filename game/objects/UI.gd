@@ -12,10 +12,14 @@ signal song_start # technically countdown tick 4 is song start but why would you
 @onready var icon_p2:Icon = $HealthBar/IconP2
 @onready var mark:Sprite2D = $HealthBar/Mark
 
+@onready var ms_txt:Label = $Strum_Group/Player/HitTime
 @onready var player_group:Strum_Line = $Strum_Group/Player
 @onready var opponent_group:Strum_Line = $Strum_Group/Opponent
+var gf_group:Strum_Line
+
 @onready var player_strums:Array = player_group.get_strums()
 @onready var opponent_strums:Array = opponent_group.get_strums()
+var gf_strums:Array
 var strums:Array[Strum] = []
 var chart_notes = []
 
@@ -115,6 +119,18 @@ func _ready():
 		
 	mark.texture = load('res://assets/images/ui/skins/'+ cur_skin +'/auto.png')
 	mark.scale = SKIN.strum_scale
+	
+	#player_group.scale = Vector2(0.9, 0.9)
+	#opponent_group.scale = Vector2(0.9, 0.9)
+	#player_group.position.x += 80
+	#opponent_group.position.x -= 30
+	
+	#gf_group = load('res://game/objects/ui/strum_line.tscn').instantiate()
+	#add_child(gf_group)
+	#gf_group.scale = Vector2(0.9, 0.9)
+	#gf_group.position = Vector2((Game.screen[0] / 2.0) - 170, 55)
+	#gf_strums = gf_group.get_strums()
+	
 	#mark.position = health_bar.position + Vector2(330, -5)
 	#mark.z_index = -2
 
@@ -177,9 +193,10 @@ func reset_stats() -> void:
 	
 	update_score_txt()
 
-func add_to_strum_group(item:Variant, to_player:bool = true) -> void:
+func add_to_strum_group(item:Variant, strums:String = 'player') -> void:
 	if item == null: return
-	var group = player_group if to_player else opponent_group
+	var group = get(strums +'_group')
+	if group == null: group = player_group
 	group.add_child(item)
 
 func add_behind(item) -> void:

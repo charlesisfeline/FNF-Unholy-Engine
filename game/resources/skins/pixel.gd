@@ -10,6 +10,8 @@ var note_scale:Vector2 = Vector2(6, 6)
 var rating_scale:Vector2 = Vector2(5, 5)
 var num_scale:Vector2 = Vector2(5.5, 5.5)
 
+var note_width:float = 17.0
+
 var has_countdown:bool = true # there are countdown images for the style
 var countdown_scale:Vector2 = Vector2(6, 6)
 

@@ -126,7 +126,7 @@ func update_list(amount:int = 0) -> void:
 
 func change_diff(amount:int = 0) -> void:
 	var use_list = songs[cur_song].variants[variant_str] if songs[cur_song].variants.size() > 1 else diff_list
-	print(use_list)
+	#print(use_list)
 	diff_int = wrapi(diff_int + amount, 0, use_list.size())
 	diff_str = use_list[diff_int]
 	var text = '< '+ diff_str.to_upper() +' >'
@@ -136,15 +136,14 @@ func change_diff(amount:int = 0) -> void:
 
 func change_variant(amount:int = 0) -> void:
 	if variant_list.size() <= 1:
-		print('No variations to change')
+		#print('No variations to change')
 		return
 	vari_int = wrapi(vari_int + amount, 0, variant_list.size())
 	variant_str = variant_list[vari_int]
 	$SongInfo/VariantTxt.text = EFFECTS + variant_str.to_upper()
-	diff_int = 0
 	change_diff()
 
-func _unhandled_key_input(event):
+func _unhandled_key_input(_event):
 	var shifty = Input.is_key_pressed(KEY_SHIFT)
 	var diff:int = 4 if shifty else 1
 	var is_pressed:Callable = func(action): 

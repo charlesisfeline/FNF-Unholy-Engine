@@ -17,12 +17,12 @@ var offsets:Vector2 = Vector2.ZERO
 func _process(_delta):
 	if parent != null: position = parent.position + offsets
 	
-	var prev_hz:float = 0;
+	var prev_hz:float = 0.0
 	for i in range(0, 7):
-		var hz = i * 11050.0 / 7; # thank you y i will mess with it later
+		var hz = (i * 11050.0) / 7.0; # thank you y i will mess with it later
 		var energy = clamp((60.0 + linear_to_db(spectrum.get_magnitude_for_frequency_range(prev_hz, hz).length())) / 60.0, 0, 1)
 		get_node('VIZ/Bar'+ str(i)).frame = clamp(round(5 - (energy * 5)), 0, 5)
-		prev_hz = hz
+		prev_hz = hz / 1.5
 	
 func bump(forced:bool = true):
 	$Frame.play('bump')

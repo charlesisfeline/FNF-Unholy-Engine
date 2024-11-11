@@ -45,7 +45,7 @@ var type:String = "":
 			'Hey': pass
 			'Alt': alt = '-alt'
 			'No Anim': no_anim = true
-			'GF': gf = true
+			'GF', 'Third Strumline', 'Second Dad Sing': gf = true
 			'Hurt':
 				should_hit = false
 				early_mod = 0.5
@@ -75,6 +75,8 @@ var length:float = 0.0
 var temp_len:float = 0.0 #if you dont immediately hold
 var offset_y:float = 0.0
 var parent:Note
+var parent_width:float = 0.0
+
 
 var holding:bool = false
 var min_len:float = 25.0 # before a sustain is counted as "hit"
@@ -93,9 +95,22 @@ var alpha:float = 1.0:
 	get: return modulate.a
 	set(alpha): modulate.a = alpha
 
-func _init(data = null, sustain:bool = false, in_chart:bool = false):
+var avail_quants:Dictionary = {
+	4: [Color(1, 0, 0), Color(0.5, 0, 0)],
+	8: [Color(0, 0, 1), Color(0, 0, 0.5)],
+	12: [Color(0.5, 0, 0.5), Color(0.25, 0, 25)],
+	16: [Color(0, 1, 0), Color(0, 0.5, 0)],
+	24: [Color(1, 0.75, 0.79), Color(0.5, 0.37, 0.5)],
+	32: [Color(1, 1, 0), Color(0.5, 0.5, 0)],
+	48: [Color(0.00, 1.00, 1.00), Color(0.00, 0.5, 0.5)],
+	64: [Color(0.00, 0.77, 0.00), Color(0.00, 0.38, 0.00)],
+	96: [Color(1.00, 0.60, 0.60), Color(0.5, 0.30, 0.30)],
+	128: [Color(0.60, 0.60, 1.00), Color(0.30, 0.30, 0.5)]
+}
+
+func _init(data = null, sustain_:bool = false, in_chart:bool = false):
 	if data != null:
-		is_sustain = (sustain and data is Note)
+		is_sustain = (sustain_ and data is Note)
 		copy_from(data)
 		chart_note = in_chart
 		if is_sustain:
@@ -109,6 +124,15 @@ func _ready():
 	position = Vector2(INF, -INF) #you can see it spawn in for a frame or two
 	scale = skin.note_scale
 	
+	var colors:Array[Color] = [Color(), Color.WHITE, Color()]
+	var funny = roundi((Conductor.bpm * strum_time) / 1000.0 / 60.0 * 48)
+
+	for i in avail_quants.keys():
+		if funny % (192 / int(i)) == 0:
+			colors[0] = avail_quants[i][0]
+			colors[2] = avail_quants[i][1]
+			break
+			
 	if is_sustain:
 		alpha = 0.6
 		# stole from fnf raven because i didnt know how "Control"s worked
@@ -117,22 +141,36 @@ func _ready():
 
 		add_child(hold_group)
 		move_child(hold_group, 0)
+		var gwa = 'res://assets/images/ui/skins/'+ skin.cur_skin +'/notes/quant/%s.png'
 		
 		end = TextureRect.new()
-		end.texture = load(tex_path + COLORS[dir] +'_end.png')
+		end.texture = load(gwa % 'end') #load(tex_path + COLORS[dir] +'_end.png')
 		if !chart_note: end.stretch_mode = TextureRect.STRETCH_TILE
 		end.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
 		end.grow_horizontal = Control.GROW_DIRECTION_BOTH
 		end.grow_vertical = Control.GROW_DIRECTION_BEGIN
 		
 		sustain = TextureRect.new()
-		sustain.texture = load(tex_path + COLORS[dir] +'_hold.png')
+		sustain.texture = load(gwa % 'hold') #load(tex_path + COLORS[dir] +'_hold.png')
 		if !chart_note: sustain.stretch_mode = TextureRect.STRETCH_TILE # hmm
 		sustain.set_anchors_preset(Control.PRESET_FULL_RECT)
 		sustain.set_anchor_and_offset(SIDE_BOTTOM, 1.0, -end.texture.get_height() + 1.0)
 		sustain.grow_horizontal = Control.GROW_DIRECTION_BOTH
 		sustain.grow_vertical = Control.GROW_DIRECTION_BOTH
 		
+		var shade = ShaderMaterial.new()
+		shade.shader = load('res://game/resources/shaders/RGB.gdshader')
+		sustain.material = shade
+		end.material = shade
+		
+		var params = ['red', 'green', 'blue']
+		for i in params.size():
+			sustain.material.set_shader_parameter(params[i], colors[i])
+			end.material.set_shader_parameter(params[i], colors[i])
+			
+		sustain.material.set_shader_parameter('mult', 1.0)
+		end.material.set_shader_parameter('mult', 1.0)
+
 		hold_group.add_child(sustain)
 		hold_group.add_child(end)
 		
@@ -147,38 +185,17 @@ func _ready():
 			note.play(COLORS[dir])
 		else:
 			note = Sprite2D.new()
-			note.texture = load(tex_path + COLORS[dir] +'.png') #load('res://assets/images/ui/skins/default/notes/quant/note.png')
-			"note.rotation = deg_to_rad([0, 270, 90, 180][dir])  #[0, 270, 90, 180] #[270, 180, 0, 90]
+			note.texture = load('res://assets/images/ui/skins/'+ skin.cur_skin +'/notes/quant/note.png') #load(tex_path + COLORS[dir] +'.png')
+			note.rotation = deg_to_rad([0, 270, 90, 180][dir])  #[0, 270, 90, 180] #[270, 180, 0, 90]
 			var shade = ShaderMaterial.new()
 			shade.shader = load('res://game/resources/shaders/RGB.gdshader')
 			note.material = shade
-			var colors:Array[Color] = [Color(), Color.WHITE, Color()]
-			var funny = roundi(Conductor.bpm * strum_time / 1000 / 60 * 48)
 			
-			var avail_quants:Dictionary = {
-				4: [Color(1, 0, 0), Color(0.5, 0, 0)],
-				8: [Color(0, 0, 1), Color(0, 0, 0.5)],
-				12: [Color(0.5, 0, 0.5), Color(0.25, 0, 25)],
-				16: [Color(0, 1, 0), Color(0, 0.5, 0)],
-				24: [Color(1, 0.75, 0.79), Color(0.5, 0.37, 0.5)],
-				32: [Color(1, 1, 0), Color(0.5, 0.5, 0)],
-				48: [Color(0.00, 1.00, 1.00), Color(0.00, 0.5, 0.5)],
-				64: [Color(0.00, 0.77, 0.00), Color(0.00, 0.38, 0.00)],
-				96: [Color(1.00, 0.60, 0.60), Color(0.5, 0.30, 0.30)],
-				128: [Color(0.60, 0.60, 1.00), Color(0.30, 0.30, 0.5)]
-			}
-			
-			for i in avail_quants.keys():
-				if funny % (192 / int(i)) == 0:
-					colors[0] = avail_quants[i][0]
-					colors[2] = avail_quants[i][1]
-					break
-					
 			note.material.set_shader_parameter('red', colors[0])
 			note.material.set_shader_parameter('green', colors[1])
 			note.material.set_shader_parameter('blue', colors[2])
 			note.material.set_shader_parameter('mult', 1.0)
-			"
+			
 		add_child(note)
 		
 		if unknown:
@@ -262,7 +279,7 @@ func resize_hold(update_control:bool = false) -> void:
 	if update_control:
 		sustain.set_anchor_and_offset(SIDE_BOTTOM, 1.0, -end.texture.get_height() + 1.0)
 		hold_group.size.x = maxf(end.texture.get_width(), sustain.texture.get_width())
-		hold_group.position.x = 0 - (hold_group.size.x * 0.5)
+		hold_group.position.x = 0 - (hold_group.size.x * 0.5) 
 
 func copy_from(item) -> void:
 	if item != null and (item is Note or item is NoteData):

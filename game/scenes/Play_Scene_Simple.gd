@@ -116,14 +116,15 @@ func _process(delta):
 			new_note.speed = cur_speed
 			notes.append(new_note)
 
+			var to_add:String = 'player' if new_note.must_press else 'opponent'
 			if chart_notes[chunk][2]: # if it has a sustain
 				var new_sustain:Note = Note.new(new_note, true)
 				new_sustain.speed = new_note.speed
 		
 				notes.append(new_sustain)
-				ui.add_to_strum_group(new_sustain, new_sustain.must_press)
+				ui.add_to_strum_group(new_sustain, to_add)
 
-			ui.add_to_strum_group(new_note, new_note.must_press)
+			ui.add_to_strum_group(new_note, to_add)
 			notes.sort_custom(func(a, b): return a.strum_time < b.strum_time)
 			chunk += 1
 

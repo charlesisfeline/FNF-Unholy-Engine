@@ -1,26 +1,26 @@
 class_name Chart; extends Resource;
 # makes a chart from a json
 
-enum CHART_TYPE {
+enum FORMAT {
 	LEGACY, # old base game, old psych
-	V_SLICE,
-	PSYCH_V1,
-	FPS_PLUS,
-	MARU
+	V_SLICE, 
+	PSYCH_V1#, 
+	# vv unfinished vv
+	#FPS_PLUS = 3, 
+	#MARU = 4
 }
-var type:CHART_TYPE
+var format:FORMAT
 
 var return_notes:Array = []
 func load_chart(data, chart_type:String = 'psych', diff:String = 'normal') -> Array:
 	if data == null: return []
 	return_notes.clear()
-	match chart_type:
-		'old_base', 'psych': 
-			type = CHART_TYPE.LEGACY
+	format = get_format(chart_type)
+	match format:
+		FORMAT.LEGACY, FORMAT.PSYCH_V1: 
 			return load_common(data)
-		'v_slice': 
-			type = CHART_TYPE.V_SLICE
-			return load_base(data, diff)
+		FORMAT.V_SLICE: 
+			return load_slice(data, diff)
 		_: return []
 		
 # for loading a chart that isnt named a difficulty
@@ -34,32 +34,24 @@ func load_named_chart(song_name:String, chart_name:String = ''):
 	return []
 	
 # old base game/psych
-var total:int = 0
-var cur:int = -1
-
-var cur_notes:int = 0
-var total_notes:int = 0
-
 func load_common(data) -> Array:
-	#total = data.notes.size() - 1
 	for sec in data.notes:
-		#cur += 1
-		#print(str(cur) +' / '+ str(total))
-		total_notes = sec.sectionNotes.size() - 1
 		for note in sec.sectionNotes:
-			#cur_notes += 1
-			#print(str(cur_notes) +' / '+ str(total_notes))
 			if note[1] < 0: continue
 			var time:float = maxf(0, note[0])
+			
 			if note[2] is String: continue
 			var sustain_length:float = maxf(0, note[2])
 			var is_sustain:bool = sustain_length > 0
+			
 			var n_data:int = int(note[1])
 			var must_hit:bool = sec.mustHitSection if note[1] <= 3 else not sec.mustHitSection
-			var type:String = str(note[3]) if note.size() > 3 else ''
-			if type == 'true': type = 'Alt'
+			if format == FORMAT.PSYCH_V1: must_hit = n_data < 4; print('hi')
 			
-			var to_add = [round(time), n_data, is_sustain, sustain_length, must_hit, type]
+			var n_type:String = str(note[3]) if note.size() > 3 else ''
+			if n_type == 'true': n_type = 'Alt'
+			
+			var to_add = [round(time), n_data, is_sustain, sustain_length, must_hit, n_type]
 			if !return_notes.has(to_add): # skip adding a note that exists
 				return_notes.append(to_add)
 	
@@ -67,15 +59,15 @@ func load_common(data) -> Array:
 	return return_notes
 
 # new base game
-func load_base(data, diff:String = 'normal') -> Array:
+func load_slice(data, diff:String = 'normal') -> Array:
 	#print(data.notes['normal'])
 	for note in data.notes[diff]:
 		var time:float = maxf(0, note.t)
 		var sustain_length:float = maxf(0.0, note.l) if note.has('l') else 0.0
-		var type:String = str(note.k) if note.has('k') else ''
-		if type == 'true': type = 'alt'
+		var n_type:String = str(note.k) if note.has('k') else ''
+		if n_type == 'true': n_type = 'alt'
 			
-		var to_add = [round(time), int(note.d), sustain_length > 0, sustain_length, note.d <= 3, type]
+		var to_add = [round(time), int(note.d), sustain_length > 0, sustain_length, note.d <= 3, n_type]
 		if !return_notes.has(to_add): # skip adding a note that exists
 			return_notes.append(to_add)
 	
@@ -91,7 +83,7 @@ func get_events(SONG:Dictionary) -> Array[EventData]:
 		events_found.append_array(SONG.events)
 	
 	
-	if type != CHART_TYPE.V_SLICE and ResourceLoader.exists(path_to_check, 'JSON'): # then check if there is a event json
+	if format != FORMAT.V_SLICE and ResourceLoader.exists(path_to_check, 'JSON'): # then check if there is a event json
 		print(path_to_check)
 		
 		var json = JSON.parse_string(FileAccess.open(path_to_check, FileAccess.READ).get_as_text())
@@ -107,7 +99,7 @@ func get_events(SONG:Dictionary) -> Array[EventData]:
 			events_found.append_array(json.events)
 	
 	for event in events_found:
-		if type == CHART_TYPE.V_SLICE:
+		if format == FORMAT.V_SLICE:
 			events.append(EventData.new(event, 'v_slice'))
 		else:
 			for i in event[1]:
@@ -115,3 +107,13 @@ func get_events(SONG:Dictionary) -> Array[EventData]:
 	
 	events.sort_custom(func(a, b): return a.strum_time < b.strum_time)
 	return events
+
+func get_format(f:String) -> FORMAT:
+	var e:FORMAT = FORMAT.LEGACY
+	match f.to_lower().strip_edges():
+		'psych', 'base', 'legacy': e = FORMAT.LEGACY
+		'v_slice': e = FORMAT.V_SLICE
+		'psych_v1': e = FORMAT.PSYCH_V1
+		#'fps_plus': e = FORMAT.FPS_PLUS
+		#'maru': e = FORMAT.MARU
+	return e
