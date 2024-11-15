@@ -26,7 +26,12 @@ var credits:Array[Array] = [
 		
 	['Daniel', 'daniel', 'who the FUCK', \
 		Color(0.22, 0.21, 0.34), func(): Prefs.daniel = true],
-		
+	
+	['this person did nothing'],
+	
+	['plank', 'faggot',  'made 3 commits', \
+		Color(0.584313725, 0.23529411764, 0.83921568627), func(): OS.shell_open('https://plankdev.gay')],
+	
 	#['Give me free art', 'cool art people'],
 	
 	#['Ashley', 'puta', 'Made Epic and Miss Judgements', \
