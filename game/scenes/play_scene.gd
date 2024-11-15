@@ -505,7 +505,7 @@ func event_hit(event:EventData) -> void:
 			if event.values[0] is Dictionary:
 				char_int = char_int.char
 				#if event.values[0].has('x'): focus_offset.x = -event.values[0].x
-				if event.values[0].has('y'): focus_offset.y = event.values[0].y
+				if event.values[0].has('y'): focus_offset.y = float(event.values[0].y)
 				
 			move_cam(int(char_int))
 		'PlayAnimation':
