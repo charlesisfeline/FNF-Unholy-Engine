@@ -1,115 +1,51 @@
 {
 	"animations": [
 		{
-			"offsets": [
-				0,
-				0
-			],
+			"offsets": [5,134],
+			"indices": [],
 			"loop": false,
 			"fps": 24,
-			"anim": "shootRight1",
-			"indices": [],
-			"name": "Pico shoot 1"
+			"name": "Pico shoot 10",
+			"anim": "shootRight1"
 		},
 		{
-			"offsets": [
-				-1,
-				-128
-			],
+			"offsets": [-8,5],
+			"indices": [],
 			"loop": false,
 			"fps": 24,
-			"anim": "shootRight2",
-			"indices": [],
-			"name": "Pico shoot 2"
+			"name": "Pico shoot 20",
+			"anim": "shootRight2"
 		},
 		{
-			"offsets": [
-				412,
-				-64
-			],
+			"offsets": [0,0],
+			"indices": [],
 			"loop": false,
 			"fps": 24,
-			"anim": "shootLeft1",
-			"indices": [],
-			"name": "Pico shoot 3"
+			"name": "Pico Dual Wield on Speaker idle",
+			"anim": "idle"
 		},
 		{
-			"offsets": [
-				439,
-				-19
-			],
+			"offsets": [568,68],
+			"indices": [],
 			"loop": false,
 			"fps": 24,
-			"anim": "shootLeft2",
+			"name": "Pico shoot 30",
+			"anim": "shootLeft1"
+		},
+		{
+			"offsets": [579,114],
 			"indices": [],
-			"name": "Pico shoot 4"
-		},
-		{
-			"offsets": [
-				412,
-				-64
-			],
-			"loop": true,
+			"loop": false,
 			"fps": 24,
-			"anim": "shootLeft1-loop",
-			"indices": [
-				50,
-				51,
-				52
-			],
-			"name": "Pico shoot 3"
-		},
-		{
-			"offsets": [
-				0,
-				0
-			],
-			"loop": true,
-			"fps": 24,
-			"anim": "shootRight1-loop",
-			"indices": [
-				23,
-				24,
-				25
-			],
-			"name": "Pico shoot 1"
-		},
-		{
-			"offsets": [
-				1,
-				-128
-			],
-			"loop": true,
-			"fps": 24,
-			"anim": "shootRight2-loop",
-			"indices": [
-				57,
-				58,
-				59
-			],
-			"name": "Pico shoot 2"
-		},
-		{
-			"offsets": [
-				439,
-				-19
-			],
-			"loop": true,
-			"fps": 24,
-			"anim": "shootLeft2-loop",
-			"indices": [
-				50,
-				51,
-				52
-			],
-			"name": "Pico shoot 4"
+			"name": "Pico shoot 40",
+			"anim": "shootLeft2"
 		}
 	],
 	"no_antialiasing": false,
 	"image": "characters/pico/tankman/char",
 	"position": [
-		120,
-		-125
+		0,
+		10
 	],
 	"healthicon": "pico",
 	"flip_x": false,
@@ -118,6 +54,11 @@
 		216,
 		85
 	],
+	"speaker": {
+		"sprite": "speaker",
+		"offsets": [-180, 305.5],
+		"scale": 1
+	},
 	"camera_position": [
 		-310,
 		100

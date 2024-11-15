@@ -43,7 +43,7 @@ func _process(delta:float) -> void:
 			outta_here.finished.connect(on_leave)
 
 func remove() -> void:
-	AlertHandler.alert_count -= 1
+	#AlertHandler.alert_count -= 1
 	
 	queue_free()
 

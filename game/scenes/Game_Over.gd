@@ -9,6 +9,10 @@ var this = Game.scene
 var last_cam_pos:Vector2
 var last_zoom:Vector2
 
+var death_info:Dictionary = {
+	character = '', sound = '', music = '', music_delay = 0.0
+}
+
 var on_death_start:Callable = func(): # once the death sound and deathStart finish playing
 	if !retried:
 		Audio.play_music('skins/'+ this.cur_skin +'/gameOver')
@@ -98,10 +102,6 @@ func _process(delta):
 	$BG.position = (get_viewport().get_camera_2d().get_screen_center_position() - (get_viewport_rect().size / 2.0) / this.cam.zoom)
 	$BG.position -= Vector2(5, 5) # you could see the stage bg leak out
 	$Fade.position = $BG.position
-
-	if !retried:
-		this.cam.zoom.x = lerpf(this.cam.zoom.x, 1.05, delta * 4)
-		this.cam.zoom.y = this.cam.zoom.x
 	
 	if (dead.frame >= 14 or dead.anim_finished) and !focused:
 		focused = true
@@ -109,6 +109,9 @@ func _process(delta):
 		this.cam.position = dead.position + Vector2(dead.width / 2, (dead.height / 2) - 30)
 
 	if !retried:
+		this.cam.zoom.x = lerpf(this.cam.zoom.x, 1.05, delta * 4)
+		this.cam.zoom.y = this.cam.zoom.x
+		
 		if Input.is_action_just_pressed('accept'):
 			on_game_over_confirm.emit(true)
 			

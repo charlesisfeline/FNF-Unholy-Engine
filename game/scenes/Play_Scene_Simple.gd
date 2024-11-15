@@ -249,15 +249,13 @@ func refresh(restart:bool = true) -> void: # start song from beginning with no r
 	section_hit(0)
 
 func event_hit(event:EventData) -> void:
-	print(event.event, event.values)
-	match event.event:
-		'Change Scroll Speed': 
-			var new_speed = SONG.speed * float(event.values[0])
-			var len := float(event.values[1])
-			if len > 0:
-				create_tween().tween_property(Game.scene, 'cur_speed', new_speed, len)
-			else:
-				cur_speed = new_speed
+	if event.event == 'Change Scroll Speed': 
+		var new_speed = SONG.speed * float(event.values[0])
+		var len := float(event.values[1])
+		if len > 0:
+			create_tween().tween_property(Game.scene, 'cur_speed', new_speed, len)
+		else:
+			cur_speed = new_speed
 
 func good_note_hit(note:Note) -> void:
 	if note.type.length() > 0: print(note.type, ' bf')

@@ -59,14 +59,12 @@ var mult_vocals:bool = false
 
 var inst = AudioStreamPlayer.new()
 var vocals = AudioStreamPlayer.new()
-#var vocals_pic = AudioStreamPlayer.new()
 var vocals_opp = AudioStreamPlayer.new()
 
 var bpm_changes
 func _ready():
 	add_child(inst)
 	add_child(vocals)
-	#add_child(vocals_pic)
 	add_child(vocals_opp)
 	inst.bus = 'Instrumental'
 	vocals.bus = 'Vocals'
@@ -88,8 +86,13 @@ func load_song(song:String = '') -> void:
 	if JsonHandler._SONG.has('variant'):
 		suffix += ('-'+ JsonHandler._SONG.variant)
 
-	#vocals2.stream = load('res://assets/songs/darnell/audio/Voices-player.ogg')
-	
+	if JsonHandler.parse_type == 'osu':
+		path = 'res://assets/songs/'+ song +'/%s.mp3' 
+		print(path % ['audio'])
+		if ResourceLoader.exists(path % ['audio']):
+			inst.stream = load(path % ['audio'])
+			song_length = inst.stream.get_length() * 1000.0
+
 	if ResourceLoader.exists(path % ['Inst'+ suffix]):
 		inst.stream = load(path % ['Inst'+ suffix])
 		song_length = inst.stream.get_length() * 1000.0
@@ -121,8 +124,9 @@ func _process(delta):
 			
 			var beats:int = 4
 			if Game.scene.get('SONG') != null and Game.scene.SONG.has('notes') and JsonHandler.parse_type != 'v_slice':
-				if 'sectionBeats' in Game.scene.SONG.notes[cur_section]:
-					beats = Game.scene.SONG.notes[cur_section].sectionBeats
+				var son = Game.scene.SONG
+				if son.notes.size() > cur_section and son.notes[cur_section].has('sectionBeats'):
+					beats = son.notes[cur_section].sectionBeats
 				
 			if cur_beat % beats == 0:
 				cur_section += 1

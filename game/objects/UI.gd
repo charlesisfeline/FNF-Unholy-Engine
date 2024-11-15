@@ -17,6 +17,11 @@ signal song_start # technically countdown tick 4 is song start but why would you
 @onready var opponent_group:Strum_Line = $Strum_Group/Opponent
 var gf_group:Strum_Line
 
+@onready var strum_lines:Dictionary = {
+	'player': $Strum_Group/Player,
+	'opponent': $Strum_Group/Opponent
+}
+
 @onready var player_strums:Array = player_group.get_strums()
 @onready var opponent_strums:Array = opponent_group.get_strums()
 var gf_strums:Array
@@ -48,6 +53,7 @@ var zoom:float = 1:
 		zoom = new_zoom
 		scale = Vector2(zoom, zoom)
 
+#var silly = []
 func _ready():
 	time_bar.fill_mode = 0
 	time_bar.set_colors(Color(0, 0, 0.5), Color(0.25, 0.65, 0.95))
@@ -94,7 +100,30 @@ func _ready():
 				if (strums[i].dir > 1 and i > 3) or (i <= 3 and strums[i].dir < 2):
 					strums[i].scroll = -strums[i].scroll
 					strums[i].position.y = 560
-		
+		#'parappa':
+		#	player_group.position = Vector2(100, 100)
+		#	opponent_group.position = Vector2(100, 100)
+		#	Game.scene.spawn_time *= 1.5
+		#	for i in 2:
+		#		var fake = Strum.new()
+		#		fake.is_event = true
+		#		fake.scale = Vector2(0.7, 0.7)
+		#		
+		#		var grop = (player_group if i == 0 else opponent_group)
+		#		grop.add_child(fake)
+		#		grop.move_child(fake, 0)
+		#		fake.z_index = -1
+		#		fake.position = Vector2(100, 100 + (125 * i))
+		#		silly.append(fake)
+			
+		#	for i in strums.size():
+		#		var st = strums[i]
+		#		st.position = Vector2(100, 100)
+		#		st.scroll = 0
+		#		st.visible = false
+		#		if i > 3:
+		#			st.position.y += 125
+			
 	if can_center:
 		time_bar.position.x = 214
 		player_group.position.x = (Game.screen[0] / 2) - 180
@@ -153,6 +182,20 @@ func _process(delta):
 	offset.x = (scale.x - 1.0) * -(Game.screen[0] * 0.5)
 	offset.y = (scale.y - 1.0) * -(Game.screen[1] * 0.5)
 	
+	#var anims1 = []
+	#var anims2 = []
+
+	#for i in opponent_strums:
+	#	anims1.append(i.animation.split('_')[1])
+	#	i.visible = !i.animation.contains('static')
+	#for i in player_strums:
+	#	anims2.append(i.animation.split('_')[1])
+	#	i.visible = !i.animation.contains('static')
+	
+#	silly[0].visible = anims1 == ['static', 'static', 'static', 'static']
+#	silly[1].visible = anims2 == ['static', 'static', 'static', 'static']
+	
+	
 func update_score_txt() -> void:
 	if Game.scene.get('score') != null:
 		var stuff = [Game.scene.score, get_acc(), Game.scene.misses]
@@ -192,6 +235,12 @@ func reset_stats() -> void:
 		hit_count[i] = 0
 	
 	update_score_txt()
+	
+#func add_strum_line(line_name:String, singer:Character): 
+# would have to change how the strum group vars are handled
+	#var new_line = load('res://game/objects/ui/strum_line.tscn').instantiate()
+	#set(line_name +'_group', new_line)
+#	return new_line
 
 func add_to_strum_group(item:Variant, strums:String = 'player') -> void:
 	if item == null: return

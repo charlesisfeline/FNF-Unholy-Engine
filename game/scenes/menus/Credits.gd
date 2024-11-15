@@ -26,12 +26,21 @@ var credits:Array[Array] = [
 		
 	['Daniel', 'daniel', 'who the FUCK', \
 		Color(0.22, 0.21, 0.34), func(): Prefs.daniel = true],
-	
+		
+	['drew me fnf bfs', 'yeaha babye!!'],
+	['Ashley', 'puta', 'drew a bf i think idk', \
+		Color.CYAN, func(): pass],
+	['Moonlight', 'moonlight', 'drew a bf i think idk', \
+		Color.CYAN, func(): pass],
+	['Betty', 'empty', 'madly in love with daniel', \
+		Color.CYAN, func(): pass],
+	['Moro', 'empty', 'something about above average weight female dogs??', \
+		Color.CYAN, func(): pass],
+	#['Give me free art', 'cool art people'],
+
 	['this person did nothing', 'planky'],
 	['plank', 'faggot',  'made 3 commits', \
 		Color(0.58, 0.24, 0.84), func(): OS.shell_open('https://plankdev.gay')],
-	
-	#['Give me free art', 'cool art people'],
 	
 	#['Ashley', 'puta', 'Made Epic and Miss Judgements', \
 	#	Color.CYAN, func(): pass],
@@ -40,7 +49,7 @@ var credits:Array[Array] = [
 	#		$cow.visible = true
 	#		$cow.play()],
 	
-	['Funkin\' Crew'],
+	['Funkin\' Crew', 'those people, you know them cmon'],
 	['NinjaMuffin99', 'empty', 'You know him'],
 	['Phantom Arcade', 'empty', 'That art guy with the animation'],
 	['Kawai Sprite', 'empty', 'Music indiviudial i think'],
@@ -55,18 +64,10 @@ var quotes:Dictionary = {
 	'crowplexus': ['Venha pequena fruta, venha comigo', 'Press [ Crow ] to crow', 'sans is at my door'],
 	'maru': ['oogie boogie please call my phone number'],
 	'betty': ['daniel.........:heart;'],
-	'ashley': ['play beatblock 🎉🎉'],
+	'ashley': ['play beatblock 🎉🎉', 'this is so peam', 'what the hell!! give me wuote ideas\nquote'],
 	'theconcealedcow': ['who are you why are you in my house']
 }
 
-#var credits = [
-#	['Test',      'empty',     'He did',                Color.ROSY_BROWN],
-#	['Daniel',    'daniel',    'heieh',                 Color(0.22, 0.21, 0.34)],
-#	['Doggo',     'doggo',     'guy',   Color(0.51, 0.70, 0.99)],
-#	['Moonlight', 'moonlight', 'ga gooberer :flushed:', Color(0.59, 0.31, 0.98)]
-#]
-
-var tests = []
 var cred_group:Array = []
 var cred_desc:Alphabet
 var cur_select:int = 0
@@ -100,10 +101,6 @@ func _ready():
 	add_child(cred_desc)
 	update_selection()
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(_delta):
-	pass
-
 func _unhandled_key_input(_event:InputEvent) -> void:
 	if Input.is_action_just_pressed("accept"):
 		cred_group[cur_select].on_press.call()
@@ -131,7 +128,6 @@ func update_selection(amount:int = 0) -> void:
 	else:
 		$Quote.text = '"Thank You!"'
 
-	
 	if col_tween: col_tween.kill()
 	col_tween = create_tween()
 	col_tween.tween_property($BG, 'modulate', cur_cred.bg_color, 0.5)

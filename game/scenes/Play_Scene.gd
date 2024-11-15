@@ -6,13 +6,13 @@ extends Node2D
 
 @onready var Judge:Rating = Rating.new()
 
-var default_zoom:float = 0.8
 var SONG
+var default_zoom:float = 0.8
 var cur_skin:String = 'default': # yes
 	set(new_skin): 
 		ui.cur_skin = new_skin
 		cur_skin = ui.cur_skin
-var cur_speed:float = 1:
+var cur_speed:float = 1.0:
 	set(new_speed):
 		cur_speed = new_speed
 		for note in notes: note.speed = cur_speed
@@ -161,6 +161,7 @@ func _ready():
 	ui.icon_p2.change_icon(dad.icon)
 	
 	characters = [boyfriend, dad, gf]
+
 	ui.player_group.singer = boyfriend
 	ui.opponent_group.singer = dad
 	#ui.gf_group.singer = gf
@@ -178,19 +179,16 @@ func _ready():
 	elif Prefs.rating_cam == 'hud':
 		Judge.rating_pos = Vector2(580, 300)
 		Judge.combo_pos = Vector2(450, 400)
-		
-	print(SONG.song +' '+ JsonHandler.get_diff.to_upper())
 	
 	Discord.change_presence('Starting '+ SONG.song.capitalize())
 	
 	if !JsonHandler.chart_notes.is_empty():
 		chart_notes = JsonHandler.chart_notes.duplicate()
-		print('already loaded')
 	else:
 		chart_notes = JsonHandler.generate_chart(SONG)
-		print('made chart')
 		
 	events = JsonHandler.song_events.duplicate()
+	print(SONG.song +' '+ JsonHandler.get_diff.to_upper())
 	print('TOTAL EVENTS: '+ str(events.size()))
 	
 	ui.countdown_start.connect(countdown_start)
@@ -208,7 +206,6 @@ func _ready():
 	
 var section_data
 var chunk:int = 0
-var aha:float = 1.0
 func _process(delta):
 	if Input.is_key_pressed(KEY_R): ui.hp = 0
 	if ui.hp <= 0:
@@ -320,7 +317,8 @@ func beat_hit(beat) -> void:
 func step_hit(_step) -> void: pass
 
 func section_hit(section) -> void:
-	if JsonHandler.parse_type != 'v_slice' and SONG.notes.size() > section:
+	var exclude = ['v_slice', 'codename', 'osu']
+	if !exclude.has(JsonHandler.parse_type) and SONG.notes.size() > section:
 		section_data = SONG.notes[section]
 		var point_at:String = 'boyfriend' if section_data.mustHitSection else 'dad'
 		if section_data.has('gfSection') and section_data.gfSection:
@@ -366,11 +364,6 @@ func key_press(key:int = 0) -> void:
 	
 	var last = ui.player_strums
 	if hittable_notes.is_empty():
-		#for i in 15:
-		#	var llol = NoteData.new([Conductor.song_pos + 300 + (100 * i), key, 0, null, true, ''])
-		#	var ha = Note.new(llol)
-		#	ui.add_to_strum_group(ha, true)
-		#	notes.push_front(ha)
 		if !Prefs.ghost_tapping:
 			ui.hp = 0
 			try_death()
@@ -402,13 +395,13 @@ func try_death() -> void:
 	add_child(death_screen)
 
 func song_end() -> void:
-	if should_save  and JsonHandler.song_variant == '':
+	if should_save and JsonHandler.song_variant == '':
 		var save_data = [score, ui.accuracy, misses, ui.fc, combo]
 		var saved_score = HighScore.get_score(SONG.song, JsonHandler.get_diff)
 		
 		if save_data[0] > saved_score:
 			HighScore.set_score(SONG.song, JsonHandler.get_diff, save_data)
-
+	
 	Conductor.reset()
 	Game.switch_scene("menus/freeplay")
 	
@@ -422,6 +415,8 @@ func refresh(restart:bool = true) -> void: # start song from beginning with no r
 	for strum in ui.player_strums:
 		strum.play_anim('static')
 		
+	boyfriend.dance(true)
+	
 	chart_notes = JsonHandler.chart_notes.duplicate()
 	events = JsonHandler.song_events.duplicate()
 	
@@ -481,6 +476,8 @@ func event_hit(event:EventData) -> void:
 			var peep := char_from_string(event.values[0])
 			var new_char = Character.get_closest(event.values[1])
 			
+			#var last_anim:String = peep.animation
+			#var last_frame:int = peep.frame
 			var last_pos:Vector2
 			match peep:
 				dad: last_pos = stage.dad_pos
@@ -530,14 +527,13 @@ func event_hit(event:EventData) -> void:
 				_cam_tween.finished.connect(func(): _cam_tween = null)
 			else:
 				$Camera.zoom = Vector2(new_zoom, new_zoom)
-		#_: false
 
 func good_note_hit(note:Note) -> void:
 	if note.type.length() > 0: print(note.type, ' bf')
 	if !note.should_hit:
 		note_miss(note)
 		return
-		
+	
 	if Conductor.vocals.stream != null: 
 		Conductor.vocals.volume_db = linear_to_db(1.0)
 		
@@ -570,7 +566,7 @@ func good_note_hit(note:Note) -> void:
 	kill_note(note)
 
 	if Prefs.hitsound_volume > 0:
-		Audio.play_sound('hitsound', Prefs.hitsound_volume / 100.0)
+		Audio.play_sound('hitsound2', Prefs.hitsound_volume / 100.0)
 
 var time_dropped:float = 0
 func good_sustain_press(sustain:Note, delt:float = 0.0) -> void:
@@ -596,7 +592,7 @@ func good_sustain_press(sustain:Note, delt:float = 0.0) -> void:
 			
 			grace = true
 			if !Prefs.legacy_score:
-				score += floor(550 * delt)
+				score += floor((550 * delt) * Conductor.playback_rate)
 			ui.hp += (4 * delt)
 			ui.update_score_txt()
 
@@ -654,6 +650,7 @@ func note_miss(note:Note) -> void:
 	var be_sad:bool = combo >= 10
 	pop_up_combo('miss', ('000' if be_sad else ''), true)
 	if be_sad: gf.play_anim('sad')
+	#if combo >= 5: pop_up_combo('', '000', true)
 		
 	combo = 0
 	

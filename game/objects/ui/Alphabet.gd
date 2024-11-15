@@ -164,9 +164,9 @@ class Letter extends AnimatedSprite2D:
 	var cool_offset:Vector2 = Vector2.ZERO
 	var align_offset:Vector2 = Vector2.ZERO
 	
-	var _width = 0: 
+	var _width:float = 0.0: 
 		get: return get_dimension(false)
-	var _height = 0: 
+	var _height:float = 0.0: 
 		get: return get_dimension(true)
 	
 	func _init(pos:Vector2, char:String, id:int, row:int):

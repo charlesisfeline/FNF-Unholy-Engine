@@ -1,11 +1,10 @@
 extends Node2D;
 
-const base_diffs:Array[String] = ['easy', 'normal', 'hard']
+const base_diffs:PackedStringArray = ['easy', 'normal', 'hard']
 var song_diffs:Array = []
 var get_diff:String
 
 var _SONG:Dictionary = {} # change name of this to like SONG_DATA or something
-var song_meta:Dictionary = {}
 var song_variant:String = '' # (erect, pico mix and whatnot)
 var song_root:String = ''
 
@@ -13,10 +12,11 @@ var chart_notes:Array = [] # keep loaded chart and events for restarting songs
 var song_events:Array[EventData] = []
 
 var parse_type:String = ''
-func parse_song(song:String, diff:String, variant:String = '', type:String = 'psych', auto_create:bool = true):
+func parse_song(song:String, diff:String, variant:String = '', auto_create:bool = true):
 	_SONG.clear()
 	song_root = ''
 	song_variant = ''
+	parse_type = ''
 
 	if !variant.is_empty(): 
 		if variant != 'normal' and !variant.begins_with('-'):
@@ -28,62 +28,61 @@ func parse_song(song:String, diff:String, variant:String = '', type:String = 'ps
 	song = Game.format_str(song)
 	song_variant = variant
 	if ResourceLoader.exists('res://assets/songs/'+ song +'/chart'+ song_variant +'.json'):
-		type = 'v_slice'
-	
-	var parsed_song
-	get_diff = diff.to_lower()
-	match type:
-		'v_slice' : parsed_song = v_slice(song)
-		'psych'   : parsed_song = psych(song)
-		#'fps_plus': parsed_song = fps_plus(song)
-		#'maru'    : parsed_song = maru(song)
-		#'osu'     : parsed_song = osu(song)
-		#_: parsed_song = psych(song)
-	_SONG = parsed_song
-	#if split:
-	#	auto_create = false
-	#	reform_parts(song)
+		parse_type = 'v_slice'
 		
-	if parse_type == 'v_slice':
-		var meta_path:String = 'res://assets/songs/'+ song +'/metadata'+ song_variant +'.json'
-		if ResourceLoader.exists(meta_path):
-			song_meta = JSON.parse_string(FileAccess.open(meta_path, FileAccess.READ).get_as_text())
-			print('Loaded meta: '+ meta_path)
-			_SONG.speed = _SONG.scrollSpeed[diff] if _SONG.scrollSpeed.has(diff) else _SONG.scrollSpeed.default
-			_SONG.player1 = song_meta.playData['characters'].player
-			_SONG.gfVersion = song_meta.playData['characters'].girlfriend
-			_SONG.player2 = song_meta.playData['characters'].opponent
-			_SONG.stage = stage_to(song_meta.playData.stage)
-			_SONG.song = song_meta.songName
-			_SONG.bpm = song_meta.timeChanges[0].bpm
+	if FileAccess.file_exists('res://assets/songs/'+ song +'/charts/'+ diff +'.osu'):
+		parse_type = 'osu'
 	
-	print('Got "'+ parse_type +'" Chart')
+	get_diff = diff.to_lower()
+	if parse_type != 'osu':
+		_SONG = get_song_data(song)
+	else:
+		var grossu = Osu.new()
+		_SONG = grossu.load_file(song)
+		
+	if _SONG.has('codenameChart'): parse_type = 'codename'
+	if _SONG.has('gf'): parse_type = 'fps_plus'
+	
+	var meta_path:String = 'res://assets/songs/'+ song +'/%s.json'
+	var meta:Dictionary = {}
+	match parse_type:
+		'v_slice':
+			meta = JSON.parse_string(FileAccess.open(meta_path % ['metadata'+ song_variant], FileAccess.READ).get_as_text())
+			_SONG.speed = _SONG.scrollSpeed[diff] if _SONG.scrollSpeed.has(diff) else _SONG.scrollSpeed.default
+			_SONG.player1 = meta.playData['characters'].player
+			_SONG.gfVersion = meta.playData['characters'].girlfriend
+			_SONG.player2 = meta.playData['characters'].opponent
+			_SONG.stage = stage_to(meta.playData.stage)
+			_SONG.song = meta.songName
+			_SONG.bpm = meta.timeChanges[0].bpm
+		'codename':
+			meta = JSON.parse_string(FileAccess.open(meta_path % ['meta'], FileAccess.READ).get_as_text())
+			_SONG.speed = _SONG.scrollSpeed
+			_SONG.song = meta.displayName
+			_SONG.bpm = meta.bpm
+			for i in _SONG.strumLines:
+				match i.position:
+					'boyfriend': _SONG.player1 = i.characters[0]
+					'girlfriend': _SONG.gfVersion = i.characters[0]
+			if !_SONG.has('player2') and _SONG.has('gfVersion'):
+				_SONG.player2 = _SONG.gfVersion
+	
+	print('Got a "'+ parse_type +'" Chart')
 	if auto_create:
 		generate_chart(_SONG)
-		#var thread = Thread.new()
-		#thread.start(generate_chart.bind(_SONG))
-		#await thread.wait_to_finish()
 
-func v_slice(song:String) -> Dictionary:
-	parse_type = 'v_slice'
-	var json = you_WILL_get_a_json(song) #FileAccess.open('res://assets/songs/'+ song +'/charts/chart.json', FileAccess.READ).get_as_text()
-	return JSON.parse_string(json.get_as_text())
+func get_song_data(song:String) -> Dictionary:
+	if parse_type.is_empty(): parse_type = 'psych_v1'
 	
-func psych(song:String) -> Dictionary:
-	parse_type = 'psych_v1'
 	var json = you_WILL_get_a_json(song)
 	var parsed = JSON.parse_string(json.get_as_text())
 	if parsed.has('song') and parsed.song is Dictionary:
-		parsed = parsed.song
-		parse_type = 'psych'
+		parsed = parsed.song # i dont want to have to do no SONG.song.bpm or something
+		parse_type = 'legacy'
+		
+	return parsed 
 
-	return parsed # i dont want to have to do no SONG.song.bpm or something
-
-#func fps_plus(song:String): pass
-#func maru(song:String): pass
-#func osu(song:String): pass
-
-func reform_parts(song:String):
+func reform_parts(song:String) -> void:
 	parse_type = 'psych'
 	var in_folder := DirAccess.get_files_at('res://assets/songs/'+ song +'/charts/')
 	var to_parse:Array = []
@@ -112,22 +111,20 @@ func you_WILL_get_a_json(song:String) -> FileAccess:
 	var returned:String
 	
 	if parse_type == 'v_slice':
-		returned = path.replace('charts/', '') +'chart'+ song_variant +'.json'
+		returned = path.replace('charts/', '') +'chart'+ song_variant
 	else:
-		if !ResourceLoader.exists(path + get_diff +'.json'):
-			printerr(song +' has no '+ get_diff +'.json')
-			get_diff = 'hard'
-			return you_WILL_get_a_json('tutorial')
-		returned = path + get_diff +'.json'
-	#var dir_files = DirAccess.get_files_at(path)
+		returned = path + get_diff
+	returned += '.json'
+	
+	if !ResourceLoader.exists(returned):
+		printerr(song +' has no '+ get_diff +' | '+ returned)
+		get_diff = 'hard'
+		return you_WILL_get_a_json('tutorial')
 
-	#if dir_files.has(get_diff):
-	#else:
-	#	printerr('COULD NOT FIND JSON: "' + song + '/' + get_diff + '.json"')
-	print('Loaded json: '+ returned)
+	print('Got json: '+ returned)
 	return FileAccess.open(returned, FileAccess.READ)
 
-func stage_to(stage:String):
+func stage_to(stage:String) -> String:
 	match stage.replace('Erect', ''):
 		'spookyMansion': return 'spooky'
 		'limoRide': return 'limo'

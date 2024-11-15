@@ -141,24 +141,24 @@ func _ready():
 
 		add_child(hold_group)
 		move_child(hold_group, 0)
-		var gwa = 'res://assets/images/ui/skins/'+ skin.cur_skin +'/notes/quant/%s.png'
+		var gwa = 'res://assets/images/ui/skins/'+ skin.cur_skin +'/notes/%s.png'
 		
 		end = TextureRect.new()
-		end.texture = load(gwa % 'end') #load(tex_path + COLORS[dir] +'_end.png')
+		end.texture = load(tex_path + COLORS[dir] +'_end.png') # load(gwa % 'end') 
 		if !chart_note: end.stretch_mode = TextureRect.STRETCH_TILE
 		end.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
 		end.grow_horizontal = Control.GROW_DIRECTION_BOTH
 		end.grow_vertical = Control.GROW_DIRECTION_BEGIN
 		
 		sustain = TextureRect.new()
-		sustain.texture = load(gwa % 'hold') #load(tex_path + COLORS[dir] +'_hold.png')
+		sustain.texture = load(tex_path + COLORS[dir] +'_hold.png') #load(gwa % 'hold') 
 		if !chart_note: sustain.stretch_mode = TextureRect.STRETCH_TILE # hmm
 		sustain.set_anchors_preset(Control.PRESET_FULL_RECT)
 		sustain.set_anchor_and_offset(SIDE_BOTTOM, 1.0, -end.texture.get_height() + 1.0)
 		sustain.grow_horizontal = Control.GROW_DIRECTION_BOTH
 		sustain.grow_vertical = Control.GROW_DIRECTION_BOTH
 		
-		var shade = ShaderMaterial.new()
+		"var shade = ShaderMaterial.new()
 		shade.shader = load('res://game/resources/shaders/RGB.gdshader')
 		sustain.material = shade
 		end.material = shade
@@ -169,7 +169,7 @@ func _ready():
 			end.material.set_shader_parameter(params[i], colors[i])
 			
 		sustain.material.set_shader_parameter('mult', 1.0)
-		end.material.set_shader_parameter('mult', 1.0)
+		end.material.set_shader_parameter('mult', 1.0)"
 
 		hold_group.add_child(sustain)
 		hold_group.add_child(end)
@@ -185,8 +185,8 @@ func _ready():
 			note.play(COLORS[dir])
 		else:
 			note = Sprite2D.new()
-			note.texture = load('res://assets/images/ui/skins/'+ skin.cur_skin +'/notes/quant/note.png') #load(tex_path + COLORS[dir] +'.png')
-			note.rotation = deg_to_rad([0, 270, 90, 180][dir])  #[0, 270, 90, 180] #[270, 180, 0, 90]
+			note.texture = load(tex_path + COLORS[dir] +'.png') #load('res://assets/images/ui/skins/'+ skin.cur_skin +'/notes/quant/note.png')
+			"note.rotation = deg_to_rad([0, 270, 90, 180][dir])  #[0, 270, 90, 180] #[270, 180, 0, 90]
 			var shade = ShaderMaterial.new()
 			shade.shader = load('res://game/resources/shaders/RGB.gdshader')
 			note.material = shade
@@ -194,7 +194,7 @@ func _ready():
 			note.material.set_shader_parameter('red', colors[0])
 			note.material.set_shader_parameter('green', colors[1])
 			note.material.set_shader_parameter('blue', colors[2])
-			note.material.set_shader_parameter('mult', 1.0)
+			note.material.set_shader_parameter('mult', 1.0)"
 			
 		add_child(note)
 		

@@ -26,4 +26,4 @@ func _init(new_event, type:String = 'psych'):
 				else:
 					values.append(new_event.v)
 				
-				print([event, strum_time, values])
+				#print([event, strum_time, values])

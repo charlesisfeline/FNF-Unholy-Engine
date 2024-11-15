@@ -30,9 +30,6 @@ func change_icon(new_image:String = 'face', player:bool = false, credit:bool = f
 	hframes = 2 if has_lose else 1
 	if is_player: flip_h = true
 	
-#func _ready():
-	#change_icon(image)
-
 func bump(to_scale:float = 1.2) -> void:
 	scale = Vector2(to_scale, to_scale)
 	

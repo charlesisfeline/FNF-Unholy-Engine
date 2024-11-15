@@ -22,9 +22,7 @@ func _ready():
 var just_pressed:bool = false
 var is_full:bool = false
 
-var global_delta:float
 func _process(delta):
-	global_delta = delta
 	if Input.is_key_pressed(KEY_F5):
 		reset_scene()
 		
@@ -57,7 +55,6 @@ func focus_changed(is_focused:bool):
 
 func center_obj(obj = null, axis:String = 'xy') -> void:
 	if obj == null: return
-	#var obj_size = obj.texture.size()
 	if obj is Sprite2D:
 		pass
 
@@ -111,17 +108,10 @@ func switch_scene(to_scene, skip_trans:bool = false) -> void:
 			cur_trans.queue_free()
 
 # call function on nodes or somethin
-func call_func(to_call:String, args:Array[Variant] = [], call_tree:bool = false) -> void:
+func call_func(to_call:String, args:Array[Variant] = []) -> void:
 	if to_call.is_empty() or scene == null: return
-	if call_tree:
-		pass
-		#for node in get_tree().get_nodes_in_group(scene.name):
-		#	print(node)
-		#	if node.has_method(to_call):
-		#		node.callv(to_call, args)
-	else:
-		if scene.has_method(to_call):
-			scene.callv(to_call, args)
+	if scene.has_method(to_call):
+		scene.callv(to_call, args)
 
 func format_str(string:String = '') -> String:
 	return string.to_lower().strip_edges().replace(' ', '-').replace('\'', '')
@@ -140,6 +130,23 @@ func remove_all(array:Array[Array], node) -> void:
 			sub[0].queue_free()
 			sub.pop_front()
 			
+func get_key_from_byte(btye:int) -> String:
+	var key:String = OS.get_keycode_string(btye)
+	match key.to_lower():
+		'space': key = ' '
+		'period': key = '.'
+		'bracketleft': key = '['
+		'bracketright': key = ']'
+		'colon': key = ':'
+		'comma': key = ','
+		'minus': key = '-'
+		'parenleft': key = '('
+		'parenright': key = ')'
+		'slash': key = '/'
+		'quote': key = '\''
+		'quotedbl': key = '"'
+	return key
+
 func get_alias(antialiased:bool = true) -> CanvasItem.TextureFilter:
 	return CanvasItem.TEXTURE_FILTER_LINEAR if antialiased else CanvasItem.TEXTURE_FILTER_NEAREST
 	

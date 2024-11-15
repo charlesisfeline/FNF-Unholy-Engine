@@ -88,6 +88,9 @@ func spawn_splash(strum:Strum) -> void:
 	
 func spawn_hold_splash(strum:Strum) -> void:
 	pass
+	
+func add_strum() -> void:
+	pass
 
 func strum_anim(dir:int = 0, player:bool = false, force:bool = true) -> void:
 	var strum:Strum = get_strums()[dir]

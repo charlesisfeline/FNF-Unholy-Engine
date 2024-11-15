@@ -1,2 +1,6 @@
 # Godot 4+ specific ignores
 .godot/
+assets/data/weeks/
+assets/images/ui/skins/default/hold this/
+assets/images/icons/peaks/
+assets/songs/

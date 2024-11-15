@@ -53,9 +53,6 @@ func _ready():
 	for song in DirAccess.get_directories_at('res://assets/songs'):
 		add_song(FreeplaySong.new([song, 'bf', [100, 100, 100]]))
 	
-	#HighScore.init_save()
-	#update_save() # changed who it works
-
 	if JsonHandler._SONG.has('song'):
 		last_loaded.song = Game.format_str(JsonHandler._SONG.song)
 		if JsonHandler.song_root != '':
@@ -100,10 +97,6 @@ func _process(delta):
 	$SongInfo/Difficulty.position.x = int($SongInfo/ScoreBG.position.x + ($SongInfo/ScoreBG.size[0] / 2))
 	$SongInfo/Difficulty.position.x -= ($SongInfo/Difficulty.size[0] / 2) + 150
 	$SongInfo/ScoreBG.position.x -= 215
-	
-	#if Input.is_physical_key_pressed(KEY_TAB) and wait_time <= 0:
-	#	wait_time = 1
-	#	switch_list()
 
 var col_tween
 func update_list(amount:int = 0) -> void:
@@ -126,7 +119,7 @@ func update_list(amount:int = 0) -> void:
 
 func change_diff(amount:int = 0) -> void:
 	var use_list = songs[cur_song].variants[variant_str] if songs[cur_song].variants.size() > 1 else diff_list
-	#print(use_list)
+	
 	diff_int = wrapi(diff_int + amount, 0, use_list.size())
 	diff_str = use_list[diff_int]
 	var text = '< '+ diff_str.to_upper() +' >'
@@ -135,9 +128,8 @@ func change_diff(amount:int = 0) -> void:
 	$SongInfo/Difficulty.text = text
 
 func change_variant(amount:int = 0) -> void:
-	if variant_list.size() <= 1:
-		#print('No variations to change')
-		return
+	if variant_list.size() <= 1: return
+	
 	vari_int = wrapi(vari_int + amount, 0, variant_list.size())
 	variant_str = variant_list[vari_int]
 	$SongInfo/VariantTxt.text = EFFECTS + variant_str.to_upper()
@@ -169,39 +161,10 @@ func _unhandled_key_input(_event):
 		Audio.stop_music()
 		Conductor.reset()
 		if last_loaded.song != songs[cur_song].text or last_loaded.diff != diff_str\
-		  or last_loaded.variant != variant_str:
+		  or last_loaded.variant != variant_str or shifty:
 			JsonHandler.parse_song(songs[cur_song].text, diff_str, variant_str)
 		JsonHandler.song_diffs = songs[cur_song].diff_list
 		Game.switch_scene('Play_Scene')
-	
-func update_save() -> void: # update the file with any new songs/difficulties
-	#NOTE rather than go over every single song every time you enterr freeplay 
-	# (which only happened because of the old system)
-	# it now only saves the song once you actually play and beat it
-	# i will still keep this here, maybe for the future
-	#if ResourceLoader.exists('user://highscores.cfg'):
-	#	best_scores.load('user://highscores.cfg')
-	
-	for song in songs:
-		var _name:String = Game.format_str(song.song)
-		#if !HighScore.saved_scores.has_section_key(_name): pass
-		if song.diff_list == JsonHandler.base_diffs:
-			HighScore.set_data(_name, HighScore.get_data(_name))
-			
-
-		#if best_scores.has_section_key('Song Scores', _name): # if it exists, get it so we dont delete scores
-		#	da_data = best_scores.get_value('Song Scores', _name)
-		var da_data:Dictionary = {}
-		for dif in song.diff_list:
-			if da_data.has(dif): continue
-		#	HighScore.set_score(_name, dif, HighScore.get_data(_name, dif))
-			da_data[dif] = HighScore.get_data(_name, dif)
-		
-		HighScore.set_data(_name, da_data)
-		#best_scores.set_value('Song Scores', _name, da_diffs)
-	
-	#best_scores.save('user://highscores.cfg') # then save and reload, just to make sure we keep it
-	#best_scores.load('user://highscores.cfg')
 	
 class FreeplaySong extends Alphabet:
 	var song:String = 'Tutorial'
