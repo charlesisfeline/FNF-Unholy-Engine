@@ -78,7 +78,7 @@ func add_variant(variant:String):
 			#for lua in active_lua:
 			#	lua.push_variant(variant, ClassDB.get_class())
 
-func makeLuaSprite(t, sp, x, y):
+func makeLuaSprite(_t, _sp, _x, _y):
 	get_tree().exit()
 
 ## LUA OBJECTS

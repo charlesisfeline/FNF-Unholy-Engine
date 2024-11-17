@@ -44,7 +44,7 @@ var should_save:bool = !Prefs.auto_play
 	set(auto):
 		if auto: should_save = false
 		auto_play = auto
-		ui.player_group.is_cpu = auto_play
+		ui.get_group('player').is_cpu = auto_play
 		ui.mark.visible = auto_play
 
 var score:int = 0
@@ -162,10 +162,13 @@ func _ready():
 	
 	characters = [boyfriend, dad, gf]
 
-	ui.player_group.singer = boyfriend
-	ui.opponent_group.singer = dad
-	#ui.gf_group.singer = gf
+	ui.get_group('player').singer = boyfriend
+	ui.get_group('opponent').singer = dad
 	
+	#var gleef = ui.add_group('gf', gf)
+	#gleef.position = Vector2((Game.screen[0] / 2.0) - 170, 85)
+	#gleef.scale = Vector2(0.9, 0.9)
+
 	if cur_stage.begins_with('school'):
 		cur_skin = 'pixel'
 	if cur_stage == 'limo': # lil dumb...
@@ -199,17 +202,14 @@ func _ready():
 	
 	ui.start_countdown(true)
 	
-	if JsonHandler.parse_type == 'v_slice': event_hit(EventData.new(
-		{t = 0, e = 'FocusCamera', v = {char = 1}}, 'v_slice')
-	)
+	if JsonHandler.parse_type == 'v_slice': move_cam('dad')
 	section_hit(0) #just for 1st section stuff
 	
 var section_data
 var chunk:int = 0
 func _process(delta):
 	if Input.is_key_pressed(KEY_R): ui.hp = 0
-	if ui.hp <= 0:
-		try_death()
+	if ui.hp <= 0: try_death()
 		
 	if Input.is_action_just_pressed("debug_1"):
 		if JsonHandler.parse_type == 'v_slice':
@@ -217,6 +217,7 @@ func _process(delta):
 			return
 		await RenderingServer.frame_post_draw
 		Game.switch_scene('debug/Charting_Scene')
+		
 	if Input.is_action_just_pressed("back"):
 		auto_play = !auto_play
 	if Input.is_action_just_pressed("accept"):
@@ -360,16 +361,16 @@ func key_press(key:int = 0) -> void:
 	var hittable_notes:Array[Note] = notes.filter(func(i:Note):
 		return i.dir == key and i.spawned and !i.is_sustain and i.must_press and i.can_hit and !i.was_good_hit
 	)
-	hittable_notes.sort_custom(func(a, b): return a.strum_time < b.strum_time)
+	#hittable_notes.sort_custom(func(a, b): return a.strum_time < b.strum_time)
 	
-	var last = ui.player_strums
+	var last = ui.get_group('player').get_strums()
 	if hittable_notes.is_empty():
 		if !Prefs.ghost_tapping:
 			ui.hp = 0
 			try_death()
 	else:
 		var note:Note = hittable_notes[0]
-		#if note.gf: last = ui.gf_strums
+		#if note.gf: last = ui.get_group('gf').get_strums()
 		if hittable_notes.size() > 1: # mmm idk anymore
 			for funny in hittable_notes: # temp dupe note thing killer bwargh i hate it
 				if note == funny: continue 
@@ -539,14 +540,11 @@ func good_note_hit(note:Note) -> void:
 		
 	var time:float = Conductor.song_pos - note.strum_time if !auto_play else 0.0
 	note.rating = Judge.get_rating(time)
-	
-	ui.ms_txt.text = str(Game.round_d(time, 2)) +' ms'
-	ui.ms_txt.modulate = Judge.get_color(note.rating)
-	
+
 	var judge_info = Judge.get_score(note.rating)
 	
-	var group = ui.player_group
-	#if note.gf: group = ui.gf_group
+	var group = ui.get_group('player')
+	#if note.gf: group = ui.get_group('gf')
 	group.singer = gf if note.gf else boyfriend 
 	group.note_hit(note)
 
@@ -585,8 +583,8 @@ func good_sustain_press(sustain:Note, delt:float = 0.0) -> void:
 			if Conductor.vocals.stream != null: 
 				Conductor.vocals.volume_db = linear_to_db(1.0) 
 			
-			var group = ui.player_group
-			#if sustain.gf: group = ui.gf_group
+			var group = ui.get_group('player')
+			#if sustain.gf: group = ui.get_group('gf')
 			group.singer = gf if sustain.gf else boyfriend
 			group.note_hit(sustain)
 			
@@ -606,9 +604,9 @@ func opponent_note_hit(note:Note) -> void:
 		var v = Conductor.vocals_opp if Conductor.mult_vocals else Conductor.vocals
 		v.volume_db = linear_to_db(1)
 	
-	var group = ui.opponent_group
+	var group = ui.get_group('opponent')
+	#if note.gf: group = ui.get_group('gf')
 	group.singer = gf if note.gf else dad
-	#if note.gf: group = ui.gf_group
 	group.note_hit(note)
 	kill_note(note)
 
@@ -620,8 +618,8 @@ func opponent_sustain_press(sustain:Note) -> void:
 	if section_data != null and section_data.has('altAnim') and section_data.altAnim:
 		sustain.alt = '-alt'
 		
-	var group = ui.opponent_group
-	#if sustain.gf: group = ui.gf_group
+	var group = ui.get_group('opponent')
+	#if sustain.gf: group = ui.get_group('gf')
 	group.singer = gf if sustain.gf else dad
 	group.note_hit(sustain)
 
@@ -632,7 +630,7 @@ func note_miss(note:Note) -> void:
 	misses += 1
 	ui.hit_count['miss'] = misses
 	if note != null:
-		ui.player_group.note_miss(note)
+		ui.get_group('player').note_miss(note)
 		var away = floor(note.length * 2) if note.is_sustain else int(30 + (15 * floor(misses / 3.0)))
 		score -= 10 if Prefs.legacy_score else away
 		#print(int(30 + (15 * floor(misses / 3))))

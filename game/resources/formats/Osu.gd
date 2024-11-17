@@ -49,11 +49,11 @@ func load_file(song:String) -> Dictionary:
 	if int(get_data('Mode')) != 3: return {}
 	
 	var time_points = get_time_points()
-	var offset = time_points[0]
+	#var offset = time_points[0]
 	var speed = float(get_data('OverallDifficulty'))
-	var hit_objs #= parse_chart()
+	#var hit_objs #= parse_chart()
 
-	var sections:Array = []
+	#var sections:Array = []
 	#for i in hit_objs.size():
 	#	var newSec
 	#	if hit_objs.get(i) != null:

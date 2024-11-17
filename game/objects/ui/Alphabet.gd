@@ -169,9 +169,9 @@ class Letter extends AnimatedSprite2D:
 	var _height:float = 0.0: 
 		get: return get_dimension(true)
 	
-	func _init(pos:Vector2, char:String, id:int, row:int):
-		self.position = pos; self.char = char;
-		self.id = id; self.row = row;
+	func _init(pos:Vector2, _char:String, _id:int, _row:int):
+		self.position = pos; self.char = _char;
+		self.id = _id; self.row = _row;
 		
 	func get_dimension(other:bool = false) -> float:
 		var to_return:float = 65.0 if other else 47.0

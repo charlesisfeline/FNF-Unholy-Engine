@@ -8,18 +8,18 @@ var antialiasing:bool = true:
 		antialiasing = alias
 		texture_filter = Game.get_alias(alias)
 
-var width:float = 0:
+var width:float = 0.0:
 	get:
 		if is_sustain:
 			return sustain.texture.get_width() * abs(hold_group.scale.x)
 		return note.texture.get_width() * abs(scale.x)
-var height:float = 0:
+var height:float = 0.0:
 	get:
 		if is_sustain:
 			return sustain.texture.get_height() * abs(hold_group.scale.y)
 		return note.texture.get_height() * abs(scale.y)
 	
-const COLORS:Array[String] = ['purple', 'blue', 'green', 'red']
+const COLORS:PackedStringArray = ['purple', 'blue', 'green', 'red']
 
 var chart_note:bool = false
 var spawned:bool = false
@@ -68,15 +68,13 @@ var late_mod:float = 1.0
 var rating:String = ''
 var was_good_hit:bool = false#:
 #	get: return not must_press and strum_time <= Conductor.song_pos
-var too_late:bool = false
+var too_late:bool = false:
+	get: return strum_time < Conductor.song_pos - Conductor.safe_zone and !was_good_hit
 
 var is_sustain:bool = false
 var length:float = 0.0
 var temp_len:float = 0.0 #if you dont immediately hold
 var offset_y:float = 0.0
-var parent:Note
-var parent_width:float = 0.0
-
 
 var holding:bool = false
 var min_len:float = 25.0 # before a sustain is counted as "hit"
@@ -115,7 +113,6 @@ func _init(data = null, sustain_:bool = false, in_chart:bool = false):
 		chart_note = in_chart
 		if is_sustain:
 			temp_len = length
-			parent = data
 
 func _ready():
 	spawned = true
@@ -124,15 +121,6 @@ func _ready():
 	position = Vector2(INF, -INF) #you can see it spawn in for a frame or two
 	scale = skin.note_scale
 	
-	var colors:Array[Color] = [Color(), Color.WHITE, Color()]
-	var funny = roundi((Conductor.bpm * strum_time) / 1000.0 / 60.0 * 48)
-
-	for i in avail_quants.keys():
-		if funny % (192 / int(i)) == 0:
-			colors[0] = avail_quants[i][0]
-			colors[2] = avail_quants[i][1]
-			break
-			
 	if is_sustain:
 		alpha = 0.6
 		# stole from fnf raven because i didnt know how "Control"s worked
@@ -141,36 +129,22 @@ func _ready():
 
 		add_child(hold_group)
 		move_child(hold_group, 0)
-		var gwa = 'res://assets/images/ui/skins/'+ skin.cur_skin +'/notes/%s.png'
 		
 		end = TextureRect.new()
-		end.texture = load(tex_path + COLORS[dir] +'_end.png') # load(gwa % 'end') 
-		if !chart_note: end.stretch_mode = TextureRect.STRETCH_TILE
+		end.texture = load(tex_path + COLORS[dir] +'_end.png') 
+		end.stretch_mode = TextureRect.STRETCH_TILE
 		end.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
 		end.grow_horizontal = Control.GROW_DIRECTION_BOTH
 		end.grow_vertical = Control.GROW_DIRECTION_BEGIN
 		
 		sustain = TextureRect.new()
-		sustain.texture = load(tex_path + COLORS[dir] +'_hold.png') #load(gwa % 'hold') 
-		if !chart_note: sustain.stretch_mode = TextureRect.STRETCH_TILE # hmm
+		sustain.texture = load(tex_path + COLORS[dir] +'_hold.png')
+		sustain.stretch_mode = TextureRect.STRETCH_TILE
 		sustain.set_anchors_preset(Control.PRESET_FULL_RECT)
 		sustain.set_anchor_and_offset(SIDE_BOTTOM, 1.0, -end.texture.get_height() + 1.0)
 		sustain.grow_horizontal = Control.GROW_DIRECTION_BOTH
 		sustain.grow_vertical = Control.GROW_DIRECTION_BOTH
 		
-		"var shade = ShaderMaterial.new()
-		shade.shader = load('res://game/resources/shaders/RGB.gdshader')
-		sustain.material = shade
-		end.material = shade
-		
-		var params = ['red', 'green', 'blue']
-		for i in params.size():
-			sustain.material.set_shader_parameter(params[i], colors[i])
-			end.material.set_shader_parameter(params[i], colors[i])
-			
-		sustain.material.set_shader_parameter('mult', 1.0)
-		end.material.set_shader_parameter('mult', 1.0)"
-
 		hold_group.add_child(sustain)
 		hold_group.add_child(end)
 		
@@ -185,23 +159,18 @@ func _ready():
 			note.play(COLORS[dir])
 		else:
 			note = Sprite2D.new()
-			note.texture = load(tex_path + COLORS[dir] +'.png') #load('res://assets/images/ui/skins/'+ skin.cur_skin +'/notes/quant/note.png')
-			"note.rotation = deg_to_rad([0, 270, 90, 180][dir])  #[0, 270, 90, 180] #[270, 180, 0, 90]
-			var shade = ShaderMaterial.new()
-			shade.shader = load('res://game/resources/shaders/RGB.gdshader')
-			note.material = shade
-			
-			note.material.set_shader_parameter('red', colors[0])
-			note.material.set_shader_parameter('green', colors[1])
-			note.material.set_shader_parameter('blue', colors[2])
-			note.material.set_shader_parameter('mult', 1.0)"
+			note.texture = load(tex_path + COLORS[dir] +'.png')
 			
 		add_child(note)
 		
 		if unknown:
 			var lol = Alphabet.new('?')
-			lol.position.x -= 22
-			lol.position.y -= 30
+			var diff:Vector2 = Vector2.ONE
+			if Game.round_d(scale.x, 1) > 0.7: 
+				diff = lol.scale / scale
+				lol.scale = diff
+			lol.position.x -= 22 * diff.x
+			lol.position.y -= 30 * diff.y
 			add_child(lol)
 			lol.z_index = 3
 		
@@ -222,15 +191,11 @@ func _process(delta):
 				length = temp_len
 				resize_hold()
 				
-				if roundi(length) <= min_len:
-					was_good_hit = true
+				was_good_hit = roundi(length) <= min_len
 	else:
 		if must_press:
 			can_hit = (strum_time > Conductor.song_pos - (safe_zone * late_mod) && \
-				strum_time < Conductor.song_pos + (safe_zone * early_mod));
-		
-			if strum_time < Conductor.song_pos - safe_zone and !was_good_hit:
-				too_late = true
+				strum_time < Conductor.song_pos + (safe_zone * early_mod))
 		else:
 			can_hit = false
 			was_good_hit = strum_time <= Conductor.song_pos
@@ -240,30 +205,23 @@ func follow_song_pos(strum:Strum) -> void:
 		position = strum.position
 		return
 		
-	#var snap:float = 40 / (randf_range(1.0, 12.0) / 16.0)
 	var pos:float = -(0.45 * (Conductor.song_pos - strum_time) * speed) #/ Conductor.playback_rate# + offset_y
-	#pos = floor(pos / snap) * snap
 	
-	#if !strum.downscroll: pos *= -1
-	
-	if skin.cur_skin != strum.skin.cur_skin: load_skin(strum.skin.cur_skin)
 	position.x = strum.position.x + (pos * cos(strum.scroll * PI / 180))
 	position.y = strum.position.y + (pos * sin(strum.scroll * PI / 180))
-	if is_sustain:
-		rotation = deg_to_rad(strum.scroll - 90.0) + strum.rotation
-	else:
-		rotation = strum.rotation
+	rotation = (deg_to_rad(strum.scroll - 90.0) if sustain else 0.0) + strum.rotation
 
 func load_skin(new_skin:String) -> void:
-	skin.load_skin(new_skin)
+	skin.load_skin(new_skin)  # this is actually terrible
 
-	tex_path = 'res://assets/images/ui/skins/'+ skin.cur_skin +'/notes/'
+	tex_path = 'assets/images/ui/skins/%s/notes/' % [skin.cur_skin]
+
 	antialiasing = skin.antialiased
 	scale = skin.note_scale
 	
 	if is_sustain:
 		#scale.y = 0.7
-		sustain.texture = load(tex_path + COLORS[dir] +'_hold.png')
+		sustain.texture = load('res://'+ tex_path + COLORS[dir] +'_hold.png')
 		end.texture = load(tex_path + COLORS[dir] +'_end.png')
 		resize_hold(true)
 	else:
@@ -272,7 +230,7 @@ func load_skin(new_skin:String) -> void:
 func resize_hold(update_control:bool = false) -> void:
 	if !spawned: return
 	hold_group.size.y = ((length * 0.63) * speed)
-	var rounded_scale = Game.round_d(skin.note_scale.y, 1)
+	var rounded_scale:float = Game.round_d(skin.note_scale.y, 1)
 	if rounded_scale > 0.7: 
 		hold_group.size.y /= (rounded_scale + (rounded_scale / 2.0))
 	

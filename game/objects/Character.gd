@@ -55,7 +55,7 @@ var antialiasing:bool = true:
 	set(anti):
 		texture_filter = Game.get_alias(anti)
 
-var sing_anims:Array[String] = ['singLEFT', 'singDOWN', 'singUP', 'singRIGHT']
+var sing_anims:PackedStringArray = ['singLEFT', 'singDOWN', 'singUP', 'singRIGHT']
 
 func _init(pos:Vector2 = Vector2.ZERO, char:String = 'bf', player:bool = false):
 	centered = false
@@ -110,7 +110,7 @@ func load_char(new_char:String = 'bf') -> void:
 		'pico-speaker':
 			can_dance = false
 			sing_anims = ['shootLeft', 'shootLeft', 'shootRight', 'shootRight']
-			play_anim('shootRight1')
+			play_anim('idle')
 			frame = sprite_frames.get_frame_count('shootRight1') - 4
 	
 	dance()
@@ -144,14 +144,9 @@ func _process(delta):
 			var boogie = (!is_player or (is_player and !holding)) and can_dance 
 			if hold_timer >= Conductor.step_crochet * (0.0011 * sing_duration) and boogie:
 				dance()
-	
-	#if offsets.has(animation +'-loop') and frame == sprite_frames.get_frame_count(animation) - 1:
-	#	frame = sprite_frames.get_frame_count(animation) - 4
-	#	looping = true
 			
 	if !chart.is_empty():
 		for i in chart: # [0] = strum time, [1] = direction, [2] = is sustain, [3] = length
-			if !i[4]: continue
 			if i[2]:
 				if i[0] <= Conductor.song_pos and i[0] + i[3] > Conductor.song_pos:
 					sing(i[1] % 4, '', false)
@@ -159,8 +154,8 @@ func _process(delta):
 					chart.remove_at(chart.find(i))
 			else:
 				if i[0] <= Conductor.song_pos:
-					#var suff:String = str(randi_range(1, 2))
-					sing(i[1] % 4, '')
+					var suff:String = str(randi_range(1, 2))
+					sing(i[1] % 4, suff)
 					chart.remove_at(chart.find(i))
 
 func dance(forced:bool = false) -> void:
@@ -184,6 +179,7 @@ func dance(forced:bool = false) -> void:
 	sing_timer = 0
 
 func sing(dir:int = 0, suffix:String = '', reset:bool = true) -> void:
+	# maybe change this # i dont like how no other animations can play once you hold a sustain
 	hold_timer = 0
 	var to_sing:String = sing_anims[dir] + suffix
 	if !has_anim(to_sing): 
@@ -259,9 +255,6 @@ func set_stuff() -> void:
 
 func has_anim(anim:String) -> bool:
 	return sprite_frames.has_animation(anim) if sprite_frames != null else false
-
-static func dupe(duper:Character) -> Character:
-	return Character.new(duper.position, duper.cur_char, duper.is_player)
 
 static func get_closest(char_name:String = 'bf') -> String: # if theres no character named "pico-but-devil" itll just use "pico"
 	for file in DirAccess.get_files_at('res://assets/data/characters'):

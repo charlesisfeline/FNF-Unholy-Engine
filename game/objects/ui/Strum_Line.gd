@@ -4,7 +4,7 @@ class_name Strum_Line; extends Node2D;
 var SPLASH = preload('res://game/objects/note/note_splash.tscn')
 var SPARK = preload('res://game/objects/note/holdnote_splash.tscn')
 
-var INIT_POS = [Vector2.ZERO, Vector2.ZERO, Vector2.ZERO, Vector2.ZERO]
+var INIT_POS:PackedVector2Array = [Vector2.ZERO, Vector2.ZERO, Vector2.ZERO, Vector2.ZERO]
 @export var is_cpu:bool = true:
 	set(cpu): 
 		is_cpu = cpu
@@ -23,9 +23,8 @@ func _ready():
 	for i in 4: # i can NOT be bothered to position these mfs manually
 		var cur_strum:Strum = get_strums()[i]
 		cur_strum.dir = (i % 4)
-		if Prefs.scroll_type == 'down':
-			cur_strum.scroll = -90
-		#cur_strum.downscroll = Prefs.scroll_type == 'down'
+		cur_strum.downscroll = Prefs.scroll_type == 'down'
+			
 		cur_strum.is_player = !is_cpu
 		cur_strum.position.x = spacing * (i % 4)
 		INIT_POS[i] = cur_strum.position

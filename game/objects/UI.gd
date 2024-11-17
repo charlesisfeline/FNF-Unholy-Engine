@@ -12,23 +12,20 @@ signal song_start # technically countdown tick 4 is song start but why would you
 @onready var icon_p2:Icon = $HealthBar/IconP2
 @onready var mark:Sprite2D = $HealthBar/Mark
 
-@onready var ms_txt:Label = $Strum_Group/Player/HitTime
-@onready var player_group:Strum_Line = $Strum_Group/Player
-@onready var opponent_group:Strum_Line = $Strum_Group/Opponent
-var gf_group:Strum_Line
-
-@onready var strum_lines:Dictionary = {
+@onready var strum_groups:Dictionary = {
 	'player': $Strum_Group/Player,
 	'opponent': $Strum_Group/Opponent
 }
 
-@onready var player_strums:Array = player_group.get_strums()
-@onready var opponent_strums:Array = opponent_group.get_strums()
+#@onready var player_group:Strum_Line = $Strum_Group/Player
+#@onready var opponent_group:Strum_Line = $Strum_Group/Opponent
+#var gf_group:Strum_Line
+
+@onready var player_strums:Array = strum_groups.player.get_strums()
+@onready var opponent_strums:Array = strum_groups.opponent.get_strums()
 var gf_strums:Array
 var strums:Array[Strum] = []
 var chart_notes = []
-
-var characters:Array[Character] = []
 
 var SKIN = SkinInfo.new()
 var cur_skin:String = 'default':
@@ -38,17 +35,17 @@ var cur_skin:String = 'default':
 			change_skin(new_style)
 			
 var finished_countdown:bool = false
-var countdown_spr:Array[String] = ['ready', 'set', 'go']
-var sounds:Array[String] = ['intro3', 'intro2', 'intro1', 'introGo']
+var countdown_spr:PackedStringArray = ['ready', 'set', 'go']
+var sounds:PackedStringArray = ['intro3', 'intro2', 'intro1', 'introGo']
 
-var total_hit:float = 0
-var note_percent:float = 0
-var accuracy:float = -1
+var total_hit:float = 0.0
+var note_percent:float = 0.0
+var accuracy:float = -1.0
 var hit_count:Dictionary = {'epic': 0, 'sick': 0, 'good': 0, 'bad': 0, 'shit': 0, 'miss': 0}
 var fc:String = 'N/A'
 
 var def_mark_scale:Vector2 = Vector2(0.7, 0.7)
-var zoom:float = 1:
+var zoom:float = 1.0:
 	set(new_zoom):
 		zoom = new_zoom
 		scale = Vector2(zoom, zoom)
@@ -61,15 +58,13 @@ func _ready():
 	strums.append_array(opponent_strums)
 	strums.append_array(player_strums)
 	
-	var downscroll = Prefs.scroll_type == 'down'
-	var middscroll = Prefs.scroll_type == 'middle' # funny
-	#var spltscroll = Prefs.splitscroll
+	var downscroll:bool = Prefs.scroll_type == 'down'
 	
+	var player = get_group('player')
+	var opponent = get_group('opponent')
 	# i am stupid they are a group i dont have to set the strums position manually just the group y pos
-	player_group.position.y = 560 if downscroll else 55
-	opponent_group.position.y = 560 if downscroll else 55
-	
-	for i in strums: i.downscroll = downscroll
+	player.position.y = 560 if downscroll else 55
+	opponent.position.y = 560 if downscroll else 55
 	
 	var can_center:bool = Prefs.center_strums
 	match Prefs.scroll_type:
@@ -81,14 +76,14 @@ func _ready():
 		'left', 'right':
 			can_center = false
 			var scr:Array[int] = [0, 180]
-			var x_pos:Array = [Game.screen[0] / 2, Game.screen[0] / 2]
+			var x_pos:Array = [Game.screen[0] / 2.0, Game.screen[0] / 2.0]
 			if Prefs.scroll_type == 'right': 
 				scr.reverse()
 				x_pos = [Game.screen[0] - 120, 120]
-				opponent_group.modulate = Color(0.2, 0.2, 0.2, 0.4)
+				opponent.modulate = Color(0.2, 0.2, 0.2, 0.4)
 			
-			player_group.position = Vector2(x_pos[0] + 60, 200)
-			opponent_group.position = Vector2(x_pos[1] - 60, 200)
+			player.position = Vector2(x_pos[0] + 60, 200)
+			opponent.position = Vector2(x_pos[1] - 60, 200)
 			
 			for i in strums.size():
 				strums[i].position = Vector2(0, 110 * strums[i].dir)
@@ -100,40 +95,17 @@ func _ready():
 				if (strums[i].dir > 1 and i > 3) or (i <= 3 and strums[i].dir < 2):
 					strums[i].scroll = -strums[i].scroll
 					strums[i].position.y = 560
-		#'parappa':
-		#	player_group.position = Vector2(100, 100)
-		#	opponent_group.position = Vector2(100, 100)
-		#	Game.scene.spawn_time *= 1.5
-		#	for i in 2:
-		#		var fake = Strum.new()
-		#		fake.is_event = true
-		#		fake.scale = Vector2(0.7, 0.7)
-		#		
-		#		var grop = (player_group if i == 0 else opponent_group)
-		#		grop.add_child(fake)
-		#		grop.move_child(fake, 0)
-		#		fake.z_index = -1
-		#		fake.position = Vector2(100, 100 + (125 * i))
-		#		silly.append(fake)
-			
-		#	for i in strums.size():
-		#		var st = strums[i]
-		#		st.position = Vector2(100, 100)
-		#		st.scroll = 0
-		#		st.visible = false
-		#		if i > 3:
-		#			st.position.y += 125
-			
+					
 	if can_center:
 		time_bar.position.x = 214
-		player_group.position.x = (Game.screen[0] / 2) - 180
+		player.position.x = (Game.screen[0] / 2) - 180
 		if Prefs.scroll_type == 'middle':
-			player_group.position.y = (Game.screen[1] / 2) - 55
+			player.position.y = (Game.screen[1] / 2) - 55
 			
-		opponent_group.modulate.a = 0.4
-		opponent_group.scale = Vector2(0.7, 0.7)
-		opponent_group.z_index = -1
-		opponent_group.position = Vector2(60, 400 if downscroll else 300)
+		opponent.modulate.a = 0.4
+		opponent.scale = Vector2(0.7, 0.7)
+		opponent.z_index = -1
+		opponent.position = Vector2(60, 400 if downscroll else 300)
 	
 	health_bar.position.x = (Game.screen[0] / 2.0) # 340
 	health_bar.position.y = 85 if downscroll else 630
@@ -149,10 +121,10 @@ func _ready():
 	mark.texture = load('res://assets/images/ui/skins/'+ cur_skin +'/auto.png')
 	mark.scale = SKIN.strum_scale
 	
-	#player_group.scale = Vector2(0.9, 0.9)
-	#opponent_group.scale = Vector2(0.9, 0.9)
-	#player_group.position.x += 80
-	#opponent_group.position.x -= 30
+	#player.scale = Vector2(0.9, 0.9)
+	#opponent.scale = Vector2(0.9, 0.9)
+	#player.position.x += 80
+	#opponent.position.x -= 30
 	
 	#gf_group = load('res://game/objects/ui/strum_line.tscn').instantiate()
 	#add_child(gf_group)
@@ -160,19 +132,16 @@ func _ready():
 	#gf_group.position = Vector2((Game.screen[0] / 2.0) - 170, 55)
 	#gf_strums = gf_group.get_strums()
 	
-	#mark.position = health_bar.position + Vector2(330, -5)
-	#mark.z_index = -2
-
 var hp:float = 50.0:
 	set(val): hp = clampf(val, 0, 100)
 	
 func _process(delta):
 	if finished_countdown:
 		time_bar.value = (abs(Conductor.song_pos / Conductor.song_length) * 100.0)
-		$Elasped.text = str(Game.to_time(floor(Conductor.song_pos / Conductor.playback_rate)))
+		#$Elasped.text = str(Game.to_time(floor(Conductor.song_pos / Conductor.playback_rate)))
 		$Left.text = str(Game.to_time(abs(floor((Conductor.song_length - Conductor.song_pos) / Conductor.playback_rate))))
 
-	$Elasped.position = time_bar.position - Vector2($Elasped.size.x / 2, 30)
+	#$Elasped.position = time_bar.position - Vector2($Elasped.size.x / 2, 30)
 	$Left.position = time_bar.position - Vector2($Left.size.x / 2, -10)
 		
 	health_bar.value = lerpf(health_bar.value, hp, delta * 8)
@@ -181,31 +150,11 @@ func _process(delta):
 	
 	offset.x = (scale.x - 1.0) * -(Game.screen[0] * 0.5)
 	offset.y = (scale.y - 1.0) * -(Game.screen[1] * 0.5)
-	
-	#var anims1 = []
-	#var anims2 = []
-
-	#for i in opponent_strums:
-	#	anims1.append(i.animation.split('_')[1])
-	#	i.visible = !i.animation.contains('static')
-	#for i in player_strums:
-	#	anims2.append(i.animation.split('_')[1])
-	#	i.visible = !i.animation.contains('static')
-	
-#	silly[0].visible = anims1 == ['static', 'static', 'static', 'static']
-#	silly[1].visible = anims2 == ['static', 'static', 'static', 'static']
-	
-	
+		
 func update_score_txt() -> void:
 	if Game.scene.get('score') != null:
 		var stuff = [Game.scene.score, get_acc(), Game.scene.misses]
 		score_txt.text = 'Score: %s / Accuracy: [%s] \\ Misses: %s' % stuff
-	#$Tally.text = '
-	#[color=purple]Epics: '+ str(hit_count['epic']) +'
-	#[color=cyan]Sicks: '+ str(hit_count['sick']) +'
-	#[color=green]Goods: '+ str(hit_count['good']) +'
-	#[color=yellow]Bads: '+ str(hit_count['bad']) +'
-	#[color=red]Shits: '+ str(hit_count['shit'])
 
 func get_acc() -> String:
 	var new_acc = clampf(note_percent / total_hit, 0, 1)
@@ -236,17 +185,24 @@ func reset_stats() -> void:
 	
 	update_score_txt()
 	
-#func add_strum_line(line_name:String, singer:Character): 
-# would have to change how the strum group vars are handled
-	#var new_line = load('res://game/objects/ui/strum_line.tscn').instantiate()
-	#set(line_name +'_group', new_line)
-#	return new_line
+func add_group(group_name:String, singer:Character = null): # add a strum group to the ui
+	var new_group = load('res://game/objects/ui/strum_line.tscn').instantiate()
+	if singer != null: new_group.singer = singer
+	strum_groups[group_name.to_lower().strip_edges()] = new_group
+	$Strum_Group.add_child(new_group)
+	return new_group
+	
+func get_group(group_name:String): # get an existing strum group
+	var grp:String = group_name.to_lower().strip_edges()
+	if strum_groups.has(grp):
+		return strum_groups[grp]
+	return null
 
-func add_to_strum_group(item:Variant, strums:String = 'player') -> void:
+func add_to_strum_group(item:Variant, group:String = 'player') -> void:
 	if item == null: return
-	var group = get(strums +'_group')
-	if group == null: group = player_group
-	group.add_child(item)
+	var group_to_add = get_group(group)
+	if group_to_add == null: group_to_add = get_group('player')
+	group_to_add.add_child(item)
 
 func add_behind(item) -> void:
 	$Back.add_child(item) 
@@ -257,8 +213,8 @@ func change_skin(new_skin:String = 'default') -> void: # change style of whole h
 	cur_skin = new_skin
 	SKIN.load_skin(new_skin)
 	
-	player_group.set_all_skins(new_skin)
-	opponent_group.set_all_skins(new_skin)
+	for i in strum_groups.keys():
+		strum_groups[i].set_all_skins(new_skin)
 	#for strum in strums: strum.load_skin(new_skin)
 	for note in Game.scene.notes: 
 		note.load_skin(new_skin)

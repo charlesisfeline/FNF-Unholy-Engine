@@ -9,12 +9,19 @@ var skin:SkinInfo = SkinInfo.new()
 		if ev: sprite_frames = load('res://assets/images/ui/eventStrum.res')
 		else: load_skin(skin.cur_skin)
 @export var is_player:bool = false
-@export var downscroll:bool = false
+@export var scroll:float = 90.0
+
 @export var dir:int = 0:
 	set(new_dir): 
 		dir = new_dir
 		play_anim(animation.split('_')[1])
-@export var scroll:float = 90.0
+		
+@export var downscroll:bool = false: # not really just for downscroll, just flips the scroll direction
+	set(d): 
+		if d != downscroll:
+			downscroll = d
+			scroll *= -1
+		
 
 var anim_timer:float = 0.0 # used for confirm anim looping on sustains
 var reset_timer:float = 0.0
@@ -22,7 +29,7 @@ var antialiasing:bool = true:
 	get: return texture_filter == CanvasItem.TEXTURE_FILTER_LINEAR
 	set(alias):
 		antialiasing = alias
-		texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR if alias else CanvasItem.TEXTURE_FILTER_NEAREST 
+		texture_filter = Game.get_alias(alias)
 
 func _ready():
 	if !is_event:
