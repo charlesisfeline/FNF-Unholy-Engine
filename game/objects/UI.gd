@@ -50,7 +50,6 @@ var zoom:float = 1.0:
 		zoom = new_zoom
 		scale = Vector2(zoom, zoom)
 
-#var silly = []
 func _ready():
 	time_bar.fill_mode = 0
 	time_bar.set_colors(Color(0, 0, 0.5), Color(0.25, 0.65, 0.95))
@@ -95,7 +94,7 @@ func _ready():
 				if (strums[i].dir > 1 and i > 3) or (i <= 3 and strums[i].dir < 2):
 					strums[i].scroll = -strums[i].scroll
 					strums[i].position.y = 560
-					
+				
 	if can_center:
 		time_bar.position.x = 214
 		player.position.x = (Game.screen[0] / 2) - 180
@@ -150,7 +149,7 @@ func _process(delta):
 	
 	offset.x = (scale.x - 1.0) * -(Game.screen[0] * 0.5)
 	offset.y = (scale.y - 1.0) * -(Game.screen[1] * 0.5)
-		
+	
 func update_score_txt() -> void:
 	if Game.scene.get('score') != null:
 		var stuff = [Game.scene.score, get_acc(), Game.scene.misses]

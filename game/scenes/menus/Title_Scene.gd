@@ -1,7 +1,5 @@
 extends Node2D
 
-
-var col = Color()
 var colors:Array[Color] = [Color(0.2, 1, 1, 1), Color(0.21, 0.21, 0.8, 0.64)]
 
 var finished_intro:bool = false
@@ -81,14 +79,10 @@ var funk_sin:float = 0.0
 var time_lerped:float = 0.0
 func _process(delta):
 	funk_sin += delta
-	$Funkin.rotation = sin(funk_sin * 2) / 8
+	$Funkin.rotation = sin(funk_sin * 2) / 8.0
 	$Funkin.scale.x = lerpf($Funkin.scale.x, 1, delta * 7)
 	$Funkin.scale.y = $Funkin.scale.x
 	
-	if Conductor.song_started:
-		Conductor.song_pos += (1000 * delta)
-		if abs(Conductor.song_pos - Audio.pos) < 10:
-			Conductor.song_pos = Audio.pos
 	#Conductor.song_pos = Audio.pos #im lazy dont judge me
 	
 	if !accepted:
@@ -115,14 +109,14 @@ func _process(delta):
 		
 				await get_tree().create_timer(1).timeout
 				Game.switch_scene('menus/main_menu')
-				Conductor.reset()
+				#Conductor.reset()
 
 func finish_intro() -> void:
 	finished_intro = true
 	remove_funny()
 	
-	if show_cow: 
-		$cow.visible = false
+	$GodotLogo.visible = false
+	$cow.visible = false
 	
 	if Audio.Player.stream == null: #or Audio.volume < 0.7:
 		Audio.play_music('freakyMenu', true, 0.7)
@@ -153,7 +147,6 @@ func remove_funny() -> void:
 		
 func get_funny() -> Array[Array]:
 	var intro_txt:String = FileAccess.open('res://assets/data/introText.txt', FileAccess.READ).get_as_text()
-	#print(intro_txt)
 
 	var split_intro:Array[Array] = []
 	if intro_txt != null and intro_txt.length() > 0:

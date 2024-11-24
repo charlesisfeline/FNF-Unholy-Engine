@@ -35,7 +35,7 @@ var gf_cam_offset:Vector2 = Vector2(0, 0)
 # song functions for signals
 func countdown_start() -> void: pass
 func countdown_tick(tick:int) -> void: pass
-func start_song() -> void: pass
+func song_start() -> void: pass
 func song_end() -> void: pass
 
 func beat_hit(beat:int) -> void: pass

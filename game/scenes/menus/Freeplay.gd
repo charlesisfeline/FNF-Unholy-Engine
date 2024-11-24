@@ -20,6 +20,7 @@ var cur_song:int = 0
 var songs:Array[FreeplaySong] = []
 var icons:Array[Icon] = []
 func _ready():
+	Game.persist.song_list = []
 	if Audio.Player.stream == null:
 		Audio.play_music('freakyMenu', true, 0.7)
 	Discord.change_presence('Maining some Menus', 'In Freeplay')
@@ -57,9 +58,13 @@ func _ready():
 		last_loaded.song = Game.format_str(JsonHandler._SONG.song)
 		if JsonHandler.song_root != '':
 			last_loaded.song = JsonHandler.song_root
-			last_loaded.variant = JsonHandler.song_variant
+			last_loaded.variant = JsonHandler.song_variant.substr(1)
 		last_loaded.diff = JsonHandler.get_diff
 		cur_song = added_songs.find(last_loaded.song)
+		diff_int = songs[cur_song].diff_list.find(last_loaded.diff)
+		if last_loaded.variant != '':
+			vari_int = songs[cur_song].variants.keys().find(last_loaded.variant)
+			
 	
 	update_list()
 	

@@ -6,6 +6,7 @@ extends Node2D
 
 @onready var Judge:Rating = Rating.new()
 
+var story_mode:bool = false
 var SONG
 var default_zoom:float = 0.8
 var cur_skin:String = 'default': # yes
@@ -28,6 +29,9 @@ var notes:Array[Note] = []
 var events:Array[EventData] = []
 var start_time:float = 0 # when the first note is actually loaded
 var spawn_time:int = 2000
+
+var song_idx:int = 0
+var playlist:Array[String] = []
 
 var boyfriend:Character
 var dad:Character
@@ -53,7 +57,10 @@ var misses:int = 0
 
 func _ready():
 	auto_play = Prefs.auto_play # there is a reason
-	
+	if Game.persist.song_list.size() > 0:
+		story_mode = true
+		playlist = Game.persist.song_list
+
 	SONG = JsonHandler._SONG
 	if Prefs.daniel and !SONG.player1.contains('bf-girl'):
 		var try = SONG.player1.replace('bf', 'bf-girl')
@@ -230,8 +237,8 @@ func _process(delta):
 		 Game.to_time(Conductor.song_pos) +' / '+ Game.to_time(Conductor.song_length) +' | '+ \
 		  str(round(abs(Conductor.song_pos / Conductor.song_length) * 100.0)) +'% Complete')
 		
-	ui.zoom = lerpf(ui.zoom, 1, delta * 4)
-	cam.zoom.x = lerpf(cam.zoom.x, default_zoom, delta * 4)
+	ui.zoom = lerpf(1.0, ui.zoom, exp(-delta * 5))
+	cam.zoom.x = lerpf(default_zoom, cam.zoom.x, exp(-delta * 5))
 	cam.zoom.y = cam.zoom.x
 	
 	if chart_notes != null:
@@ -299,7 +306,8 @@ func countdown_tick(tick) -> void:
 	ui.icon_p1.bump()
 	ui.icon_p2.bump()
 	
-func song_start() -> void: pass
+func song_start() -> void:
+	stage.song_start()
 
 func beat_hit(beat) -> void:
 	for i in characters:
@@ -321,6 +329,8 @@ func section_hit(section) -> void:
 	var exclude = ['v_slice', 'codename', 'osu']
 	if !exclude.has(JsonHandler.parse_type) and SONG.notes.size() > section:
 		section_data = SONG.notes[section]
+		if !section_data.has('mustHitSection'): section_data.mustHitSection = true
+		
 		var point_at:String = 'boyfriend' if section_data.mustHitSection else 'dad'
 		if section_data.has('gfSection') and section_data.gfSection:
 			point_at = 'gf'
@@ -404,7 +414,17 @@ func song_end() -> void:
 			HighScore.set_score(SONG.song, JsonHandler.get_diff, save_data)
 	
 	Conductor.reset()
-	Game.switch_scene("menus/freeplay")
+	if playlist.is_empty() or song_idx >= playlist.size() - 1:
+		Game.persist.song_list = []
+		var back_to = 'story_mode' if story_mode else 'freeplay'
+		Game.switch_scene("menus/"+ back_to)
+	else:
+		song_idx += 1
+		JsonHandler.parse_song(playlist[song_idx], JsonHandler.get_diff, JsonHandler.song_variant)
+		SONG = JsonHandler._SONG
+		cur_speed = SONG.speed
+		Conductor.load_song(SONG.song)
+		refresh(true)
 	
 func refresh(restart:bool = true) -> void: # start song from beginning with no restarts
 	Conductor.reset_beats()
@@ -517,8 +537,12 @@ func event_hit(event:EventData) -> void:
 			zoom_add.game = event.values[0].intensity / 15.0
 		'ZoomCamera':
 			var data = event.values[0]
-			var new_zoom:float = data.zoom if data.mode == 'direct' else stage.default_zoom * data.zoom
-			var dur:float = Conductor.step_crochet * data.duration / 1000.0
+			var zoom_mode = 'direct'
+			if data.has('mode'): zoom_mode = data.mode
+			var new_zoom:float = data.zoom if zoom_mode == 'direct' else stage.default_zoom * data.zoom
+			var dur:float = 0.0
+			if data.has('duration'):
+				dur = Conductor.step_crochet * data.duration / 1000.0
 			
 			default_zoom = new_zoom
 			if dur > 0:
@@ -540,6 +564,8 @@ func good_note_hit(note:Note) -> void:
 		
 	var time:float = Conductor.song_pos - note.strum_time if !auto_play else 0.0
 	note.rating = Judge.get_rating(time)
+	if section_data != null:
+		if section_data.has('gfSection') and section_data.gfSection and section_data.mustHitSection: note.gf = true
 
 	var judge_info = Judge.get_score(note.rating)
 	
@@ -583,6 +609,9 @@ func good_sustain_press(sustain:Note, delt:float = 0.0) -> void:
 			if Conductor.vocals.stream != null: 
 				Conductor.vocals.volume_db = linear_to_db(1.0) 
 			
+			if section_data != null:
+				if section_data.has('gfSection') and section_data.gfSection and section_data.mustHitSection: sustain.gf = true
+			
 			var group = ui.get_group('player')
 			#if sustain.gf: group = ui.get_group('gf')
 			group.singer = gf if sustain.gf else boyfriend
@@ -597,8 +626,13 @@ func good_sustain_press(sustain:Note, delt:float = 0.0) -> void:
 func opponent_note_hit(note:Note) -> void:
 	if note.type.length() > 0: print(note.type, ' dad')
 
-	if section_data != null and section_data.has('altAnim') and section_data.altAnim:
-		note.alt = '-alt'
+	if section_data != null:
+		if section_data.has('altAnim') and section_data.altAnim:
+			note.alt = '-alt'
+
+		if section_data.has('gfSection') and section_data.gfSection and !section_data.mustHitSection: 
+			note.gf = true
+
 		
 	if Conductor.vocals.stream != null:
 		var v = Conductor.vocals_opp if Conductor.mult_vocals else Conductor.vocals
@@ -615,9 +649,12 @@ func opponent_sustain_press(sustain:Note) -> void:
 		var v = Conductor.vocals_opp if Conductor.mult_vocals else Conductor.vocals
 		v.volume_db = linear_to_db(1)
 		
-	if section_data != null and section_data.has('altAnim') and section_data.altAnim:
-		sustain.alt = '-alt'
-		
+	if section_data != null:
+		if section_data.has('altAnim') and section_data.altAnim:
+			sustain.alt = '-alt'
+		if section_data.has('gfSection') and section_data.gfSection and !section_data.mustHitSection: 
+			sustain.gf = true
+	
 	var group = ui.get_group('opponent')
 	#if sustain.gf: group = ui.get_group('gf')
 	group.singer = gf if sustain.gf else dad

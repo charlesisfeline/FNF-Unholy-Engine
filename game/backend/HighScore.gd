@@ -36,6 +36,15 @@ func get_data(song:String, diff:String = ''):
 
 func get_score(song:String, diff:String = 'hard'): # just need the score, for readability
 	return get_data(song, diff)[0]
+	
+func add_week(week_name:String, diffs:Array = ['easy', 'normal', 'hard']):
+	pass
+	
+func get_week_score(week_name:String, diff:String = 'hard'):
+	var DEFAULT_WEEK = {}
+	var week_data = song_scores.get_value(get_section(), week_name.to_lower().strip_edges())
+	
+	pass
 
 func compile_data(song_list:Array[String], diff:String = 'hard') -> Array[int]: # get all score + misses from selected songs
 	var totals:Array[int] = [0, 0]

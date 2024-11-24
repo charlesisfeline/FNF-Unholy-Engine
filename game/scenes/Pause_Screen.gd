@@ -88,8 +88,8 @@ func _process(_delta):
 				'Exit To Menu':
 					close()
 					Conductor.reset()
-					Game.switch_scene('menus/freeplay')
-					Discord.change_presence('Maining some Menus', 'In Freeplay')
+					var back_to = 'story_mode' if Game.scene.story_mode else 'freeplay'
+					Game.switch_scene('menus/'+ back_to)
 				_: 
 					Audio.play_sound('cancelMenu')
 

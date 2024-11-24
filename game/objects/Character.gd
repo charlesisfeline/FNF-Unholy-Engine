@@ -123,7 +123,6 @@ func load_char(new_char:String = 'bf') -> void:
 	print('loaded '+ cur_char)
 
 func _process(delta):
-	sing_timer = max(sing_timer - delta, 0)
 	if special_anim:
 		if anim_timer == -1.0:
 			if !animation_finished.is_connected(on_anim_finished):
@@ -137,6 +136,8 @@ func _process(delta):
 	else:
 		if animation.begins_with('sing'):
 			hold_timer += delta
+			sing_timer = max(sing_timer + delta, Conductor.step_crochet * 0.0001)
+
 			
 			var holding = Input.is_action_pressed('note_left') or Input.is_action_pressed('note_down')\
 				or Input.is_action_pressed('note_up') or Input.is_action_pressed('note_right')
@@ -183,11 +184,11 @@ func sing(dir:int = 0, suffix:String = '', reset:bool = true) -> void:
 	hold_timer = 0
 	var to_sing:String = sing_anims[dir] + suffix
 	if !has_anim(to_sing): 
-		printerr('No sing anim ['+ to_sing +'] on '+ cur_char)
+		#printerr('No sing anim ['+ to_sing +'] on '+ cur_char)
 		to_sing = sing_anims[dir]
 		
-	if sing_timer == 0:
-		sing_timer = 0.0 if reset else Conductor.step_crochet / 1000.0
+	if sing_timer >= Conductor.step_crochet / 1000.0 or reset:
+		sing_timer = 0.0 #if reset else Conductor.step_crochet / 1000.0
 		
 		play_anim(to_sing, true)
 		#if is_player:

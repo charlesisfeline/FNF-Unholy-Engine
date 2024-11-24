@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="texture.png" width="1296" height="288">
+	<SubTexture name="Tankman Idle Dance0005" x="433" y="1" width="212" height="280" frameX="-1" frameY="-6" frameWidth="215" frameHeight="286"/>
+	<SubTexture name="Tankman Idle Dance0001" x="1" y="1" width="213" height="277" frameX="-2" frameY="-9" frameWidth="215" frameHeight="286"/>
+	<SubTexture name="Tankman Idle Dance0003" x="217" y="1" width="213" height="278" frameX="-2" frameY="-8" frameWidth="215" frameHeight="286"/>
+	<SubTexture name="Tankman Idle Dance0007" x="648" y="1" width="213" height="286" frameX="-0" frameY="-0" frameWidth="215" frameHeight="286"/>
+	<SubTexture name="Tankman Idle Dance0008" x="864" y="1" width="214" height="286" frameX="-0" frameY="-0" frameWidth="215" frameHeight="286"/>
+	<SubTexture name="Tankman Idle Dance0009" x="1081" y="1" width="214" height="286" frameX="-0" frameY="-0" frameWidth="215" frameHeight="286"/>
+	<SubTexture name="Tankman Idle Dance0002" x="1" y="1" width="213" height="277" frameX="-2" frameY="-9" frameWidth="215" frameHeight="286"/>
+	<SubTexture name="Tankman Idle Dance0004" x="217" y="1" width="213" height="278" frameX="-2" frameY="-8" frameWidth="215" frameHeight="286"/>
+	<SubTexture name="Tankman Idle Dance0006" x="433" y="1" width="212" height="280" frameX="-1" frameY="-6" frameWidth="215" frameHeight="286"/>
+	<SubTexture name="Tankman Idle Dance0010" x="1081" y="1" width="214" height="286" frameX="-0" frameY="-0" frameWidth="215" frameHeight="286"/>
+	<SubTexture name="Tankman Idle Dance0011" x="1081" y="1" width="214" height="286" frameX="-0" frameY="-0" frameWidth="215" frameHeight="286"/>
+	<SubTexture name="Tankman Idle Dance0012" x="1081" y="1" width="214" height="286" frameX="-0" frameY="-0" frameWidth="215" frameHeight="286"/>
+	<SubTexture name="Tankman Idle Dance0013" x="1081" y="1" width="214" height="286" frameX="-0" frameY="-0" frameWidth="215" frameHeight="286"/>
+	<SubTexture name="Tankman Idle Dance0014" x="1081" y="1" width="214" height="286" frameX="-0" frameY="-0" frameWidth="215" frameHeight="286"/>
+</TextureAtlas>

@@ -305,7 +305,7 @@ func _process(delta):
 				if !note.is_sustain and note.modulate != Color.GRAY:
 					note.modulate = Color.GRAY
 					if (tab('Chart', 'HitsoundsL').button_pressed and !note.must_press):
-						Audio.play_sound('hitsound', tab('Chart', 'HitsoundsL/Vol').value)
+						Audio.play_sound('hitsnap', tab('Chart', 'HitsoundsL/Vol').value)
 					
 					if (tab('Chart', 'HitsoundsR').button_pressed and note.must_press):
 						Audio.play_sound('hitsound', tab('Chart', 'HitsoundsR/Vol').value)
@@ -473,13 +473,21 @@ func _input(event): # this is better
 		if Input.is_key_pressed(KEY_ENTER):
 			Conductor.reset_beats()
 			Conductor.paused = true
+			var c = [null, null, null]
 			if char_list.size() - 1 >= tab('Song', 'Player1').selected:
-				SONG.player1 = char_list[tab('Song', 'Player1').selected]
+				c[0] = char_list[tab('Song', 'Player1').selected]
 			if char_list.size() - 1 >= tab('Song', 'Player2').selected:
-				SONG.player2 = char_list[tab('Song', 'Player2').selected]
+				c[1] = char_list[tab('Song', 'Player2').selected]
 			if char_list.size() - 1 >= tab('Song', 'GF').selected:
-				SONG.gfVersion = char_list[tab('Song', 'GF').selected]
-	
+				c[2] = char_list[tab('Song', 'GF').selected]
+			
+			if SONG.has('players'):
+				SONG.players = c
+			else:
+				SONG.player1 = c[0]
+				SONG.player2 = c[1]
+				SONG.gfVersion = c[2]
+				
 			
 			SONG.bpm = tab('Song', 'BPM').value
 			SONG.speed = tab('Song', 'Speed').value

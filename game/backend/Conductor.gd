@@ -123,9 +123,9 @@ func _process(delta):
 			beat_hit.emit(cur_beat)
 			
 			var beats:int = 4
-			if Game.scene.get('SONG') != null and Game.scene.SONG.has('notes') and JsonHandler.parse_type != 'v_slice':
+			if Game.scene != null and Game.scene.get('SONG') != null and JsonHandler.parse_type != 'v_slice':
 				var son = Game.scene.SONG
-				if son.notes.size() > cur_section and son.notes[cur_section].has('sectionBeats'):
+				if son.notes.size() > cur_section and son.has('notes') and son.notes[cur_section].has('sectionBeats'):
 					beats = son.notes[cur_section].sectionBeats
 				
 			if cur_beat % beats == 0:

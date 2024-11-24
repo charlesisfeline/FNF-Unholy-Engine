@@ -1,0 +1,163 @@
+[gd_scene load_steps=8 format=3 uid="uid://dcc3n6k7cac8y"]
+
+[ext_resource type="Texture2D" uid="uid://c2kgfrmj64m2t" path="res://assets/images/ui/tiny_bf.png" id="1_nkmks"]
+[ext_resource type="Texture2D" uid="uid://dylyqakqm14uk" path="res://assets/images/ui/playControls.png" id="2_8rd16"]
+
+[sub_resource type="GDScript" id="GDScript_s273s"]
+script/source = "extends Control
+
+
+var loop_song:bool = false
+
+func _ready() -> void:
+	Conductor.load_song('bopeebo')
+	Conductor.song_end.connect(song_finished)
+
+var progress:float = 0.0
+func _process(delta: float) -> void:
+	progress = (abs(Conductor.song_pos / Conductor.song_length) * 100.0)
+	$Progress.value = progress
+
+func song_finished():
+	if !loop_song:
+		Conductor.paused = true
+"
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_goe3p"]
+atlas = ExtResource("1_nkmks")
+region = Rect2(0, 0, 75, 0)
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_jpbml"]
+color = Color(0.0279876, 0.2074, 0.744661, 1)
+thickness = 7
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0wqaq"]
+bg_color = Color(0.452244, 0.651137, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qkmuo"]
+bg_color = Color(0.464648, 0.622138, 1, 1)
+
+[node name="MusicPlayer" type="CanvasLayer"]
+script = SubResource("GDScript_s273s")
+
+[node name="BG" type="ColorRect" parent="."]
+custom_minimum_size = Vector2(600, 75)
+offset_left = 272.0
+offset_top = 183.0
+offset_right = 872.0
+offset_bottom = 543.0
+scale = Vector2(1.26953, 0.164062)
+color = Color(0, 0, 0, 0.705882)
+
+[node name="BG2" type="Polygon2D" parent="."]
+position = Vector2(-239, -62)
+scale = Vector2(3.32303, 0.418197)
+color = Color(0, 0, 0, 0.705882)
+polygon = PackedVector2Array(185, 500, 153.7, 586, 383.08, 586, 353, 500)
+
+[node name="Song" type="Label" parent="."]
+offset_left = 282.0
+offset_top = 195.0
+offset_right = 388.0
+offset_bottom = 218.0
+text = "SONG NAME!!"
+
+[node name="Time" type="Label" parent="."]
+offset_left = 942.0
+offset_top = 200.0
+offset_right = 1021.0
+offset_bottom = 223.0
+text = "0:00 / 9:99"
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(658, 213)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_8rd16")
+
+[node name="Progress" type="HSlider" parent="."]
+anchors_preset = -1
+anchor_right = 0.441
+anchor_bottom = 0.069
+offset_left = 370.0
+offset_top = 135.0
+offset_right = 370.52
+offset_bottom = 152.086
+theme_override_icons/grabber = SubResource("AtlasTexture_goe3p")
+theme_override_styles/slider = SubResource("StyleBoxLine_jpbml")
+theme_override_styles/grabber_area = SubResource("StyleBoxFlat_0wqaq")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxFlat_qkmuo")
+step = 0.01
+value = 50.0
+
+[node name="Buttons" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 21.0
+offset_top = 21.0
+offset_right = 327.0
+offset_bottom = 22.0
+
+[node name="Play" type="Sprite2D" parent="Buttons"]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_8rd16")
+centered = false
+hframes = 6
+
+[node name="Pause" type="Sprite2D" parent="Buttons"]
+position = Vector2(32, 0)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_8rd16")
+centered = false
+hframes = 6
+frame = 1
+
+[node name="Stop" type="Sprite2D" parent="Buttons"]
+position = Vector2(72, 0)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_8rd16")
+centered = false
+hframes = 6
+frame = 2
+
+[node name="Loop" type="Sprite2D" parent="Buttons"]
+position = Vector2(120, 0)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_8rd16")
+centered = false
+hframes = 6
+frame = 3
+
+[node name="Rewind" type="Sprite2D" parent="Buttons"]
+position = Vector2(168, 0)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_8rd16")
+centered = false
+hframes = 6
+frame = 4
+
+[node name="SkipBack" type="Sprite2D" parent="Buttons"]
+position = Vector2(216, 0)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_8rd16")
+centered = false
+hframes = 6
+frame = 5
+
+[node name="SkipForward" type="Sprite2D" parent="Buttons"]
+position = Vector2(260, 0)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_8rd16")
+centered = false
+flip_h = true
+hframes = 6
+frame = 5
+
+[node name="FastForward" type="Sprite2D" parent="Buttons"]
+position = Vector2(308, 0)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_8rd16")
+centered = false
+flip_h = true
+hframes = 6
+frame = 4

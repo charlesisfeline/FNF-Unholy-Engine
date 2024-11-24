@@ -7,9 +7,8 @@ enum FORMAT {
 	PSYCH_V1,
 	FPS_PLUS,
 	CODENAME,
+	MARU,
 	OSU
-	# vv unfinished vv
-	#MARU
 }
 var format:FORMAT = FORMAT.LEGACY
 
@@ -27,6 +26,8 @@ func load_chart(data, chart_type:String = 'psych', diff:String = 'normal') -> Ar
 			le_parse = VSlice.new(diff)
 		FORMAT.CODENAME:
 			le_parse = Codename.new()
+		FORMAT.MARU:
+			le_parse = Maru.new()
 		FORMAT.OSU:
 			le_parse = Osu.new()
 			le_parse.load_file(data.song)
@@ -76,7 +77,7 @@ func get_events(SONG:Dictionary) -> Array[EventData]:
 				for note in sec.sectionNotes:
 					if note[1] == -1: 
 						events_found.append([note[0], [[note[2], note[3], note[4]]]])
-		else:
+		elif json.has('events'):
 			events_found.append_array(json.events)
 	
 	for event in events_found:
@@ -84,6 +85,7 @@ func get_events(SONG:Dictionary) -> Array[EventData]:
 			FORMAT.V_SLICE: events.append(EventData.new(event, 'v_slice'))
 			FORMAT.CODENAME: pass
 			FORMAT.FPS_PLUS: pass
+			FORMAT.MARU: pass
 			_:
 				for i in event[1]:
 					events.append(EventData.new([event[0], i]))
@@ -99,5 +101,5 @@ func get_format(f:String) -> FORMAT:
 		'codename': e = FORMAT.CODENAME
 		'fps_plus': e = FORMAT.FPS_PLUS
 		'osu': e = FORMAT.OSU
-		#'maru': e = FORMAT.MARU
+		'maru': e = FORMAT.MARU
 	return e

@@ -13,6 +13,6 @@
 	"weekName": "Tutorial",
 	"startUnlocked": true,
 
-	"hideStoryMode": false,
+	"hideStory": true,
 	"hideFreeplay": false
 }

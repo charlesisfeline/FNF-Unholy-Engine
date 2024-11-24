@@ -21,14 +21,15 @@ func parse_song(song:String, diff:String, variant:String = '', auto_create:bool 
 	if !variant.is_empty(): 
 		if variant != 'normal' and !variant.begins_with('-'):
 			variant = '-'+ variant
-			song_root = Game.format_str(song)
 		else:
 			variant = ''
 	
+	# TODO figure out a better way to get chart types, this a lil dookie
 	song = Game.format_str(song)
 	song_variant = variant
 	if ResourceLoader.exists('res://assets/songs/'+ song +'/chart'+ song_variant +'.json'):
 		parse_type = 'v_slice'
+		song_root = song
 		
 	if FileAccess.file_exists('res://assets/songs/'+ song +'/charts/'+ diff +'.osu'):
 		parse_type = 'osu'
@@ -42,7 +43,8 @@ func parse_song(song:String, diff:String, variant:String = '', auto_create:bool 
 		
 	if _SONG.has('codenameChart'): parse_type = 'codename'
 	if _SONG.has('gf'): parse_type = 'fps_plus'
-	
+	if _SONG.has('players'): parse_type = 'maru'
+
 	var meta_path:String = 'res://assets/songs/'+ song +'/%s.json'
 	var meta:Dictionary = {}
 	match parse_type:
@@ -78,7 +80,7 @@ func get_song_data(song:String) -> Dictionary:
 	var parsed = JSON.parse_string(json.get_as_text())
 	if parsed.has('song') and parsed.song is Dictionary:
 		parsed = parsed.song # i dont want to have to do no SONG.song.bpm or something
-		parse_type = 'legacy'
+		if parse_type == 'psych_v1': parse_type = 'legacy'
 		
 	return parsed 
 
@@ -159,7 +161,8 @@ func get_character(character:String = 'bf'):
 	return JSON.parse_string(file.get_as_text())
 
 func parse_week(week:String = 'week1') -> Dictionary: # in week folder
-	week = week.replace('.json', '')
-	var week_json = FileAccess.open('res://assets/data/weeks/'+ week.strip_edges() +'.json', FileAccess.READ)
+	week = week.to_lower().strip_edges().replace('.json', '')
+	var week_json = FileAccess.open('res://assets/data/weeks/'+ week +'.json', FileAccess.READ)
 	var json = JSON.parse_string(week_json.get_as_text())
+	json.file_name = week
 	return json

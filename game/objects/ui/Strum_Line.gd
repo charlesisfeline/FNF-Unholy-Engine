@@ -32,7 +32,7 @@ func _ready():
 func get_strums() -> Array[Strum]:
 	return [$Left, $Down, $Up, $Right]
 	
-func set_all_skins(skin:String = ''):
+func set_all_skins(skin:String = '') -> void:
 	for i in get_strums():
 		i.load_skin(skin)
 	
@@ -41,15 +41,13 @@ func note_hit(note:Note) -> void:
 	
 	if singer != null:
 		if !note.no_anim:
-			if note.type == 'Hey':
-				singer.play_anim('hey', true)
-				singer.anim_timer = 0.6
-			else:
-				singer.sing(note.dir, note.alt, !note.is_sustain)
-				#if note.is_sustain:
-				#	singer.sing_timer = (note.length / Conductor.step_crochet) * 1.5
-				#	print(singer.sing_timer)
-			
+			match note.type:
+				'Hey':
+					singer.play_anim('hey', true)
+					singer.anim_timer = 0.6
+				_:
+					singer.sing(note.dir, note.alt, !note.is_sustain)
+	
 	var can_splash = note.rating == 'sick' or note.rating == 'epic'
 	if Prefs.note_splashes == 'all' or \
 	  (Prefs.note_splashes == 'epics' and note.rating == 'epic') or \
@@ -60,7 +58,7 @@ func note_miss(note:Note) -> void:
 	if singer != null:
 		singer.sing(note.dir, 'miss')
 		if note.length > 0:
-			singer.anim_timer = note.length / Conductor.step_crochet * 0.16
+			singer.anim_timer = 0.5 + (note.length / Conductor.step_crochet * 0.16)
 
 var total_splash:Array[AnimatedSprite2D] = []
 func spawn_splash(strum:Strum) -> void:
@@ -71,15 +69,10 @@ func spawn_splash(strum:Strum) -> void:
 		
 	var new_splash:AnimatedSprite2D = SPLASH.instantiate()
 	new_splash.strum = strum
-	#new_splash.speed_scale = 1.0 / (Conductor.step_crochet / 100.0)
 	new_splash.on_anim_finish = func():
-		#new_splash.on_anim_finish = func():
 		total_splash.remove_at(total_splash.find(new_splash))
 		remove_child(new_splash)
 		new_splash.queue_free()
-		#new_splash.animation_finished.connect(new_splash.on_anim_finish)
-		#new_splash.play_backwards(new_splash.animation)
-	
 		
 	add_child(new_splash)
 	move_child(new_splash, 4)

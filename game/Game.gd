@@ -5,7 +5,11 @@ signal focus_change(is_focused) # when you click on/off the game window
 var TRANS = preload('res://game/objects/ui/transition.tscn') # always have it loaded for instantiating
 var cur_trans
 
-var persist = {'deaths': 0} # var values to remember
+var persist = { # var values to remember
+	'week_int': -1, 'week_diff': -1,
+	'song_list': [],
+	'deaths': 0
+} 
 var scene:Node2D = null:
 	get: return get_tree().current_scene
 	
@@ -63,10 +67,15 @@ func center_obj(obj = null, axis:String = 'xy') -> void:
 		'y': obj.position.y = (screen[1] / 2) #- (obj_size.y / 2)
 		_: obj.position = Vector2(screen[0] / 2, screen[1] / 2)
 
+#func set_scene_var(var_name:String, to:Variant = null):
+#	if Game.scene != null and Game.scene.get(var_name) != null:
+#		Game.scene.set(var_name, to)
+
 func reset_scene(_skip_trans:bool = false) -> void:
 	get_tree().reload_current_scene()
 
-func switch_scene(to_scene, skip_trans:bool = false) -> void:	
+func switch_scene(to_scene, skip_trans:bool = false) -> void:
+	Audio.sync_beats = false
 	if ((to_scene is not String) and (to_scene is not PackedScene)) or to_scene == null:
 		printerr('Switch Scene: new scene is invalid')
 		return
@@ -151,7 +160,7 @@ func get_alias(antialiased:bool = true) -> CanvasItem.TextureFilter:
 	return CanvasItem.TEXTURE_FILTER_LINEAR if antialiased else CanvasItem.TEXTURE_FILTER_NEAREST
 	
 func to_time(secs:float, is_milli:bool = true, show_ms:bool = false) -> String:
-	if is_milli: secs = secs / 1000
+	if is_milli: secs = secs / 1000.0
 	var time_part1:String = str(int(secs / 60)) + ":"
 	var time_part2:int = int(secs) % 60
 	if time_part2 < 10:

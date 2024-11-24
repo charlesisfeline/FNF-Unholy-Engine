@@ -1,10 +1,10 @@
-class_name Legacy; extends Chart
+class_name Maru; extends Chart;
 
-var p_v1:bool = false
-func _init(s:bool = false): p_v1 = s
-
+var last_must:bool = false
 func parse_chart(data) -> Array:
 	for sec in data.notes:
+		last_must = sec.mustHitSection if sec.has('mustHitSection') else true
+		if !sec.has('sectionNotes'): continue
 		for note in sec.sectionNotes:
 			if note[1] < 0: continue
 			var time:float = maxf(0, note[0])
@@ -14,8 +14,7 @@ func parse_chart(data) -> Array:
 			var is_sustain:bool = sustain_len > 0
 			
 			var n_data:int = int(note[1])
-			var must_hit:bool = sec.mustHitSection if note[1] <= 3 else not sec.mustHitSection
-			if p_v1: must_hit = n_data < 4
+			var must_hit:bool = last_must if note[1] <= 3 else !last_must
 				
 			var n_type:String = str(note[3]) if note.size() > 3 else ''
 			if n_type == 'true': n_type = 'Alt'

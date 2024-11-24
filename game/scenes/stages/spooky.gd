@@ -11,6 +11,9 @@ func _ready():
 
 var lightning_beat:int = 0
 var lighting_offset:int = 8
+func song_start():
+	lightning_beat = 0
+
 func beat_hit(beat):
 	if Game.rand_bool(10) and beat > lightning_beat + lighting_offset:
 		strike()
