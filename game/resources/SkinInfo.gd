@@ -4,11 +4,13 @@ var cur_skin:String = 'default' # just the current skin as a string
 var strum_skin:SpriteFrames = preload('res://assets/images/ui/skins/default/strums.res')
 var rating_skin:Texture2D = preload('res://assets/images/ui/skins/default/ratings.png')
 var num_skin:Texture2D = preload('res://assets/images/ui/skins/default/nums.png')
+var timing_skin:Texture2D = preload('res://assets/images/ui/skins/default/timings.png')
 
 var strum_scale:Vector2 = Vector2(0.7, 0.7)
 var note_scale:Vector2 = Vector2(0.7, 0.7)
 var rating_scale:Vector2 = Vector2(0.7, 0.7)
 var num_scale:Vector2 = Vector2(0.5, 0.5)
+var time_scale:Vector2 = Vector2(0.7, 0.7)
 
 var note_width:float = 157.0
 

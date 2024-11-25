@@ -29,7 +29,7 @@ var credits:Array[Array] = [
 		
 	['drew me fnf bfs', 'yeaha babye!!'],
 	['Ashley', 'puta', 'drew a bf i think idk', \
-		Color.CYAN, func(): pass],
+		Color.CYAN, func(): Prefs.femboy = !Prefs.femboy],
 	['Moonlight', 'moonlight', 'drew a bf i think idk', \
 		Color.CYAN, func(): pass],
 	['Betty', 'empty', 'madly in love with daniel', \

@@ -103,9 +103,9 @@
 		"offsets": [-200, 305],
 		"scale": 1,
 		"addons": [
-			["tankman-body", [-100, -85], 1, true, 0],
+			["tankman-body", [-100, -85], 1, true, true],
 			["tankman-head2", [-120, -215], 1, true],
-			["tankman-body", [510, -85], 1, false, 0],
+			["tankman-body", [510, -85], 1, false, true],
 			["tankman-head1", [445, -215], 1, false]
 		]
 	},

@@ -19,6 +19,6 @@ func bump(forced:bool = true) -> void:
 			if forced: i.frame = 0
 
 func _process(delta:float) -> void:
-	if parent != null: position = parent.position + offsets
+	#if parent != null: position = parent.position + offsets
 	for i in addons:
-		i.position = position
+		i.position = position + offset

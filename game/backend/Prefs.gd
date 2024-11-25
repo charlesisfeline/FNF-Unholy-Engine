@@ -37,6 +37,7 @@ var splash_sprite:String = 'haxe'
 var behind_strums:bool = false
 var rating_cam:String = 'game'
 var chart_grid:bool = true
+var femboy:bool = false
 
 var daniel:bool = false: # if you switch too much, it'll break lol
 	set(dani): 

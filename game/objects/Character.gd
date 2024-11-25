@@ -35,7 +35,7 @@ var anim_timer:float = -1.0: # play an anim for a certain amount of time
 		anim_timer = time
 		if !special_anim and time > 0:
 			special_anim = true
-			
+
 var on_anim_finished:Callable = func():
 	special_anim = false
 	can_dance = true
@@ -102,7 +102,7 @@ func load_char(new_char:String = 'bf') -> void:
 		speaker_data = json.speaker
 	
 	dance_idle = offsets.has('danceLeft') and offsets.has('danceRight')
-	if dance_idle: dance_beat = 1
+	dance_beat = 1 if dance_idle else 2
 	
 	match(cur_char):
 		'senpai-angry':
@@ -145,7 +145,12 @@ func _process(delta):
 			var boogie = (!is_player or (is_player and !holding)) and can_dance 
 			if hold_timer >= Conductor.step_crochet * (0.0011 * sing_duration) and boogie:
 				dance()
-			
+	
+	if cur_char.contains('-car') and offsets.has(animation +'-loop') and \
+	  frame >= sprite_frames.get_frame_count(animation) - 1:
+		looping = true
+		frame = sprite_frames.get_frame_count(animation) - 5
+		
 	if !chart.is_empty():
 		for i in chart: # [0] = strum time, [1] = direction, [2] = is sustain, [3] = length
 			if i[2]:
@@ -161,7 +166,7 @@ func _process(delta):
 
 func dance(forced:bool = false) -> void:
 	if special_anim or !can_dance: return
-	#if looping: forced = true
+	if looping: forced = true
 	var idle:String = 'idle'
 	if cur_char.contains('-dead'): 
 		idle = 'deathLoop'
@@ -184,6 +189,7 @@ func sing(dir:int = 0, suffix:String = '', reset:bool = true) -> void:
 	hold_timer = 0
 	var to_sing:String = sing_anims[dir] + suffix
 	if !has_anim(to_sing): 
+		if suffix == 'miss': return
 		#printerr('No sing anim ['+ to_sing +'] on '+ cur_char)
 		to_sing = sing_anims[dir]
 		
@@ -258,15 +264,16 @@ func has_anim(anim:String) -> bool:
 	return sprite_frames.has_animation(anim) if sprite_frames != null else false
 
 static func get_closest(char_name:String = 'bf') -> String: # if theres no character named "pico-but-devil" itll just use "pico"
-	for file in DirAccess.get_files_at('res://assets/data/characters'):
+	var char_list = DirAccess.get_files_at('res://assets/data/characters')
+	for file in char_list:
 		file = file.replace('.json', '')
-		if file.to_lower().contains(char_name): return file
-		
-	for i in char_name.split('-'): # get more specific
-		for file in DirAccess.get_files_at('res://assets/data/characters'):
+		if char_name.to_lower().contains(file): return file # i might be stupid 
+	
+	for i in char_name.split('-'): # get more specific and stop caring
+		for file in char_list:
 			file = file.replace('.json', '')
 			if i.to_lower().contains(file): return file
-			
+		
 	return 'bf'
 
 #func get_anim(anim:String): # get the animation from the json file

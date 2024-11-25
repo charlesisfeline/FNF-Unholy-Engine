@@ -13,9 +13,15 @@ var min_values = []
 var max_values = []
 
 var parent = null
-var offsets:Vector2 = Vector2.ZERO
+var unedited_pos:Vector2 = Vector2.ZERO
+var offset:Vector2 = Vector2.ZERO:
+	set(off):
+		unedited_pos = position - offset
+		offset = off
+		position = unedited_pos + offset
+		
 func _process(_delta):
-	if parent != null: position = parent.position + offsets
+	#if parent != null: position = parent.position + offsets
 	
 	var prev_hz:float = 0.0
 	for i in range(0, 7):

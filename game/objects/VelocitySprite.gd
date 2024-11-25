@@ -20,6 +20,11 @@ func _process(delta):
 		velocity.x += velocity_delta.x * 2.0
 		velocity.y += velocity_delta.y * 2.0
 
+func copy_from(sprite:VelocitySprite):
+	velocity = sprite.velocity
+	acceleration = sprite.acceleration
+	moving = sprite.moving
+	
 static func _compute_velocity(velocity:float, acceleration:float, elapsed:float):
 	return velocity + (acceleration * elapsed if acceleration != 0.0 else 0.0)
 

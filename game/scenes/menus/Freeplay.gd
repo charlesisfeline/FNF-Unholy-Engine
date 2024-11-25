@@ -133,7 +133,7 @@ func change_diff(amount:int = 0) -> void:
 	$SongInfo/Difficulty.text = text
 
 func change_variant(amount:int = 0) -> void:
-	if variant_list.size() <= 1: return
+	if variant_list.size() <= 1: vari_int = 0 # just in case
 	
 	vari_int = wrapi(vari_int + amount, 0, variant_list.size())
 	variant_str = variant_list[vari_int]
