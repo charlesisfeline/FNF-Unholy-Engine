@@ -681,15 +681,15 @@ func do_note_shit(note, dir:int = 0) -> void:
 func check_note() -> void:
 	var clicked_note:bool = false
 	for note in cur_notes:
-		if !note.is_sustain:
-			var note_pos = note.position.x - note.width / 2
-			if mouse_pos.x - 100 >= note_pos and mouse_pos.x - 100 <= note_pos + note.width \
-			and mouse_pos.y >= note.position.y and mouse_pos.y <= note.position.y + note.height:
-				clicked_note = true
-				if Input.is_key_pressed(KEY_CTRL): #Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
-					select_note(note)
-				else:
-					remove_note(note)
+		if note.is_sustain: continue
+		var note_pos = note.position.x - note.width / 2
+		if mouse_pos.x - 100 >= note_pos and mouse_pos.x - 100 <= note_pos + GRID_SIZE \
+		  and mouse_pos.y >= note.position.y and mouse_pos.y <= note.position.y + GRID_SIZE:
+			clicked_note = true
+			if Input.is_key_pressed(KEY_CTRL): #Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
+				select_note(note)
+			else:
+				remove_note(note)
 		
 	if !clicked_note and over_grid: # so you can click notes that are somehow off the grid, but not add more
 		add_note()
