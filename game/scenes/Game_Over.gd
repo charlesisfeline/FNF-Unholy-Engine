@@ -100,7 +100,7 @@ var focused:bool = false
 func _process(delta):
 	$BG.scale = (Vector2.ONE / this.cam.zoom) + Vector2(0.05, 0.05)
 	$BG.position = (get_viewport().get_camera_2d().get_screen_center_position() - (get_viewport_rect().size / 2.0) / this.cam.zoom)
-	$BG.position -= Vector2(5, 5) # you could see the stage bg leak out
+	$BG.position -= Vector2((5 / 1), 5) # you could see the stage bg leak out
 	$Fade.position = $BG.position
 	
 	if (dead.frame >= 14 or dead.anim_finished) and !focused:
