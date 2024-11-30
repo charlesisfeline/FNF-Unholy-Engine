@@ -110,7 +110,7 @@
 	"sing_duration": 4,
 	"speaker": {
 		"sprite": "speaker",
-		"offsets": [-200, 299],
+		"offsets": [-180, 299],
 		"scale": 1,
 		"addons": [
 			["lights", [-80, -40], 1, false]

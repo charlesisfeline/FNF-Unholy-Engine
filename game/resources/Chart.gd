@@ -31,8 +31,10 @@ func load_chart(data, chart_type:String = 'psych', diff:String = 'normal') -> Ar
 		FORMAT.OSU:
 			le_parse = Osu.new()
 			le_parse.load_file(data.song)
-		_: return []
-		
+		_: 
+			printerr('Couldn\'t get chart type')
+			return []
+			
 	return le_parse.parse_chart(data)
 	
 # for loading a chart that isnt named a difficulty
@@ -49,6 +51,7 @@ func load_named_chart(song_name:String, chart_name:String = ''):
 func get_must_hits(player_hit:bool = true) -> Array:
 	var notes:Array = []
 	for i in return_notes:
+		print(i[4])
 		if i[4] == player_hit: notes.append(i)
 	return notes
 

@@ -7,12 +7,11 @@ var spacing:float = 43.0
 
 var ratings_data:Dictionary = {
 	'name':       ['epic', 'sick', 'good', 'bad', 'shit', 'miss'],
-	'score':      [500,   350,    200,   100,    50],
-	'hit_window': [22.5,   45,     90,   135,  null],
+	'score':      [500,       350,    200,   100,    50],
+	'hit_window': [22.5,       45,     90,   135,  null],
 	'color':      ['ff00ff', '68fafc', '48f048', 'fffecb', 'ff0000'],
-	'penalty':    [1.0,   0.9,   0.73,  0.38,  0.10], # the lower it is, the harsher the score loss is
-	# e = ~400-500, s = ~300, g = ~260, b = ~130, sh = ~30
-	'hit_mod':    [1.0,   1.0,   0.75,   0.5,   0.2] # 1.0, 0.9, 0.7, 0.4, 0.2
+	'penalty':    [   1,        1,      1,  0.35,  0.10], # heavily penalize lower rating's score
+	'hit_mod':    [ 1.0,      1.0,   0.75,   0.5,   0.2] # 1.0, 0.9, 0.7, 0.4, 0.2
 }
 
 func get_rating(diff:float) -> String:

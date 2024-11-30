@@ -1,0 +1,5 @@
+local spr = Sprite.new()
+spr.load_texture('logoBumpin')
+spr.position = Vector2(300, 200)
+spr.scale = Vector2(0.7, 0.7)
+Game.add_child(spr)

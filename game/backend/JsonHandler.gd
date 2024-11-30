@@ -27,9 +27,10 @@ func parse_song(song:String, diff:String, variant:String = '', auto_create:bool 
 	# TODO figure out a better way to get chart types, this a lil dookie
 	song = Game.format_str(song)
 	song_variant = variant
+	song_root = song
+
 	if ResourceLoader.exists('res://assets/songs/'+ song +'/chart'+ song_variant +'.json'):
 		parse_type = 'v_slice'
-		song_root = song
 		
 	if FileAccess.file_exists('res://assets/songs/'+ song +'/charts/'+ diff +'.osu'):
 		parse_type = 'osu'
@@ -40,7 +41,8 @@ func parse_song(song:String, diff:String, variant:String = '', auto_create:bool 
 	else:
 		var grossu = Osu.new()
 		_SONG = grossu.load_file(song)
-		
+	
+	if _SONG.has('scrollSpeed'): parse_type = 'v_slice'
 	if _SONG.has('codenameChart'): parse_type = 'codename'
 	if _SONG.has('gf'): parse_type = 'fps_plus'
 	if _SONG.has('players'): parse_type = 'maru'
@@ -123,6 +125,7 @@ func you_WILL_get_a_json(song:String) -> FileAccess:
 		get_diff = 'hard'
 		return you_WILL_get_a_json('tutorial')
 
+	#ResourceLoader.load_threaded_request(path)
 	print('Got json: '+ returned)
 	return FileAccess.open(returned, FileAccess.READ)
 

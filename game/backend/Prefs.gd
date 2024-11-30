@@ -3,7 +3,7 @@ extends Node2D
 var saved_prefs:ConfigFile = ConfigFile.new()
 ## GAMEPLAY ##
 var auto_play:bool = false
-var ghost_tapping:bool = true
+var ghost_tapping:String = 'on'
 var scroll_type:String = 'up'
 var center_strums:bool = false
 var legacy_score:bool = false

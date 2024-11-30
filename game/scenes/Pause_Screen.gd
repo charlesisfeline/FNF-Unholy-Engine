@@ -75,6 +75,7 @@ func _process(_delta):
 					get_tree().paused = false
 				'Restart Song':
 					close()
+					LuaHandler.remove_all()
 					Conductor.reset()
 					Game.reset_scene()
 				'Change Difficulty':
@@ -87,6 +88,7 @@ func _process(_delta):
 					#add_child(wah)
 				'Exit To Menu':
 					close()
+					LuaHandler.remove_all()
 					Conductor.reset()
 					var back_to = 'story_mode' if Game.scene.story_mode else 'freeplay'
 					Game.switch_scene('menus/'+ back_to)

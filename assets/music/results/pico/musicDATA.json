@@ -1,0 +1,25 @@
+{
+    "perfect": {
+        "artist": "Saruky",
+        "songName": "Shootin' Ropes (Pico Perfect)",
+        "bpm": 1
+    },      
+
+    "excellent": {
+        "artist": "Kawai Sprite",
+        "songName": "Pico Excellent",
+        "bpm": 1
+    },
+      
+    "normal": {
+        "artist": "Kawai Sprite",
+        "songName": "Pico Good",
+        "bpm": 145
+    },
+    
+    "shit": {
+        "artist": "Kawai Sprite",
+        "songName": "Pico Loss",
+        "bpm": 90
+    }  
+}

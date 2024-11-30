@@ -9,11 +9,11 @@ var lerp_points:Array = [-700, 0, 700]
 var gameplay = [ 
 	['auto_play',        'bool'],
 	['legacy_score',     'bool'],
-	['ghost_tapping',    'bool'],
+	['ghost_tapping',    'array', ['on', 'off', 'insta-kill']],
 	['scroll_type',      'array', ['up', 'down', 'left', 'right', 'middle', 'split']],
 	['center_strums',    'bool'],
 	['hitsound_volume',   'int', [0, 100]],
-	['offset',            'int', [0, 300]], 
+	['offset',            'int', [-500, 500]], 
 	['epic_window',     'float', [15, 22.5]], 
 	['sick_window',     'float', [15, 45]], 
 	['good_window',     'float', [15, 90]], 
@@ -190,7 +190,7 @@ class Option extends Alphabet:
 			'array':
 				choices = option_array[2]
 				cur_op = choices.find(str(Prefs.get(option)))
-				vis.text = str(choices[cur_op])
+				vis.text = str(choices[cur_op]).capitalize()
 			'int', 'float':
 				min_val = option_array[2][0]
 				max_val = option_array[2][1]
@@ -219,5 +219,5 @@ class Option extends Alphabet:
 				Prefs.set(option, !a_bool)
 				check.checked = !a_bool
 		if type != 'bool':
-			vis.text = str(Prefs.get(option))
+			vis.text = str(Prefs.get(option)).capitalize()
 		Prefs.save_prefs()

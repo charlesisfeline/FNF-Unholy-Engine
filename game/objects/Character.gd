@@ -153,15 +153,16 @@ func _process(delta):
 		
 	if !chart.is_empty():
 		for i in chart: # [0] = strum time, [1] = direction, [2] = is sustain, [3] = length
+			var dir = int(i[1]) % 4
 			if i[2]:
 				if i[0] <= Conductor.song_pos and i[0] + i[3] > Conductor.song_pos:
-					sing(i[1] % 4, '', false)
+					sing(dir, '', false)
 				if Conductor.song_pos > i[0] + i[3]: # sustain should be finished
 					chart.remove_at(chart.find(i))
 			else:
 				if i[0] <= Conductor.song_pos:
 					var suff:String = str(randi_range(1, 2))
-					sing(i[1] % 4, suff)
+					sing(dir, suff)
 					chart.remove_at(chart.find(i))
 
 func dance(forced:bool = false) -> void:
@@ -178,14 +179,13 @@ func dance(forced:bool = false) -> void:
 	
 	#modulate.v = 1000
 	#test.tween_property(self, 'modulate:v', 1, Conductor.step_crochet / 500.0)
-	
+	LuaHandler.call_func('onCharDance', [cur_char])
 	times_danced += 1
 	play_anim(idle + idle_suffix, forced)
 	hold_timer = 0
 	sing_timer = 0
 
 func sing(dir:int = 0, suffix:String = '', reset:bool = true) -> void:
-	# maybe change this # i dont like how no other animations can play once you hold a sustain
 	hold_timer = 0
 	var to_sing:String = sing_anims[dir] + suffix
 	if !has_anim(to_sing): 

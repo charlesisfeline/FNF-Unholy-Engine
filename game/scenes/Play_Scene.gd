@@ -60,7 +60,9 @@ func _ready():
 	if Game.persist.song_list.size() > 0:
 		story_mode = true
 		playlist = Game.persist.song_list
-
+	
+	LuaHandler.remove_all()
+	
 	SONG = JsonHandler._SONG
 	#if Prefs.femboy: SONG.player1 = 'bf-femboy'
 	if Prefs.daniel and !SONG.player1.contains('bf-girl'):
@@ -184,10 +186,10 @@ func _ready():
 	
 	if Prefs.rating_cam == 'game':
 		Judge.rating_pos = boyfriend.position + Vector2(0, -40)
-		Judge.combo_pos = boyfriend.position + Vector2(-150, 60)
+		Judge.combo_pos = boyfriend.position + Vector2(-150, 70)
 	elif Prefs.rating_cam == 'hud':
 		Judge.rating_pos = Vector2(580, 300)
-		Judge.combo_pos = Vector2(450, 400)
+		Judge.combo_pos = Vector2(420, 420)
 	
 	Discord.change_presence('Starting '+ SONG.song.capitalize())
 	
@@ -208,6 +210,7 @@ func _ready():
 	
 	ui.start_countdown(true)
 	
+	LuaHandler.add_script('')
 	if JsonHandler.parse_type == 'v_slice': move_cam('dad')
 	section_hit(0) #just for 1st section stuff
 	
@@ -375,9 +378,12 @@ func key_press(key:int = 0) -> void:
 	
 	var last = ui.get_group('player').get_strums()
 	if hittable_notes.is_empty():
-		if !Prefs.ghost_tapping:
-			ui.hp = 0
-			try_death()
+		if Prefs.ghost_tapping != 'on':
+			if Prefs.ghost_tapping == 'insta-kill':
+				ui.hp = 0
+				try_death()
+			else:
+				ghost_tap(key)
 	else:
 		var note:Note = hittable_notes[0]
 		#if note.gf: last = ui.get_group('gf').get_strums()
@@ -563,6 +569,7 @@ func good_note_hit(note:Note) -> void:
 		note_miss(note)
 		return
 	
+	LuaHandler.call_func('goodNoteHit', [note.dir])
 	if Conductor.vocals.stream != null: 
 		Conductor.vocals.volume_db = linear_to_db(1.0)
 		
@@ -583,8 +590,9 @@ func good_note_hit(note:Note) -> void:
 	grace = combo > 10
 	pop_up_combo([note.rating, combo, time])
 	var to_add = int(300 * (((1.0 + exp(-0.08 * (abs(time) - 40))) + 66.3)) / (55.0 / judge_info[2])) # good enough im happy
-	score += judge_info[0] if Prefs.legacy_score else to_add
 	# 500 is the perfect hit score amount
+	
+	score += judge_info[0] if Prefs.legacy_score else to_add
 	#print(int(300 * (((1.0 + exp(-0.08 * (abs(time) - 40))) + 66.3)) / (55 / judge_info[2])))
 	ui.note_percent += judge_info[1]
 	ui.total_hit += 1
@@ -614,6 +622,8 @@ func good_sustain_press(sustain:Note, delt:float = 0.0) -> void:
 			if Conductor.vocals.stream != null: 
 				Conductor.vocals.volume_db = linear_to_db(1.0) 
 			
+			LuaHandler.call_func('goodSustainPress', [sustain.dir])
+
 			if section_data != null:
 				if section_data.has('gfSection') and section_data.gfSection and section_data.mustHitSection: sustain.gf = true
 			
@@ -630,7 +640,8 @@ func good_sustain_press(sustain:Note, delt:float = 0.0) -> void:
 
 func opponent_note_hit(note:Note) -> void:
 	if note.type.length() > 0: print(note.type, ' dad')
-
+	
+	LuaHandler.call_func('opponentNoteHit', [note.dir])
 	if section_data != null:
 		if section_data.has('altAnim') and section_data.altAnim:
 			note.alt = '-alt'
@@ -653,7 +664,9 @@ func opponent_sustain_press(sustain:Note) -> void:
 	if Conductor.vocals.stream != null:
 		var v = Conductor.vocals_opp if Conductor.mult_vocals else Conductor.vocals
 		v.volume_db = linear_to_db(1)
-		
+	
+	LuaHandler.call_func('opponentSustainPress', [sustain.dir])
+
 	if section_data != null:
 		if section_data.has('altAnim') and section_data.altAnim:
 			sustain.alt = '-alt'
@@ -689,7 +702,9 @@ func note_miss(note:Note) -> void:
 	
 	var be_sad:bool = combo >= 10
 	pop_up_combo(['miss', ('000' if be_sad else '')], true)
-	if be_sad: gf.play_anim('sad')
+	if be_sad: 
+		gf.play_anim('sad')
+		gf.anim_timer = 0.5
 	#if combo >= 5: pop_up_combo('', '000', true)
 		
 	combo = 0
@@ -699,6 +714,28 @@ func note_miss(note:Note) -> void:
 	ui.update_score_txt()
 	#if !note.sustain: 
 	
+func ghost_tap(dir:int):
+	Audio.play_sound('missnote'+ str(randi_range(1, 3)), 0.3)
+	
+	misses += 1
+	ui.hit_count['miss'] = misses
+	boyfriend.sing(dir, 'miss')
+	var away = int(30 + (15 * floor(misses / 3.0)))
+	score -= 10 if Prefs.legacy_score else away
+	
+	ui.total_hit += 1
+	
+	ui.hp -= 2.5 
+	
+	var be_sad:bool = combo >= 10
+	pop_up_combo(['miss', ''], true)
+	if be_sad: 
+		gf.play_anim('sad')
+		gf.anim_timer = 0.5
+	
+	if Conductor.vocals != null:
+		Conductor.vocals.volume_db = linear_to_db(0)
+	ui.update_score_txt()
 	
 func pop_up_combo(_info:Array = ['sick', -1], is_miss:bool = false) -> void:
 	if Prefs.rating_cam != 'none':
@@ -734,6 +771,8 @@ func kill_note(note:Note) -> void:
 	if notes.find(note) != -1:
 		note.spawned = false
 		notes.remove_at(notes.find(note))
+		note.queue_free()
+	else:
 		note.queue_free()
 
 func kill_all_notes() -> void:

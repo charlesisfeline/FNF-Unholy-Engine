@@ -123,7 +123,7 @@ func _process(delta):
 			beat_hit.emit(cur_beat)
 			
 			var beats:int = 4
-			if Game.scene != null and Game.scene.get('SONG') != null and JsonHandler.parse_type != 'v_slice':
+			if Game.scene != null and Game.scene.get('SONG') != null and JsonHandler.parse_type == 'legacy':
 				var son = Game.scene.SONG
 				if son.notes.size() > cur_section and son.has('notes') and son.notes[cur_section].has('sectionBeats'):
 					beats = son.notes[cur_section].sectionBeats
@@ -139,12 +139,11 @@ func _process(delta):
 			
 		if song_pos >= song_length and song_loaded:
 			print('Song Finished')
-			
 			song_end.emit()
 		
 		for audio in [inst, vocals, vocals_opp]:
 			if audio.stream != null and audio.playing:
-				if absf(audio.get_playback_position() * 1000 - song_pos) > 20: 
+				if absf((audio.get_playback_position() * 1000) - (song_pos + Prefs.offset)) > 20: 
 					resync_audio()
 				
 func connect_signals() -> void: # connect all signals
@@ -158,7 +157,7 @@ func check_resync(sound:AudioStreamPlayer) -> void: # ill keep this here for now
 		print('resynced')
 
 func resync_audio() -> void:
-	for_all_audio('seek', (song_pos / 1000.0))
+	for_all_audio('seek', ((song_pos + Prefs.offset) / 1000.0))
 	print('resynced audios')
 
 func stop() -> void:
@@ -175,9 +174,12 @@ func start(at_point:float = -1) -> void:
 		song_pos = absf(at_point) / 1000.0
 	for_all_audio('play', song_pos)
 
-#func set_pos(new_pos:float):
-#	pass
-
+# so you dont have to personally check if a vocal/vocal.stream is null
+func vocal_volume(da_vocal:String = 'vocals', to_vol:float = 1.0):
+	var le_voices = get(da_vocal.to_lower())
+	if le_voices != null and le_voices.stream != null:
+		le_voices.volume_db = linear_to_db(0)
+		
 func for_all_audio(do:String, arg = null, is_var:bool = false) -> void:
 	for audio in [inst, vocals, vocals_opp]:
 		if audio.stream == null: continue

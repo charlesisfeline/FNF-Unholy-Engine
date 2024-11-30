@@ -13,6 +13,7 @@ colors = PackedColorArray(0, 0, 0, 1, 0.929412, 0.929412, 0, 0.294118, 1, 1, 1, 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_jc7a4"]
 width = 1220
 height = 75
+normalize = false
 color_ramp = SubResource("Gradient_lh322")
 noise = SubResource("FastNoiseLite_v2hej")
 
@@ -104,10 +105,10 @@ autowrap_mode = 2
 
 [node name="Alert" type="Label" parent="Description"]
 visible = false
-offset_left = 519.0
-offset_top = 690.0
-offset_right = 761.0
-offset_bottom = 727.0
+offset_left = 1010.0
+offset_top = 665.0
+offset_right = 1252.0
+offset_bottom = 702.0
 theme_override_fonts/font = ExtResource("3_cu7cg")
 theme_override_font_sizes/font_size = 16
 text = "Hold Ctrl for more precision"

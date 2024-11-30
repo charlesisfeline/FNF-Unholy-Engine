@@ -1,0 +1,25 @@
+{
+    "perfect": {
+        "artist": "Kawai Sprite",
+        "songName": "Results (Perfect)",
+        "bpm": 1
+    },
+      
+    "excellent": {
+        "artist": "Kawai Sprite",
+        "songName": "Results (Excellent)",
+        "bpm": 126
+    },
+
+    "normal": {
+        "artist": "Kawai Sprite",
+        "songName": "Results (Normal)",
+        "bpm": 1
+    },
+      
+    "shit": {
+        "artist": "Kawai Sprite",
+        "songName": "Results (Shit)",
+        "bpm": 1
+    }     
+}
