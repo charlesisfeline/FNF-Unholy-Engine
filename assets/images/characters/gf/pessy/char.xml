@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="PsychGF.png">
+	<!-- Created with Adobe Animate version 20.0.0.17400 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="pessy bump new0000" x="1441" y="4" width="475" height="540" frameX="0" frameY="-6" frameWidth="475" frameHeight="546"/>
+	<SubTexture name="pessy bump new0001" x="1441" y="4" width="475" height="540" frameX="0" frameY="-6" frameWidth="475" frameHeight="546"/>
+	<SubTexture name="pessy bump new0002" x="4" y="558" width="471" height="532" frameX="-4" frameY="-14" frameWidth="475" frameHeight="546"/>
+	<SubTexture name="pessy bump new0003" x="4" y="558" width="471" height="532" frameX="-4" frameY="-14" frameWidth="475" frameHeight="546"/>
+	<SubTexture name="pessy bump new0004" x="1441" y="552" width="471" height="533" frameX="0" frameY="-13" frameWidth="475" frameHeight="546"/>
+	<SubTexture name="pessy bump new0005" x="1920" y="556" width="471" height="533" frameX="0" frameY="-13" frameWidth="475" frameHeight="546"/>
+	<SubTexture name="pessy bump new0006" x="962" y="557" width="471" height="533" frameX="0" frameY="-13" frameWidth="475" frameHeight="546"/>
+	<SubTexture name="pessy bump new0007" x="2403" y="4" width="471" height="539" frameX="0" frameY="-7" frameWidth="475" frameHeight="546"/>
+	<SubTexture name="pessy bump new0008" x="2403" y="4" width="471" height="539" frameX="0" frameY="-7" frameWidth="475" frameHeight="546"/>
+	<SubTexture name="pessy bump new0009" x="962" y="4" width="471" height="545" frameX="0" frameY="-1" frameWidth="475" frameHeight="546"/>
+	<SubTexture name="pessy bump new0010" x="962" y="4" width="471" height="545" frameX="0" frameY="-1" frameWidth="475" frameHeight="546"/>
+	<SubTexture name="pessy bump new0011" x="4" y="4" width="471" height="546" frameX="0" frameY="0" frameWidth="475" frameHeight="546"/>
+	<SubTexture name="pessy bump new0012" x="4" y="4" width="471" height="546" frameX="0" frameY="0" frameWidth="475" frameHeight="546"/>
+	<SubTexture name="pessy bump new0013" x="483" y="4" width="471" height="546" frameX="0" frameY="0" frameWidth="475" frameHeight="546"/>
+	<SubTexture name="pessy bump new0014" x="483" y="4" width="471" height="546" frameX="0" frameY="0" frameWidth="475" frameHeight="546"/>
+	<SubTexture name="pessy bump new0015" x="3361" y="4" width="475" height="534" frameX="0" frameY="-12" frameWidth="475" frameHeight="546"/>
+	<SubTexture name="pessy bump new0016" x="3361" y="4" width="475" height="534" frameX="0" frameY="-12" frameWidth="475" frameHeight="546"/>
+	<SubTexture name="pessy bump new0017" x="483" y="558" width="471" height="532" frameX="-4" frameY="-14" frameWidth="475" frameHeight="546"/>
+	<SubTexture name="pessy bump new0018" x="483" y="558" width="471" height="532" frameX="-4" frameY="-14" frameWidth="475" frameHeight="546"/>
+	<SubTexture name="pessy bump new0019" x="3361" y="546" width="471" height="536" frameX="0" frameY="-10" frameWidth="475" frameHeight="546"/>
+	<SubTexture name="pessy bump new0020" x="2403" y="551" width="471" height="536" frameX="0" frameY="-10" frameWidth="475" frameHeight="546"/>
+	<SubTexture name="pessy bump new0021" x="2882" y="551" width="471" height="536" frameX="0" frameY="-10" frameWidth="475" frameHeight="546"/>
+	<SubTexture name="pessy bump new0022" x="2882" y="4" width="471" height="539" frameX="0" frameY="-7" frameWidth="475" frameHeight="546"/>
+	<SubTexture name="pessy bump new0023" x="2882" y="4" width="471" height="539" frameX="0" frameY="-7" frameWidth="475" frameHeight="546"/>
+	<SubTexture name="pessy bump new0024" x="1924" y="4" width="471" height="544" frameX="0" frameY="-2" frameWidth="475" frameHeight="546"/>
+	<SubTexture name="pessy bump new0025" x="1924" y="4" width="471" height="544" frameX="0" frameY="-2" frameWidth="475" frameHeight="546"/>
+	<SubTexture name="pessy bump new0026" x="4" y="4" width="471" height="546" frameX="0" frameY="0" frameWidth="475" frameHeight="546"/>
+	<SubTexture name="pessy bump new0027" x="4" y="4" width="471" height="546" frameX="0" frameY="0" frameWidth="475" frameHeight="546"/>
+	<SubTexture name="pessy bump new0028" x="483" y="4" width="471" height="546" frameX="0" frameY="0" frameWidth="475" frameHeight="546"/>
+	<SubTexture name="pessy bump new0029" x="483" y="4" width="471" height="546" frameX="0" frameY="0" frameWidth="475" frameHeight="546"/>
+</TextureAtlas>

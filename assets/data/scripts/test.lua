@@ -1,10 +1,22 @@
--- same as extraChar example but this follows a chart
---[[local leJson = parse_json('songs/bopeebo/chart-erect') -- parse_json starts in 'assets/'
-local funny = Chart.new()
-funny.load_chart(leJson, 'v_slice', 'nightmare') -- has second param for specifying the chart type (assumes legacy by default)
+--[[local left = Character.new(boyfriend.position - Vector2(180 * boyfriend.scale.x, 360), 'bf-girl', true)
+add_char(left, 'boyfriend')
 
-local char = Character.new(boyfriend.position + Vector2(240, -325), 'pico', true)
-add_char(char)
-char.chart = funny.load_chart(leJson, 'v_slice', 'nightmare') --funny.get_must_hits()
+local up = Character.new(boyfriend.position + Vector2(180, -345), 'bf-femboy', true)
+add_char(up)
 
-print(#char.chart)]]
+local right = Character.new(boyfriend.position + Vector2(300, -325), 'bf-soul', true)
+add_char(right)
+
+function noteAdded(id)
+    --Game.notes[id].no_anim = Game.notes[id].dir ~= 1
+end
+
+function goodNoteHit(i)
+    left.sing(i) boyfriend.sing(i)
+    up.sing(math.abs(i - 3)) right.sing(math.abs(i - 3)) 
+end
+
+function goodSustainPress(i)
+    left.sing(i, '', false) boyfriend.sing(i, '', false)
+    up.sing(math.abs(i - 3), '', false) right.sing(math.abs(i - 3), '', false)
+end]]

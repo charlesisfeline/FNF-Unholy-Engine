@@ -1,0 +1,152 @@
+[gd_scene load_steps=7 format=3 uid="uid://dom5tyfk1in3q"]
+
+[ext_resource type="Script" path="res://game/scenes/debug/CharacterOffsetter.gd" id="1_q8ujq"]
+[ext_resource type="Texture2D" uid="uid://dave1imbc216x" path="res://assets/images/leGrid.png" id="3_0k3qt"]
+[ext_resource type="Shader" path="res://game/resources/shaders/scroll.gdshader" id="3_f84mi"]
+[ext_resource type="Texture2D" uid="uid://daba84ejgj2x1" path="res://assets/images/ui/cross.png" id="4_7buq4"]
+[ext_resource type="FontFile" uid="uid://dnssbi7hjccim" path="res://assets/fonts/vcr.ttf" id="4_e8b0o"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_3m81g"]
+shader = ExtResource("3_f84mi")
+shader_parameter/direction = Vector2(1, 1)
+shader_parameter/speed_scale = 0.3
+
+[node name="CharacterOffsetting" type="Node2D"]
+script = ExtResource("1_q8ujq")
+
+[node name="Backdrop" type="Sprite2D" parent="."]
+texture_repeat = 2
+material = SubResource("ShaderMaterial_3m81g")
+position = Vector2(634, 364)
+texture = ExtResource("3_0k3qt")
+region_enabled = true
+region_rect = Rect2(0, 0, 1300, 800)
+
+[node name="UILayer" type="CanvasLayer" parent="."]
+
+[node name="Window" type="ColorRect" parent="UILayer"]
+custom_minimum_size = Vector2(300, 300)
+offset_left = 950.0
+offset_top = 15.0
+offset_right = 1250.0
+offset_bottom = 315.0
+color = Color(0.489622, 0.489622, 0.489622, 1)
+
+[node name="RichTextLabel" type="RichTextLabel" parent="UILayer"]
+visible = false
+offset_right = 276.0
+offset_bottom = 299.0
+text = "Test
+Anim
+ation
+Names"
+
+[node name="Animations" type="Label" parent="UILayer"]
+offset_left = 70.0
+offset_top = 5.0
+offset_right = 188.0
+offset_bottom = 28.0
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = ExtResource("4_e8b0o")
+theme_override_font_sizes/font_size = 20
+text = "Animations"
+
+[node name="AnimSpeed" type="HSlider" parent="UILayer"]
+offset_left = 1025.0
+offset_top = 285.0
+offset_right = 1240.0
+offset_bottom = 301.0
+focus_mode = 0
+min_value = 0.5
+max_value = 2.0
+step = 0.1
+value = 1.0
+
+[node name="Label" type="Label" parent="UILayer/AnimSpeed"]
+layout_mode = 0
+offset_left = -65.0
+offset_top = -4.0
+offset_right = -6.0
+offset_bottom = 19.0
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = ExtResource("4_e8b0o")
+theme_override_font_sizes/font_size = 20
+text = "Speed"
+vertical_alignment = 1
+
+[node name="CharacterSelect" type="MenuButton" parent="UILayer"]
+offset_left = 961.0
+offset_top = 25.0
+offset_right = 1117.0
+offset_bottom = 56.0
+text = "Change Character"
+flat = false
+
+[node name="CurCharLabel" type="Label" parent="UILayer/CharacterSelect"]
+layout_mode = 0
+offset_left = 165.0
+offset_top = 5.0
+offset_right = 255.0
+offset_bottom = 28.0
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = ExtResource("4_e8b0o")
+text = "bf"
+vertical_alignment = 1
+
+[node name="CurData" type="Control" parent="UILayer"]
+clip_contents = true
+layout_mode = 3
+anchors_preset = 0
+offset_left = 432.0
+offset_top = 15.0
+offset_right = 681.0
+offset_bottom = 148.0
+
+[node name="Anim" type="Label" parent="UILayer/CurData"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.648
+anchor_bottom = 0.14
+offset_left = -8.0
+offset_top = -3.0
+offset_right = 84.992
+offset_bottom = 0.379999
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = ExtResource("4_e8b0o")
+theme_override_font_sizes/font_size = 25
+text = "No Anim Playing"
+horizontal_alignment = 1
+
+[node name="Frame" type="Label" parent="UILayer/CurData"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 31.0
+offset_right = 210.0
+offset_bottom = 80.0
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = ExtResource("4_e8b0o")
+theme_override_font_sizes/font_size = 25
+text = "Frame
+? / ?"
+horizontal_alignment = 1
+
+[node name="Offset" type="Label" parent="UILayer/CurData"]
+layout_mode = 0
+offset_left = 47.0
+offset_top = 98.0
+offset_right = 182.0
+offset_bottom = 121.0
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = ExtResource("4_e8b0o")
+theme_override_font_sizes/font_size = 25
+text = "[0 | 0]"
+horizontal_alignment = 1
+
+[node name="Cam" type="Camera2D" parent="."]
+position = Vector2(624, 360)
+
+[node name="Point" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(568, 368)
+scale = Vector2(5, 5)
+texture = ExtResource("4_7buq4")

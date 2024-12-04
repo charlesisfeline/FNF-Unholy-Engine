@@ -123,7 +123,7 @@ func call_func(to_call:String, args:Array[Variant] = []) -> void:
 		scene.callv(to_call, args)
 
 func format_str(string:String = '') -> String:
-	return string.to_lower().strip_edges().replace(' ', '-').replace('\'', '')
+	return string.to_lower().strip_edges().replace(' ', '-').replace('\'', '').replace(':', '')
 
 func round_d(num:float, digit:int) -> float: # bowomp
 	return round(num * pow(10.0, digit)) / pow(10.0, digit)
@@ -138,6 +138,7 @@ func remove_all(array:Array[Array], node) -> void:
 			node.remove_child(sub[0])
 			sub[0].queue_free()
 			sub.pop_front()
+		sub.clear()
 			
 func get_key_from_byte(btye:int) -> String:
 	var key:String = OS.get_keycode_string(btye)

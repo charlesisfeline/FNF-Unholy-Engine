@@ -71,11 +71,11 @@ func return_sound(sound:String, use_skin:bool = false) -> AutoSound:
 	add_child(to_return)
 	return to_return
 
-func play_sound(sound:String, vol:float = 1.0, use_skin:bool = false) -> void:
+func play_sound(sound:String, vol:float = 1.0, use_skin:bool = false, ext:String = 'ogg') -> void:
 	if use_skin and !sound.begins_with('skins/'): 
 		sound = 'skins/'+ Game.scene.cur_skin +'/'+ sound
 
-	var path = 'res://assets/sounds/%s.ogg' % sound
+	var path = 'res://assets/sounds/%s.%s' % [sound, ext]
 	var new_sound := AutoSound.new(path, vol)
 	add_child(new_sound)
 	new_sound.play()

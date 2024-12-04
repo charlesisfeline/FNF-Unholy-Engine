@@ -248,9 +248,9 @@ func play_anim(anim:String, forced:bool = false, reversed:bool = false) -> void:
 		offset = Vector2(0, 0)
 
 func get_cam_pos() -> Vector2:
-	var midpoint = Vector2(position.x + width / 2, position.y + height / 2)
+	var midpoint = Vector2(position.x + width / 2.0, position.y + height / 2.0)
 	var pos:= Vector2(midpoint.x + (-100 if is_player else 150), midpoint.y - 100)
-	return pos + focus_offsets
+	return (pos + focus_offsets)
 	
 func set_stuff() -> void:
 	var anim:String = 'danceLeft' if dance_idle else 'idle'

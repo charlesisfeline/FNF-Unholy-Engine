@@ -107,12 +107,19 @@ func add_variant(variant:String):
 		pass
 			#for lua in active_lua:
 			#	lua.push_variant(variant, ClassDB.get_class())
-func add_character(char:Character):
+func add_character(char:Character, _layer:String = ''):
+	var layer_indx:int = -1
+	var add_to = Game.scene.stage.get_node('CharGroup') if Game.scene.stage.has_node('CharGroup') else Game.scene
+	
+	match _layer.to_lower().strip_edges():
+		'boyfriend': layer_indx = add_to.get('boyfriend').get_index()
+		'gf': layer_indx = add_to.get('gf').get_index()
+		'dad': layer_indx = add_to.get('dad').get_index()
+		
 	Game.scene.characters.append(char)
-	if Game.scene.stage.has_node('CharGroup'):
-		Game.scene.stage.get_node('CharGroup').add_child(char)
-	else:
-		Game.scene.add_child(char)
+	add_to.add_child(char)
+	if layer_indx > -1:
+		add_to.move_child(char, layer_indx)
 
 func parse_json(path:String):
 	if !path.ends_with('.json'): path += '.json'
