@@ -39,7 +39,7 @@ var credits:Array[Array] = [
 	#['Give me free art', 'cool art people'],
 
 	['this person did nothing', 'planky'],
-	['plank', 'faggot',  'made 3 commits', \
+	['plank', 'faggot',  'made 4 commits', \
 		Color(0.58, 0.24, 0.84), func(): OS.shell_open('https://plankdev.gay')],
 	
 	#['Ashley', 'puta', 'Made Epic and Miss Judgements', \
