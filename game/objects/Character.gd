@@ -93,7 +93,7 @@ func load_char(new_char:String = 'bf') -> void:
 	scale = Vector2(json.scale, json.scale)
 	antialiasing = !json.no_antialiasing #probably gonna make my own char json format eventually
 	position.x += json.position[0]
-	position.y += json.position[1]
+	position.y += json.position[1] + 1
 	focus_offsets.x = json.camera_position[0]
 	focus_offsets.y = json.camera_position[1]
 	
