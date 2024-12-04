@@ -58,7 +58,7 @@ var credits:Array[Array] = [
 ]
 
 var quotes:Dictionary = {
-	'unholywanderer04': ['wee wee whaha yahoo yippee yay!!'],
+	'unholywanderer04': ['wee wee whaha yahoo yippee yay!!', 'i am a femboy!1!', 'guh!!!', 'balls', ':AINT_NO_WAY:'],
 	'shadow mario': ['WikiHow: How to handle fame'],
 	'zyflx': ['i still dont know what i want my quote to be, i have no ideas'],
 	'crowplexus': ['Venha pequena fruta, venha comigo', 'Press [ Crow ] to crow', 'sans is at my door'],
