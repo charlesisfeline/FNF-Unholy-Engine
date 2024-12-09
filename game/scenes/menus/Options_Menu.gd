@@ -26,7 +26,7 @@ var visuals = [
 	['allow_rpc',      'bool'],
 	['basic_play',     'bool'],
 	['note_splashes', 'array', ['epics', 'both', 'all', 'none']],
-	['splash_sprite', 'array', ['base', 'haxe', 'forever']],
+	['splash_sprite', 'array', ['vis', 'base', 'haxe', 'forever']],
 	['behind_strums',  'bool'],
 	['rating_cam',    'array', ['game', 'hud', 'none']],
 	['auto_pause',     'bool'],

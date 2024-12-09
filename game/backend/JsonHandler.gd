@@ -157,11 +157,14 @@ func generate_chart(data, keep_loaded:bool = true) -> Array:
 
 func get_character(character:String = 'bf'):
 	var json_path = 'res://assets/data/characters/%s.json' % character
+	var return_json
 	if !ResourceLoader.exists(json_path):
 		printerr('JSON: get_character | [%s.json] COULD NOT BE FOUND' % character);
 		return null
-	var file = FileAccess.open(json_path, FileAccess.READ)
-	return JSON.parse_string(file.get_as_text())
+	var file = FileAccess.open(json_path, FileAccess.READ).get_as_text()
+	return_json = JSON.parse_string(file)
+	if return_json.has('no_antialiasing'): return_json.type = 'psych'
+	return return_json
 
 func parse_week(week:String = 'week1') -> Dictionary: # in week folder
 	week = week.to_lower().strip_edges().replace('.json', '')

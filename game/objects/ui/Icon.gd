@@ -17,15 +17,16 @@ var antialiasing:bool = true:
 		texture_filter = Game.get_alias(anti)
 
 func change_icon(new_image:String = 'face', player:bool = false, credit:bool = false) -> void:
-	if new_image.begins_with('icon-'): new_image.replace('icon-', '')
+	if new_image.begins_with('icon-'): new_image = new_image.replace('icon-', '')
+	
 	is_player = player
 	image = new_image
-	var icon_path = 'res://assets/images/icons/icon-%s.png'
+	var icon_path:String = 'res://assets/images/icons/icon-%s.png'
 	if credit: icon_path = icon_path.replace('icons/', 'credits/').replace('icon-', '')
 	if !ResourceLoader.exists(icon_path % image): image = 'face'
 	texture = load(icon_path % image)
 	
-	if image.ends_with('-pixel'): antialiasing = false
+	antialiasing = !image.ends_with('-pixel')
 	has_lose = texture.get_width() > MIN_WIDTH
 	hframes = 2 if has_lose else 1
 	if is_player: flip_h = true

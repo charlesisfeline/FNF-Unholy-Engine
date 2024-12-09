@@ -33,6 +33,9 @@ func _process(delta):
 		Audio.play_sound('cancelMenu')
 		Game.switch_scene('menus/title_scene')
 	
+	if Input.is_action_just_pressed('debug_1'):
+		Game.switch_scene('debug/Character_Offsetter')
+	
 func change_selection(by:int = 0) -> void:
 	if by != 0: Audio.play_sound('scrollMenu')
 	cur_option = wrapi(cur_option + by, 0, menu_sprites.size())

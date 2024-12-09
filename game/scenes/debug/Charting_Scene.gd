@@ -1,16 +1,6 @@
 extends Node2D
 
-const lol:String = 'assets/images/ui/skins/default/notes/'
-var funny = []
-
 var cur_section:int = 0
-
-var used_notes:int = 0 # if this goes above the amount of premade notes, then make more
-var max_cache:int = 128
-var cached_notes:Array[BasicNote] = [] # keep notes loaded for reuse
-var extra_notes:Array[BasicNote] = [] # any extra notes that are made on the fly
-
-var total_notes:Array[BasicNote] = []
 
 var strums = []
 
@@ -73,15 +63,8 @@ var events:Array[EventData] = []
 # TODO
 # add events
 
-var exist_chars = DirAccess.get_files_at('res://assets/data/characters')
-var char_list = [ # fuck you!!
-	'bf', 'bf-car', 'bf-christmas', 'bf-pixel', 'bf-holding-gf', 'bf-pixel-opponent', 
-	'gf', 'gf-car', 'gf-christmas', 'gf-pixel', 'gf-tankmen', 
-	'dad', 'spooky', 'monster', 'pico', 'mom', 'mom-car', 'darnell', 'nene',
-	'parents-christmas', 'monster-christmas', 
-	'senpai', 'senpai-angry', 'spirit', 'tankman', 'pico-speaker'
-]
-
+var char_list:Array = []
+var invalid_chars:Array = [] # should only ever be a max of 3, since how song chars works
 var SONG
 func _ready():
 	Game.set_mouse_visibility(true)
@@ -128,46 +111,42 @@ func _ready():
 	#$ChartLine/IconL.position.x = 166 #idk if this is centered but fuck you
 	#$ChartLine/IconR.position.x = 325
 	
-	exist_chars.push_back(SONG.player1)
-	exist_chars.push_back(SONG.player2)
+	var list = FileAccess.open('res://assets/data/order.txt', FileAccess.READ).get_as_text().split(',')
+	list.append_array(DirAccess.get_files_at('res://assets/data/characters'))
+	for i in list:
+		var char = i.replace('.json', '').strip_edges()
+		if !char_list.has(char):
+			char_list.append(char)
+			tab('Song', 'Player1').get_popup().add_item(char)
+			tab('Song', 'Player2').get_popup().add_item(char)
+			tab('Song', 'GF').get_popup().add_item(char)
 	
 	var realgf = 'gf'
 	if SONG.has('gfVersion') or SONG.has('player3'):
 		realgf = SONG.gfVersion if SONG.has('gfVersion') else SONG.player3
 		if realgf == null: realgf = 'gf'
-		exist_chars.push_back(realgf)
-	else:
-		SONG.gfVersion = realgf
+	SONG.gfVersion = realgf # will make sure that gfVersion exists on the dictionary
 		
-	for char in exist_chars:
-		char = char.replace('.json', '')
-		if char_list.has(char): continue
-		char_list.push_back(char)
+	for i in [SONG.player1, SONG.player2, SONG.gfVersion]:
+		if !char_list.has(i):
+			char_list.append(i)
+			invalid_chars.append(i)
 	
-	for char in char_list:
-		tab('Song', 'Player1').add_item(char)
-		tab('Song', 'Player2').add_item(char)
-		tab('Song', 'GF').add_item(char)
+	tab('Song', 'Player1').text = SONG.player1
+	tab('Song', 'Player1').get_popup().connect("id_pressed", on_p1_change)
+
+	tab('Song', 'Player2').text = SONG.player2
+	tab('Song', 'Player2').get_popup().connect("id_pressed", on_p2_change)
 	
-	set_dropdown(tab('Song', 'Player1'), SONG.player1)
-	set_dropdown(tab('Song', 'Player2'), SONG.player2)
-	set_dropdown(tab('Song', 'GF'), realgf)
-	
+	tab('Song', 'GF').text = SONG.gfVersion
+	tab('Song', 'GF').get_popup().connect("id_pressed", on_gf_change)
+
 	var chars = [JsonHandler.get_character(SONG.player2), JsonHandler.get_character(SONG.player1)]
 	$ChartLine/IconL.change_icon(chars[0].healthicon if chars[0] != null else 'face')
 	$ChartLine/IconR.change_icon(chars[1].healthicon if chars[1] != null else 'face', true)
 	
 	$ChartUI/SongProgress/Length.text = Game.to_time(Conductor.song_length)
 	
-	#for i in max_cache: # make some notes to reuse, so less lag happens hopefully
-	#	var le_note:BasicNote = BasicNote.new()
-	#	$Notes.add_child(le_note)
-	#	do_note_shit(le_note) # just update the scales
-	#	#le_note.visible = false
-	#	le_note.position = Vector2(-INF, -INF) # go offscreen grr
-	#	cached_notes.append(le_note)
-		# will still make sustains on the fly instead of caching
-		
 	var vec_size = Vector2(GRID_SIZE, GRID_SIZE)
 	grid = NoteGrid.new(vec_size, Vector2(GRID_SIZE * 8, GRID_SIZE * 16))
 	grid.position.x = OFF
@@ -279,16 +258,6 @@ func _process(delta):
 		y_pos = floor(mouse_pos.y / snap) * snap
 		
 	selected.position.y = y_pos
-	#for arr:Array in [prev_notes, cur_notes, next_notes, cur_events]:
-	#	for i:BasicNote in arr:
-			#print($ChartLine.position.y - i.position.y)
-			# ($ChartLine.position.y - i.position.y < 500)
-			# i.visible = ($ChartLine.position.y - i.position.y < 500) and ($ChartLine.position.y - i.position.y > -500)
-	#		if i.spawned and ($ChartLine.position.y - i.position.y < 500): #and ($ChartLine.position.y - i.position.y > -500):
-	#			arr.remove_at(arr.find(i))
-	#			$Notes.remove_child(i)
-	#			i.queue_free()
-						
 	if !Conductor.paused:
 		
 		#for event in cur_events:
@@ -320,13 +289,6 @@ func _process(delta):
 		Conductor.reset_beats()
 		Game.reset_scene()
 	
-		#Game.switch_scene('Play_Scene')
-	
-		#JsonHandler._SONG.bpm = $Info/BPM.value
-		#JsonHandler._SONG.player1 = $Info/Player1.text
-		#JsonHandler._SONG.player2 = $Info/Player2.text
-		#JsonHandler._SONG.gfVersion = $Info/GF.text
-
 func play_strum(note):
 	if note is BasicNote:
 		#print('NOTE: '+ str(note.position.y) +' | CAM: '+  str($Cam.position.y) +' '+ str(note.position.y + $Cam.position.y))
@@ -338,6 +300,36 @@ func play_strum(note):
 	elif note is EventNote:
 		$ChartLine/EventStrum.play_anim('confirm', true)
 		$ChartLine/EventStrum.reset_timer = 0.15
+
+func on_p1_change(id):
+	SONG.player1 = char_list[id]
+	on_char_change('Player1')
+	
+func on_p2_change(id):
+	SONG.player2 = char_list[id]
+	on_char_change('Player2')
+
+func on_gf_change(id):
+	SONG.gfVersion = char_list[id]
+	on_char_change('GF')
+	
+func on_char_change(c:String):
+	var new_char
+	var _icon
+	match c:
+		'Player2':
+			new_char = SONG.player2
+			_icon = $ChartLine/IconL
+		'GF': 
+			new_char = SONG.gfVersion
+		_: 
+			new_char = SONG.player1
+			_icon = $ChartLine/IconR
+			
+	tab('Song', c).text = new_char
+	var new_json = JsonHandler.get_character(new_char)
+	if _icon != null:
+		_icon.change_icon(new_json.healthicon if new_json != null else 'face', c.to_lower() == 'Player1')
 	
 var bg_tween:Tween
 func beat_hit(beat:int) -> void:
@@ -474,12 +466,9 @@ func _input(event): # this is better
 			Conductor.reset_beats()
 			Conductor.paused = true
 			var c = [null, null, null]
-			if char_list.size() - 1 >= tab('Song', 'Player1').selected:
-				c[0] = char_list[tab('Song', 'Player1').selected]
-			if char_list.size() - 1 >= tab('Song', 'Player2').selected:
-				c[1] = char_list[tab('Song', 'Player2').selected]
-			if char_list.size() - 1 >= tab('Song', 'GF').selected:
-				c[2] = char_list[tab('Song', 'GF').selected]
+			var ord = ['Player1', 'Player2', 'GF']
+			for i in 3:
+				c[i] = tab('Song', ord[i]).text
 			
 			if SONG.has('players'):
 				SONG.players = c
@@ -732,7 +721,7 @@ func update_text() -> void:
 func _toggle_grid(toggled:bool) -> void:
 	#Conductor.paused = true
 	for i in [grid]: #[prev_grid, grid, next_grid]:
-		if grid != null:
+		if i != null:
 			for sqr in i.grid: sqr.visible = toggled
 			for mrk in i.markers: mrk.visible = !toggled
 	update_grids()

@@ -27,9 +27,6 @@ var just_pressed:bool = false
 var is_full:bool = false
 
 func _process(delta):
-	if Input.is_key_pressed(KEY_F5):
-		reset_scene()
-		
 	if Input.is_key_pressed(KEY_F6):
 		if !just_pressed:
 			var window_mode = DisplayServer.WINDOW_MODE_FULLSCREEN if !is_full else DisplayServer.WINDOW_MODE_WINDOWED

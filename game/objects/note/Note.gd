@@ -155,7 +155,7 @@ func _ready():
 	else:
 		if ResourceLoader.exists(tex_path +'.res'):
 			note = AnimatedSprite2D.new()
-			note.sprite_frames = ResourceLoader.load(tex_path +'.res')
+			note.sprite_frames = skin.cached_note_types['hurt'] #ResourceLoader.load(tex_path +'.res')
 			note.play(COLORS[dir])
 		else:
 			note = Sprite2D.new()

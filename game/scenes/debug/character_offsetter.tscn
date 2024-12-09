@@ -1,10 +1,11 @@
-[gd_scene load_steps=7 format=3 uid="uid://dom5tyfk1in3q"]
+[gd_scene load_steps=8 format=3 uid="uid://dom5tyfk1in3q"]
 
 [ext_resource type="Script" path="res://game/scenes/debug/CharacterOffsetter.gd" id="1_q8ujq"]
 [ext_resource type="Texture2D" uid="uid://dave1imbc216x" path="res://assets/images/leGrid.png" id="3_0k3qt"]
 [ext_resource type="Shader" path="res://game/resources/shaders/scroll.gdshader" id="3_f84mi"]
 [ext_resource type="Texture2D" uid="uid://daba84ejgj2x1" path="res://assets/images/ui/cross.png" id="4_7buq4"]
 [ext_resource type="FontFile" uid="uid://dnssbi7hjccim" path="res://assets/fonts/vcr.ttf" id="4_e8b0o"]
+[ext_resource type="Script" path="res://game/objects/ui/Icon.gd" id="5_36ais"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_3m81g"]
 shader = ExtResource("3_f84mi")
@@ -24,22 +25,29 @@ region_rect = Rect2(0, 0, 1300, 800)
 
 [node name="UILayer" type="CanvasLayer" parent="."]
 
+[node name="Reset" type="Button" parent="UILayer"]
+modulate = Color(1, 0, 0, 1)
+offset_left = 1133.0
+offset_top = 344.0
+offset_right = 1250.0
+offset_bottom = 375.0
+text = "RESET"
+
+[node name="Save" type="Button" parent="UILayer"]
+modulate = Color(0, 1, 1, 1)
+offset_left = 950.0
+offset_top = 345.0
+offset_right = 1067.0
+offset_bottom = 376.0
+text = "SAVE Json"
+
 [node name="Window" type="ColorRect" parent="UILayer"]
 custom_minimum_size = Vector2(300, 300)
 offset_left = 950.0
 offset_top = 15.0
 offset_right = 1250.0
-offset_bottom = 315.0
+offset_bottom = 335.0
 color = Color(0.489622, 0.489622, 0.489622, 1)
-
-[node name="RichTextLabel" type="RichTextLabel" parent="UILayer"]
-visible = false
-offset_right = 276.0
-offset_bottom = 299.0
-text = "Test
-Anim
-ation
-Names"
 
 [node name="Animations" type="Label" parent="UILayer"]
 offset_left = 70.0
@@ -51,11 +59,32 @@ theme_override_fonts/font = ExtResource("4_e8b0o")
 theme_override_font_sizes/font_size = 20
 text = "Animations"
 
+[node name="Player" type="CheckBox" parent="UILayer"]
+offset_left = 955.0
+offset_top = 230.0
+offset_right = 1152.0
+offset_bottom = 261.0
+focus_mode = 0
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = ExtResource("4_e8b0o")
+text = "Is Player (Flip X)"
+
+[node name="ScaleBox" type="SpinBox" parent="UILayer"]
+offset_left = 960.0
+offset_top = 266.0
+offset_right = 1088.0
+offset_bottom = 297.0
+min_value = 0.1
+max_value = 10.0
+step = 0.01
+value = 1.0
+prefix = "Scale:"
+
 [node name="AnimSpeed" type="HSlider" parent="UILayer"]
 offset_left = 1025.0
-offset_top = 285.0
+offset_top = 310.0
 offset_right = 1240.0
-offset_bottom = 301.0
+offset_bottom = 326.0
 focus_mode = 0
 min_value = 0.5
 max_value = 2.0
@@ -74,20 +103,43 @@ theme_override_font_sizes/font_size = 20
 text = "Speed"
 vertical_alignment = 1
 
+[node name="IconSelect" type="MenuButton" parent="UILayer"]
+offset_left = 961.0
+offset_top = 70.0
+offset_right = 1064.0
+offset_bottom = 101.0
+theme_override_fonts/font = ExtResource("4_e8b0o")
+action_mode = 1
+text = "Change Icon"
+flat = false
+
+[node name="Highlight" type="ColorRect" parent="UILayer/IconSelect"]
+custom_minimum_size = Vector2(105, 105)
+layout_mode = 0
+offset_top = 50.0
+offset_right = 105.0
+offset_bottom = 155.0
+color = Color(1, 1, 0, 0.392157)
+
+[node name="Icon" type="Sprite2D" parent="UILayer/IconSelect"]
+script = ExtResource("5_36ais")
+
 [node name="CharacterSelect" type="MenuButton" parent="UILayer"]
 offset_left = 961.0
 offset_top = 25.0
 offset_right = 1117.0
 offset_bottom = 56.0
+theme_override_fonts/font = ExtResource("4_e8b0o")
+action_mode = 1
 text = "Change Character"
 flat = false
 
 [node name="CurCharLabel" type="Label" parent="UILayer/CharacterSelect"]
 layout_mode = 0
 offset_left = 165.0
-offset_top = 5.0
+offset_top = 3.0
 offset_right = 255.0
-offset_bottom = 28.0
+offset_bottom = 26.0
 theme_override_constants/outline_size = 4
 theme_override_fonts/font = ExtResource("4_e8b0o")
 text = "bf"
@@ -142,6 +194,14 @@ theme_override_font_sizes/font_size = 25
 text = "[0 | 0]"
 horizontal_alignment = 1
 
+[node name="Window2" type="ColorRect" parent="UILayer"]
+custom_minimum_size = Vector2(300, 300)
+offset_left = 950.0
+offset_top = 385.0
+offset_right = 1250.0
+offset_bottom = 685.0
+color = Color(0.489622, 0.489622, 0.489622, 1)
+
 [node name="Cam" type="Camera2D" parent="."]
 position = Vector2(624, 360)
 
@@ -150,3 +210,5 @@ texture_filter = 1
 position = Vector2(568, 368)
 scale = Vector2(5, 5)
 texture = ExtResource("4_7buq4")
+
+[connection signal="pressed" from="UILayer/Save" to="." method="save_pressed"]

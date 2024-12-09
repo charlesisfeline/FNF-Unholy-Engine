@@ -1,8 +1,6 @@
 extends StageBase
 
-var windows:Array = [ # window colors so fancy wow woah woaoh
-	[49, 162, 253], [49, 253, 140], [251, 51, 245], [253, 69, 49], [251, 166, 51]
-]
+var windows:Array = ['31A2FD', '31FD8C', 'FB33F5', 'FD4531', 'FBA633'] # window colors so fancy wow woah woaoh
 
 var train:Train = Train.new(Vector2(2000, 360))
 func _ready():
@@ -21,7 +19,7 @@ func beat_hit(beat:int):
 	train.beat_hit(beat)
 	if beat % 4 == 0:
 		var cur_col = windows[randi_range(0, windows.size() - 1)]
-		$Windows/Sprite.self_modulate = Color(cur_col[0] / 255.0, cur_col[1] / 255.0, cur_col[2] / 255.0, 1)
+		$Windows/Sprite.self_modulate = Color(cur_col)
 	
 class Train extends Sprite2D:
 	var active:bool = false
@@ -29,7 +27,7 @@ class Train extends Sprite2D:
 	var stopping:bool = false
 	
 	var frame_limit:float = 0.0
-	var sound = AudioStreamPlayer.new()
+	var sound := AudioStreamPlayer.new()
 	var cars:int = 8
 	var cooldown:int = 0
 	

@@ -10,6 +10,7 @@ var focus_offsets:Vector2 = Vector2.ZERO # cam offset type shit
 var icon:String = 'bf'
 var death_char:String = 'bf-dead'
 
+var debug:bool = false
 var is_player:bool = false
 
 var idle_suffix:String = ''
@@ -123,6 +124,7 @@ func load_char(new_char:String = 'bf') -> void:
 	print('loaded '+ cur_char)
 
 func _process(delta):
+	if debug: return
 	if special_anim:
 		if anim_timer == -1.0:
 			if !animation_finished.is_connected(on_anim_finished):
