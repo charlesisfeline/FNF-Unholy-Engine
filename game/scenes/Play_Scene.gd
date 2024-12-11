@@ -162,6 +162,7 @@ func _ready():
 		dad.position = gf.position
 		dad.focus_offsets.x -= dad.width / 4
 		gf.visible = false
+		speaker.reparent(dad)
 	
 	boyfriend = Character.new(stage.bf_pos, SONG.player1, true)
 	add.call(boyfriend)
@@ -210,7 +211,6 @@ func _ready():
 	
 	ui.start_countdown(true)
 	
-	LuaHandler.add_script('')
 	if JsonHandler.parse_type == 'v_slice': move_cam('dad')
 	section_hit(0) #just for 1st section stuff
 	
@@ -259,7 +259,7 @@ func _process(delta):
 			if chart_notes[chunk][2]: # if it has a sustain
 				var new_sustain:Note = Note.new(new_note, true)
 				new_sustain.speed = new_note.speed
-		
+
 				notes.append(new_sustain)
 				ui.add_to_strum_group(new_sustain, to_add)
 
@@ -325,6 +325,7 @@ func beat_hit(beat) -> void:
 		if !_cam_tween:
 			cam.zoom += Vector2(zoom_add.game, zoom_add.game)
 		ui.mark.scale = ui.def_mark_scale + (ui.def_mark_scale / 5)
+	LuaHandler.call_func('beatHit')
 
 func step_hit(_step) -> void: pass
 
