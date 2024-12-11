@@ -138,8 +138,7 @@ func _process(delta):
 	else:
 		if animation.begins_with('sing'):
 			hold_timer += delta
-			sing_timer = max(sing_timer + delta, Conductor.step_crochet * 0.0001)
-
+			sing_timer += delta
 			
 			var holding = Input.is_action_pressed('note_left') or Input.is_action_pressed('note_down')\
 				or Input.is_action_pressed('note_up') or Input.is_action_pressed('note_right')
@@ -163,7 +162,7 @@ func _process(delta):
 					chart.remove_at(chart.find(i))
 			else:
 				if i[0] <= Conductor.song_pos:
-					var suff:String = str(randi_range(1, 2))
+					var suff = str(randi_range(1, 2))
 					sing(dir, suff)
 					chart.remove_at(chart.find(i))
 

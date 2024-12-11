@@ -43,7 +43,7 @@ func _process(delta):
 		$Volume/Percent.text = str(round(volume * 100)) +'%'
 		for i in 10:
 			var bar = get_node('Volume/BarsBG/VolBar'+ str(i + 1))
-			bar.scale.y = clamp(lerp(bar.scale.y, 0.0 if round(volume * 10) <= i else 1.0, exp(-delta * 15)), 0, 1)
+			bar.scale.y = clamp(lerp(0.0 if round(volume * 10) <= i else 1.0, bar.scale.y, exp(-delta * 15)), 0, 1)
 			
 		time_existed += delta
 		vol_visible = time_existed < 1
@@ -76,6 +76,6 @@ func _unhandled_key_input(_event):
 	
 	if Input.is_key_pressed(KEY_F5): Game.reset_scene()
 	if Input.is_key_pressed(KEY_CTRL): # debuggin baby wahoo
-		if Input.is_key_pressed(KEY_L): Conductor.playback_rate *= 2.0
-		if Input.is_key_pressed(KEY_J): Conductor.playback_rate /= 2.0
+		if Input.is_key_pressed(KEY_L): Conductor.playback_rate += 0.5
+		if Input.is_key_pressed(KEY_J): Conductor.playback_rate -= 0.5
 		if Input.is_key_pressed(KEY_I): Conductor.playback_rate = 1

@@ -1,8 +1,8 @@
 extends Node2D
 
 const EFFECTS:String = '[center][wave]' # effects for the "variant" text
+const add_first = ['test', 'tutorial', 'week1', 'week2', 'week3', 'week4', 'week5', 'week6', 'week7', 'weekend1']
 
-@onready var order = FileAccess.open('res://assets/data/weeks/week-order.txt', FileAccess.READ).get_as_text().split('\n')
 var added_songs:Array[String] = [] # a list of all the song names, so no dupes are added
 var added_weeks:Array[String] = [] # same but for week jsons
 
@@ -25,33 +25,25 @@ func _ready():
 		Audio.play_music('freakyMenu', true, 0.7)
 	Discord.change_presence('Maining some Menus', 'In Freeplay')
 	
-	if order != null: 
-		for file in order: # base songs first~
-			added_weeks.append(file.strip_edges())
-			var week_file = JsonHandler.parse_week(file)
-			var d_list = week_file.difficulties if week_file.has('difficulties') else []
-			var v_list = {}
-			if 'variants' in week_file:
-				v_list = week_file.variants
-					
-			for song in week_file.songs:
-				add_song(FreeplaySong.new(song, d_list, v_list))
+	added_weeks.append_array(add_first) # base stuff first~
+	var other_weeks = []
+	for i in DirAccess.get_files_at('res://assets/data/weeks'): # then go through the weeks folder for any others
+		if !i.ends_with('.json') or added_weeks.has(i): continue
+		other_weeks.append(i.replace('.json', ''))
+
+	added_weeks.append_array(other_weeks)
 	
-	# you dont need a json to add songs, without one itll only have base 3 diffs, no color, and a bf icon
-	var weeks_to_add = []
-	for week in DirAccess.get_files_at('res://assets/data/weeks'):
-		week = week.replace('.json', '')
-		if !added_weeks.has(week) and !week.ends_with('.txt'):
-			weeks_to_add.append(week)
+	for file in added_weeks: 
+		var week_file = JsonHandler.parse_week(file)
+		var d_list = week_file.difficulties if week_file.has('difficulties') else []
+		var v_list = {}
+		if 'variants' in week_file:
+			v_list = week_file.variants
+			
+		for song in week_file.songs:
+			add_song(FreeplaySong.new(song, d_list, v_list))
 	
-	if weeks_to_add.size() > 0:
-		for week in weeks_to_add:
-			var week_file = JsonHandler.parse_week(week)
-			var d_list = week_file.difficulties if week_file.has('difficulties') else []
-			for song in week_file.songs:
-				add_song(FreeplaySong.new(song, d_list))
-	
-	for song in DirAccess.get_directories_at('res://assets/songs'):
+	for song in DirAccess.get_directories_at('res://assets/songs'): # then add any other fuckass songs without a json
 		add_song(FreeplaySong.new([song, 'bf', [100, 100, 100]]))
 	
 	if JsonHandler._SONG.has('song'):
@@ -116,11 +108,14 @@ func update_list(amount:int = 0) -> void:
 	variant_list = songs[cur_song].variants.keys()
 	change_variant()
 	change_diff()
-
+	
 	for i in songs.size():
 		var item = songs[i]
 		item.target_y = i - cur_song
-		item.modulate.a = (1.0 if i == cur_song else 0.6)
+		item.visible = !(abs(item.target_y) > 5) # no need to have everything visible if its offscreen
+		icons[i].visible = item.visible          # these dont change draw calls but it can help fps
+		if item.visible:
+			item.modulate.a = (1.0 if i == cur_song else 0.6)
 
 func change_diff(amount:int = 0) -> void:
 	var use_list = songs[cur_song].variants[variant_str] if songs[cur_song].variants.size() > 1 else diff_list
@@ -140,29 +135,39 @@ func change_variant(amount:int = 0) -> void:
 	$SongInfo/VariantTxt.text = EFFECTS + variant_str.to_upper()
 	change_diff()
 
+var hold_time:float = 0.0
 func _unhandled_key_input(_event):
 	var shifty = Input.is_key_pressed(KEY_SHIFT)
 	var diff:int = 4 if shifty else 1
-	var is_pressed:Callable = func(action): 
-		return Input.is_action_just_pressed(action) or Input.is_action_pressed(action)
-		
+	var just_pressed:Callable = func(action): return Input.is_action_just_pressed(action)
+	var is_held:Callable = func(action): return Input.is_action_pressed(action) and !just_pressed.call(action)
+	var is_pressed:Callable = func(action): return just_pressed.call(action) or is_held.call(action)
+
 	if Input.is_key_pressed(KEY_R):
 		print('Erasing '+ ('all' if shifty else diff_str) +' | '+ songs[cur_song].text)
 		HighScore.clear_score(songs[cur_song].text, diff_str, shifty)
 		update_list()
 		
-	if is_pressed.call('menu_down') : update_list(diff)
-	if is_pressed.call('menu_up')   : update_list(-diff)
-	if is_pressed.call('menu_left') : change_diff(-1)
-	if is_pressed.call('menu_right'): change_diff(1)
+	if just_pressed.call('menu_down'): update_list(diff)
+	if just_pressed.call('menu_up')  : update_list(-diff)
+	
+	if is_held.call('menu_down') or is_held.call('menu_up'):
+		var mult:int = -1 if is_held.call('menu_up') else 1
+		hold_time += get_process_delta_time()
+		if hold_time >= (1.5 * get_process_delta_time()):
+			hold_time = 0
+			update_list(diff * mult)
+			
+	if just_pressed.call('menu_left') : change_diff(-1)
+	if just_pressed.call('menu_right'): change_diff(1)
 	if Input.is_key_pressed(KEY_CTRL):
 		change_variant(1)
 	
-	if Input.is_action_just_pressed('back'):
+	if just_pressed.call('back'):
 		Audio.play_sound('cancelMenu')
 		Game.switch_scene('menus/main_menu')
 		
-	if Input.is_action_just_pressed('accept'):
+	if just_pressed.call('accept'):
 		Audio.stop_music()
 		Conductor.reset()
 		if last_loaded.song != songs[cur_song].text or last_loaded.diff != diff_str\

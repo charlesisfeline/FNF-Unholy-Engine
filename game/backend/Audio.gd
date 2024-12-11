@@ -11,7 +11,7 @@ var volume:float = 1:
 		
 var pos:float = 0.0 # in case you need the position for something or whatever
 
-var sync_beats:bool = false
+var sync_conductor:bool = false
 var loop_music:bool = true
 var music:String = "" #"freakyMenu" # current music being played
 var sound_list:Array[AudioStreamPlayer] = [] # currently playing sounds
@@ -21,13 +21,13 @@ func _ready():
 	add_child(Player)
 	Player.finished.connect(finished)
 	if music.length() == 0 and !exclude.has(Game.scene.name):
-		sync_beats = true
+		sync_conductor = true
 		play_music('freakyMenu')
 
 func _process(_delta):
 	if Player.stream != null and Player.playing:
 		pos = Player.get_playback_position() * 1000.0
-		if sync_beats: Conductor.song_pos = pos
+		if sync_conductor: Conductor.song_pos = pos
 
 func set_music(new_music:String, vol:float = 1, looped:bool = true): # set the music without auto playing it
 	var path:String = 'assets/music/'+ new_music +'.ogg'
@@ -60,7 +60,7 @@ func stop_music(clear:bool = true) -> void: # stop and clear the stream if neede
 
 func finished():
 	print('Music Finished')
-	if sync_beats: Conductor.reset_beats()
+	if sync_conductor: Conductor.reset_beats()
 	if loop_music: play_music()
 	Game.call_func('on_music_finish')
 

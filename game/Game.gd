@@ -72,7 +72,7 @@ func reset_scene(_skip_trans:bool = false) -> void:
 	get_tree().reload_current_scene()
 
 func switch_scene(to_scene, skip_trans:bool = false) -> void:
-	Audio.sync_beats = false
+	Audio.sync_conductor = false
 	if ((to_scene is not String) and (to_scene is not PackedScene)) or to_scene == null:
 		printerr('Switch Scene: new scene is invalid')
 		return

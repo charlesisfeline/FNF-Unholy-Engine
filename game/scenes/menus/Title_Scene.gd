@@ -10,7 +10,7 @@ var show_cow:bool = Game.rand_bool(5)
 var blurb:Array = []
 func _ready():
 	Discord.change_presence('Title Screen', 'Welcome to the Funkin')
-	
+	#Audio.sync_conductor = true
 	add_child(flash)
 	move_child(flash, 4)
 	flash.color = Color.BLACK
@@ -146,12 +146,12 @@ func remove_funny() -> void:
 	Game.remove_all([added_text], self)
 		
 func get_funny() -> Array[Array]:
-	var intro_txt:String = FileAccess.open('res://assets/data/introText.txt', FileAccess.READ).get_as_text()
-
+	var intro_txt = FileAccess.open('res://assets/data/introText.csv', FileAccess.READ)
+	if intro_txt == null: return [['uh uhm', 'ah weh']]
+	
 	var split_intro:Array[Array] = []
-	if intro_txt != null and intro_txt.length() > 0:
-		for txt in intro_txt.split('\n'):
-			split_intro.append(Array(txt.strip_edges().split('--')))
+	for txt in intro_txt.get_as_text().split('\n'):
+		split_intro.append(Array(txt.strip_edges().replace(',', '').split('--')))
 	
 	return split_intro
 
