@@ -15,7 +15,7 @@ func _ready():
 		Audio.play_music('freakyMenu', true, 0.7)
 	Discord.change_presence('I play FNF for the plot', 'Story Mode')
 
-	var to_add = ['test', 'tutorial', 'week1', 'week2', 'week3', 'week4', 'week5', 'week6', 'week7', 'weekend1']
+	var to_add = Game.persist.week_list
 	
 	for file in DirAccess.get_files_at('res://assets/data/weeks'):
 		var file_name = file.to_lower().strip_edges()

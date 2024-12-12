@@ -19,9 +19,6 @@ func _ready():
 
 	if !show_cow:
 		blurb = get_funny().pick_random()
-		if blurb.is_empty(): 
-			blurb = ['there\'s nothing', 'to say']
-			
 	print(blurb)
 	
 	Game.center_obj($GodotLogo)
@@ -30,7 +27,8 @@ func _ready():
 	Conductor.bpm = 102
 	Conductor.beat_hit.connect(beat_hit)
 	Conductor.song_started = true
-	#Conductor.inst = Audio.Player
+	if Game.persist.prev_scene != null:
+		finish_intro()
 
 var danced:bool = false
 func beat_hit(beat) -> void:
@@ -147,7 +145,7 @@ func remove_funny() -> void:
 		
 func get_funny() -> Array[Array]:
 	var intro_txt = FileAccess.open('res://assets/data/introText.csv', FileAccess.READ)
-	if intro_txt == null: return [['uh uhm', 'ah weh']]
+	if intro_txt == null: return [['this is a', 'fallback text lol']]
 	
 	var split_intro:Array[Array] = []
 	for txt in intro_txt.get_as_text().split('\n'):

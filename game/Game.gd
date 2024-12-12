@@ -6,6 +6,8 @@ var TRANS = preload('res://game/objects/ui/transition.tscn') # always have it lo
 var cur_trans
 
 var persist = { # var values to remember
+	'prev_scene': null,
+	'week_list': ['test', 'tutorial', 'week1', 'week2', 'week3', 'week4', 'week5', 'week6', 'week7', 'weekend1'],
 	'week_int': -1, 'week_diff': -1,
 	'song_list': [],
 	'deaths': 0
@@ -26,7 +28,7 @@ func _ready():
 var just_pressed:bool = false
 var is_full:bool = false
 
-func _process(delta):
+func _process(_delta):
 	if Input.is_key_pressed(KEY_F6):
 		if !just_pressed:
 			var window_mode = DisplayServer.WINDOW_MODE_FULLSCREEN if !is_full else DisplayServer.WINDOW_MODE_WINDOWED
@@ -48,7 +50,7 @@ var is_paused:bool = false:
 func focus_changed(is_focused:bool):
 	if Prefs.auto_pause:
 		Engine.max_fps = Prefs.fps if is_focused else 12 # no need to process shit if its paused
-		Audio.process_mode = Node.PROCESS_MODE_ALWAYS if is_focused else Node.PROCESS_MODE_DISABLED # pausing this is too much work ill just mute it
+		Audio.process_mode = Node.PROCESS_MODE_ALWAYS if is_focused else Node.PROCESS_MODE_DISABLED
 		if is_focused:
 			if is_paused: is_paused = false
 		else:
@@ -56,23 +58,17 @@ func focus_changed(is_focused:bool):
 
 func center_obj(obj = null, axis:String = 'xy') -> void:
 	if obj == null: return
-	if obj is Sprite2D:
-		pass
-
 	match axis:
 		'x': obj.position.x = (screen[0] / 2) #- (obj_size.x / 2)
 		'y': obj.position.y = (screen[1] / 2) #- (obj_size.y / 2)
 		_: obj.position = Vector2(screen[0] / 2, screen[1] / 2)
 
-#func set_scene_var(var_name:String, to:Variant = null):
-#	if Game.scene != null and Game.scene.get(var_name) != null:
-#		Game.scene.set(var_name, to)
-
-func reset_scene(_skip_trans:bool = false) -> void:
+func reset_scene() -> void:
 	get_tree().reload_current_scene()
 
 func switch_scene(to_scene, skip_trans:bool = false) -> void:
 	Audio.sync_conductor = false
+	persist.prev_scene = scene.name
 	if ((to_scene is not String) and (to_scene is not PackedScene)) or to_scene == null:
 		printerr('Switch Scene: new scene is invalid')
 		return

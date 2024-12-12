@@ -77,7 +77,8 @@ var temp_len:float = 0.0 #if you dont immediately hold
 var offset_y:float = 0.0
 
 var holding:bool = false
-var min_len:float = 25.0 # before a sustain is counted as "hit"
+var min_len:float = 10.0 # before a sustain is counted as "hit"
+var drop_time:float = 0.0
 var dropped:bool = false:
 	set(drop): 
 		dropped = drop
@@ -92,19 +93,6 @@ var hold_group:Control
 var alpha:float = 1.0:
 	get: return modulate.a
 	set(alpha): modulate.a = alpha
-
-var avail_quants:Dictionary = {
-	4: [Color(1, 0, 0), Color(0.5, 0, 0)],
-	8: [Color(0, 0, 1), Color(0, 0, 0.5)],
-	12: [Color(0.5, 0, 0.5), Color(0.25, 0, 25)],
-	16: [Color(0, 1, 0), Color(0, 0.5, 0)],
-	24: [Color(1, 0.75, 0.79), Color(0.5, 0.37, 0.5)],
-	32: [Color(1, 1, 0), Color(0.5, 0.5, 0)],
-	48: [Color(0.00, 1.00, 1.00), Color(0.00, 0.5, 0.5)],
-	64: [Color(0.00, 0.77, 0.00), Color(0.00, 0.38, 0.00)],
-	96: [Color(1.00, 0.60, 0.60), Color(0.5, 0.30, 0.30)],
-	128: [Color(0.60, 0.60, 1.00), Color(0.30, 0.30, 0.5)]
-}
 
 func _init(data = null, sustain_:bool = false, in_chart:bool = false):
 	if data != null:
@@ -201,15 +189,13 @@ func _process(delta):
 			was_good_hit = strum_time <= Conductor.song_pos
 
 func follow_song_pos(strum:Strum) -> void:
-	if is_sustain and holding: 
-		position = strum.position
-		return
-		
 	var pos:float = -(0.45 * (Conductor.song_pos - strum_time) * speed) #/ Conductor.playback_rate# + offset_y
 	
 	position.x = strum.position.x + (pos * cos(strum.scroll * PI / 180))
 	position.y = strum.position.y + (pos * sin(strum.scroll * PI / 180))
 	rotation = (deg_to_rad(strum.scroll - 90.0) if sustain else 0.0) + strum.rotation
+	if is_sustain and holding: 
+		position = strum.position
 
 func load_skin(new_skin:String) -> void:
 	skin.load_skin(new_skin)  # this is actually terrible
@@ -251,8 +237,8 @@ func convert_type(t:String) -> String:
 	match t.to_lower().strip_edges():
 		'alt animation', 'true', 'mom': return 'Alt'
 		'no animation': return 'No Anim'
-		'gf sing': return 'GF'
-		'hurt note', 'markov note', 'ebola': return 'Hurt'
+		'gf sing', '2': return 'GF'
+		'hurt note', 'markov note', 'ebola', 'burger note': return 'Hurt'
 		'hey!': return 'Hey'
 		_: return t
 

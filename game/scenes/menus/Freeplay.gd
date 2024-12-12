@@ -1,7 +1,6 @@
 extends Node2D
 
 const EFFECTS:String = '[center][wave]' # effects for the "variant" text
-const add_first = ['test', 'tutorial', 'week1', 'week2', 'week3', 'week4', 'week5', 'week6', 'week7', 'weekend1']
 
 var added_songs:Array[String] = [] # a list of all the song names, so no dupes are added
 var added_weeks:Array[String] = [] # same but for week jsons
@@ -25,7 +24,7 @@ func _ready():
 		Audio.play_music('freakyMenu', true, 0.7)
 	Discord.change_presence('Maining some Menus', 'In Freeplay')
 	
-	added_weeks.append_array(add_first) # base stuff first~
+	added_weeks.append_array(Game.persist.week_list) # base stuff first~
 	var other_weeks = []
 	for i in DirAccess.get_files_at('res://assets/data/weeks'): # then go through the weeks folder for any others
 		if !i.ends_with('.json') or added_weeks.has(i): continue
@@ -128,11 +127,16 @@ func change_diff(amount:int = 0) -> void:
 	$SongInfo/Difficulty.text = text
 
 func change_variant(amount:int = 0) -> void:
-	if variant_list.size() <= 1: vari_int = 0 # just in case
+	var has_variants = variant_list.size() > 1
+	$SongInfo/VariantTxt.modulate = Color.WHITE if has_variants else Color.DIM_GRAY
+	$SongInfo/VariantTxt/Notice.visible = has_variants
+	if !has_variants:
+		vari_int = 0 # just in case
 	
 	vari_int = wrapi(vari_int + amount, 0, variant_list.size())
 	variant_str = variant_list[vari_int]
 	$SongInfo/VariantTxt.text = EFFECTS + variant_str.to_upper()
+	if !has_variants: $SongInfo/VariantTxt.text = $SongInfo/VariantTxt.text.replace('[wave]', '')
 	change_diff()
 
 var hold_time:float = 0.0

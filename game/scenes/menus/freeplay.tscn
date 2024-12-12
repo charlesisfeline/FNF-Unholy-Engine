@@ -63,6 +63,19 @@ autowrap_mode = 0
 deselect_on_focus_loss_enabled = false
 drag_and_drop_selection_enabled = false
 
+[node name="Notice" type="Label" parent="SongInfo/VariantTxt"]
+layout_mode = 0
+offset_left = 50.0
+offset_top = 61.0
+offset_right = 285.0
+offset_bottom = 84.0
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = ExtResource("3_vuq8a")
+theme_override_font_sizes/font_size = 20
+text = "Press Ctrl to change"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="PlaybackInfo" type="CanvasLayer" parent="."]
 visible = false
 

@@ -175,10 +175,6 @@ func _ready():
 	ui.get_group('player').singer = boyfriend
 	ui.get_group('opponent').singer = dad
 	
-	#var gleef = ui.add_group('gf', gf)
-	#gleef.position = Vector2((Game.screen[0] / 2.0) - 170, 85)
-	#gleef.scale = Vector2(0.9, 0.9)
-
 	if cur_stage.begins_with('school'):
 		cur_skin = 'pixel'
 	if cur_stage == 'limo': # lil dumb...
@@ -277,7 +273,7 @@ func _process(delta):
 					if note.can_hit and !note.was_good_hit:
 						if note.must_press:
 							note.holding = ((auto_play and note.should_hit) or Input.is_action_pressed(key_names[note.dir]))
-							good_sustain_press(note, delta)
+							good_sustain_press(note)
 							if !auto_play and note.strum_time < kill_zone and !note.holding \
 								and note.should_hit: note_miss(note)
 						else:
@@ -375,7 +371,7 @@ func key_press(key:int = 0) -> void:
 	var hittable_notes:Array[Note] = notes.filter(func(i:Note):
 		return i.dir == key and i.spawned and !i.is_sustain and i.must_press and i.can_hit and !i.was_good_hit
 	)
-	#hittable_notes.sort_custom(func(a, b): return a.strum_time < b.strum_time)
+	hittable_notes.sort_custom(func(a, b): return a.strum_time < b.strum_time)
 	
 	var last = ui.get_group('player').get_strums()
 	if hittable_notes.is_empty():
@@ -607,13 +603,15 @@ func good_note_hit(note:Note) -> void:
 		Audio.play_sound('hitsound', Prefs.hitsound_volume / 100.0)
 
 var time_dropped:float = 0
-func good_sustain_press(sustain:Note, delt:float = 0.0) -> void:
+func good_sustain_press(sustain:Note) -> void:
 	if !auto_play and Input.is_action_just_released(key_names[sustain.dir]) and !sustain.was_good_hit:
 		#sustain.dropped = true
+		sustain.strum_time = Conductor.song_pos
 		sustain.holding = false
 		print('let go too soon ', sustain.length)
-		time_dropped += delt
-		note_miss(sustain)
+		sustain.drop_time += get_process_delta_time() #testing something
+		if sustain.drop_time >= 0.3:
+			note_miss(sustain)
 		return
 	
 	if sustain.holding:
@@ -635,8 +633,8 @@ func good_sustain_press(sustain:Note, delt:float = 0.0) -> void:
 			
 			grace = true
 			if !Prefs.legacy_score:
-				score += floor((550 * delt) * Conductor.playback_rate)
-			ui.hp += (4 * delt)
+				score += floor((550 * get_process_delta_time()) * Conductor.playback_rate)
+			ui.hp += (4 * get_process_delta_time())
 			ui.update_score_txt()
 
 func opponent_note_hit(note:Note) -> void:
