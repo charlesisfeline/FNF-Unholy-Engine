@@ -33,13 +33,11 @@ var playback_rate:float = 1.0:
 				Game.scene.get_child(i).speed_scale = rate
 		#Engine.time_scale = 1
 		
-var offset:float = 300.0
 var safe_zone:float = 166.0
 var song_length:float = INF
 
 var beat_time:float = 0.0
 var step_time:float = 0.0
-#var sec_time:float = 0
 
 var cur_beat:int = 0
 var cur_step:int = 0
@@ -55,8 +53,8 @@ var paused:bool = false:
 	set(pause): 
 		paused = pause
 		pause()
-var mult_vocals:bool = false
 
+var mult_vocals:bool = false
 var inst = AudioStreamPlayer.new()
 var vocals = AudioStreamPlayer.new()
 var vocals_opp = AudioStreamPlayer.new()
@@ -73,37 +71,34 @@ func _ready():
 func load_song(song:String = '') -> void:
 	if song.is_empty():
 		printerr('Conductor.load_song: NO SONG ENTERED')
-		song = 'tutorial' #DirAccess.get_directories_at('res://assets/songs')[0]
+		song = 'tutorial'
 	
 	song = Game.format_str(song)
 	var path:String = 'res://assets/songs/'+ song +'/audio/%s.ogg' # myehh
 	if JsonHandler.song_variant != '':
 		var inf = [JsonHandler.song_root, JsonHandler.song_variant.substr(1)]
 		path = 'res://assets/songs/'+ inf[0] +'/audio/'+ inf[1] +'/%s.ogg'
-	
-	print(path % 'Inst')
-	var suffix:String = ''
-	if JsonHandler._SONG.has('variant'):
-		suffix += ('-'+ JsonHandler._SONG.variant)
 
 	if JsonHandler.parse_type == 'osu':
-		path = 'res://assets/songs/'+ song +'/%s.mp3' 
-		print(path % ['audio'])
-		if ResourceLoader.exists(path % ['audio']):
-			inst.stream = load(path % ['audio'])
-			song_length = inst.stream.get_length() * 1000.0
-
-	if ResourceLoader.exists(path % ['Inst'+ suffix]):
-		inst.stream = load(path % ['Inst'+ suffix])
-		song_length = inst.stream.get_length() * 1000.0
-	if ResourceLoader.exists(path % ['Voices-player'+ suffix]):
-		mult_vocals = true
-		vocals.stream = load(path % ['Voices-player'+ suffix])
-		vocals_opp.stream = load(path % ['Voices-opponent'+ suffix])
-	elif ResourceLoader.exists(path % ['Voices'+ suffix]):
-		mult_vocals = false
-		vocals.stream = load(path % ['Voices'+ suffix])
+		if ResourceLoader.exists('res://assets/songs/'+ song +'/audio.mp3'):
+			inst.stream = load('res://assets/songs/'+ song +'/audio.mp3')
+	else:
+		var suffix:String = ''
+		if JsonHandler._SONG.has('variant'): suffix += ('-'+ JsonHandler._SONG.variant)
+		
+		if ResourceLoader.exists(path % ['Inst'+ suffix]):
+			inst.stream = load(path % ['Inst'+ suffix])
+		if ResourceLoader.exists(path % ['Voices-player'+ suffix]):
+			mult_vocals = true
+			vocals.stream = load(path % ['Voices-player'+ suffix])
+			vocals_opp.stream = load(path % ['Voices-opponent'+ suffix])
+		elif ResourceLoader.exists(path % ['Voices'+ suffix]):
+			mult_vocals = false
+			vocals.stream = load(path % ['Voices'+ suffix])
 	
+	if inst.stream:
+		song_length = inst.stream.get_length() * 1000.0
+		
 	song_loaded = true
 
 func _process(delta):
@@ -124,7 +119,7 @@ func _process(delta):
 			beat_hit.emit(cur_beat)
 			
 			var beats:int = 4
-			if Game.scene != null and Game.scene.get('SONG') != null and JsonHandler.parse_type == 'legacy':
+			if JsonHandler.parse_type == 'legacy' and Game.scene != null and Game.scene.get('SONG') != null:
 				var son = Game.scene.SONG
 				if son.notes.size() > cur_section and son.has('notes') and son.notes[cur_section].has('sectionBeats'):
 					beats = son.notes[cur_section].sectionBeats
@@ -143,7 +138,7 @@ func _process(delta):
 			song_end.emit()
 		
 		for audio in [inst, vocals, vocals_opp]:
-			if audio.stream != null and audio.playing:
+			if audio.stream and audio.playing:
 				if absf((audio.get_playback_position() * 1000) - (song_pos + Prefs.offset)) > 20: 
 					resync_audio()
 				
@@ -152,7 +147,7 @@ func connect_signals() -> void: # connect all signals
 		if Game.scene.has_method(i):
 			get(i).connect(Callable(Game.scene, i))
 	
-func check_resync(sound:AudioStreamPlayer) -> void: # ill keep this here for now
+func check_resync(sound:AudioStreamPlayer) -> void: # resyncs a sound to the song position
 	if absf(sound.get_playback_position() * 1000.0 - song_pos) > 20:
 		sound.seek(song_pos / 1000.0)
 		print('resynced')
@@ -171,19 +166,19 @@ func pause() -> void: # NOTE: you shouldn't call this function, you should set C
 
 func start(at_point:float = -1) -> void:
 	song_started = true # lol
-	if at_point != -1:
+	if at_point > -1:
 		song_pos = absf(at_point) / 1000.0
 	for_all_audio('play', song_pos)
 
 # so you dont have to personally check if a vocal/vocal.stream is null
 func vocal_volume(da_vocal:String = 'vocals', to_vol:float = 1.0):
 	var le_voices = get(da_vocal.to_lower())
-	if le_voices != null and le_voices.stream != null:
+	if le_voices != null and le_voices.stream:
 		le_voices.volume_db = linear_to_db(0)
 		
 func for_all_audio(do:String, arg = null, is_var:bool = false) -> void:
 	for audio in [inst, vocals, vocals_opp]:
-		if audio.stream == null: continue
+		if !audio.stream: continue
 		if is_var: 
 			audio.set(do, arg)
 		else:
