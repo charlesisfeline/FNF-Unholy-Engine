@@ -5,6 +5,9 @@ signal step_hit(step:int)
 signal section_hit(section:int)
 signal song_end
 
+# calling the method each frames can be expensive so we cache the latency as it's constant
+var audio_latency:float = AudioServer.get_output_latency() * 1000
+
 var bpm:float = 100.0:
 	set(new_bpm):
 		bpm = new_bpm
@@ -15,11 +18,14 @@ var crochet:float:
 	get: return ((60.0 / bpm) * 1000.0)
 var step_crochet:float:
 	get: return crochet / 4.0
-	
-var song_pos:float = 0.0:
+
+var raw_song_pos:float = 0.0
+var song_pos:float:
+	get():
+		return raw_song_pos - audio_latency
 	set(new_pos): 
-		song_pos = new_pos
-		if song_pos < 0: 
+		raw_song_pos = new_pos
+		if raw_song_pos < 0:
 			song_started = false
 			for_all_audio('stop')
 
@@ -105,10 +111,9 @@ func _process(delta):
 	if paused: return
 
 	if song_loaded:
-		song_pos += (1000 * delta) * playback_rate
-		#song_pos -= AudioServer.get_output_latency() #hmm
+		raw_song_pos += (1000 * delta) * playback_rate
 	
-	if song_pos > 0:
+	if raw_song_pos > 0:
 		if !song_started: 
 			start()
 			return
@@ -139,7 +144,7 @@ func _process(delta):
 		
 		for audio in [inst, vocals, vocals_opp]:
 			if audio.stream and audio.playing:
-				if absf((audio.get_playback_position() * 1000) - (song_pos + Prefs.offset)) > 20: 
+				if absf((audio.get_playback_position() * 1000) - (raw_song_pos + Prefs.offset)) > 20: 
 					resync_audio()
 				
 func connect_signals() -> void: # connect all signals
@@ -148,12 +153,12 @@ func connect_signals() -> void: # connect all signals
 			get(i).connect(Callable(Game.scene, i))
 	
 func check_resync(sound:AudioStreamPlayer) -> void: # resyncs a sound to the song position
-	if absf(sound.get_playback_position() * 1000.0 - song_pos) > 20:
-		sound.seek(song_pos / 1000.0)
+	if absf(sound.get_playback_position() * 1000.0 - raw_song_pos) > 20:
+		sound.seek(raw_song_pos / 1000.0)
 		print('resynced')
 
 func resync_audio() -> void:
-	for_all_audio('seek', ((song_pos + Prefs.offset) / 1000.0))
+	for_all_audio('seek', ((raw_song_pos + Prefs.offset) / 1000.0))
 	print('resynced audios')
 
 func stop() -> void:
@@ -168,7 +173,7 @@ func start(at_point:float = -1) -> void:
 	song_started = true # lol
 	if at_point > -1:
 		song_pos = absf(at_point) / 1000.0
-	for_all_audio('play', song_pos)
+	for_all_audio('play', raw_song_pos)
 
 # so you dont have to personally check if a vocal/vocal.stream is null
 func vocal_volume(da_vocal:String = 'vocals', to_vol:float = 1.0):
@@ -199,3 +204,4 @@ func reset_beats() -> void:
 	cur_beat = 0; cur_step = 0; cur_section = 0;
 	last_beat = -1; last_step = -1; last_section = -1;
 	paused = false
+
