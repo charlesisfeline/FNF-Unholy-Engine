@@ -1,78 +1,73 @@
 {
 	"animations": [
 		{
+			"name": "idle",
+			"prefix": "idle spirit_",
 			"offsets": [
 				0,
 				0
 			],
-			"loop": false,
-			"anim": "idle",
-			"fps": 24,
-			"name": "idle spirit_",
-			"indices": []
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
+			"name": "singLEFT",
+			"prefix": "left_",
 			"offsets": [
 				0,
 				0
 			],
-			"loop": false,
-			"anim": "singLEFT",
-			"fps": 24,
-			"name": "left_",
-			"indices": []
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
+			"name": "singDOWN",
+			"prefix": "spirit down_",
 			"offsets": [
-				65,
-				65
+				-65,
+				-65
 			],
-			"loop": false,
-			"anim": "singDOWN",
-			"fps": 24,
-			"name": "spirit down_",
-			"indices": []
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
-			"offsets": [
-				0,
-				0
-			],
-			"loop": false,
-			"anim": "singRIGHT",
-			"fps": 24,
-			"name": "right_",
-			"indices": []
-		},
-		{
+			"name": "singRIGHT",
+			"prefix": "right_",
 			"offsets": [
 				0,
 				0
 			],
-			"loop": false,
-			"anim": "singUP",
-			"fps": 24,
-			"name": "up_",
-			"indices": []
+			"framerate": 24,
+			"frames": [],
+			"loop": false
+		},
+		{
+			"name": "singUP",
+			"prefix": "up_",
+			"offsets": [
+				0,
+				0
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		}
 	],
-	"no_antialiasing": true,
-	"image": "characters/spirit",
-	"position": [
-		-150,
-		100
-	],
-	"healthicon": "spirit-pixel",
-	"flip_x": false,
-	"healthbar_colors": [
-		255,
-		60,
-		110
-	],
-	"camera_position": [
+	"path": "characters/spirit",
+	"icon": "spirit-pixel",
+	"facing_left": false,
+	"antialiasing": false,
+	"cam_offset": [
 		0,
 		0
 	],
-	"sing_duration": 4,
+	"pos_offset": [
+		-150,
+		100
+	],
+	"sing_dur": 4,
 	"scale": 6
 }

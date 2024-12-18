@@ -1,15 +1,14 @@
 {
 	"animations": [
 		{
-			"loop": false,
+			"name": "idle",
+			"prefix": "Idle",
 			"offsets": [
-				25,
-				90
+				-25,
+				-90
 			],
-			"anim": "idle",
-			"fps": 24,
-			"name": "Idle",
-			"indices": [
+			"framerate": 24,
+			"frames": [
 				0,
 				1,
 				2,
@@ -24,116 +23,110 @@
 				11,
 				12,
 				13
-			]
+			],
+			"loop": false
 		},
 		{
-			"loop": false,
+			"name": "singLEFT",
+			"prefix": "Pose Left",
 			"offsets": [
-				26,
-				91
+				-26,
+				-91
 			],
-			"anim": "singLEFT",
-			"fps": 24,
-			"name": "Pose Left",
-			"indices": []
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
-			"loop": false,
+			"name": "singDOWN",
+			"prefix": "Pose Down",
 			"offsets": [
-				30,
-				89
+				-30,
+				-89
 			],
-			"anim": "singDOWN",
-			"fps": 24,
-			"name": "Pose Down",
-			"indices": []
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
-			"loop": false,
+			"name": "singUP",
+			"prefix": "Pose Up",
 			"offsets": [
-				34,
-				97
+				-34,
+				-97
 			],
-			"anim": "singUP",
-			"fps": 24,
-			"name": "Pose Up",
-			"indices": []
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
-			"loop": false,
+			"name": "singRIGHT",
+			"prefix": "Pose Right",
 			"offsets": [
-				26,
-				93
+				-26,
+				-93
 			],
-			"anim": "singRIGHT",
-			"fps": 24,
-			"name": "Pose Right",
-			"indices": []
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
-			"loop": false,
+			"name": "light",
+			"prefix": "Light Can",
 			"offsets": [
-				30,
-				90
+				-30,
+				-90
 			],
-			"anim": "can",
-			"fps": 24,
-			"name": "Light Can",
-			"indices": []
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
-			"loop": false,
+			"name": "kick",
+			"prefix": "Kick Up",
 			"offsets": [
-				40,
-				110
+				-40,
+				-110
 			],
-			"anim": "kick",
-			"fps": 24,
-			"name": "Kick Up",
-			"indices": []
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
-			"loop": false,
+			"name": "knee",
+			"prefix": "Knee Forward",
 			"offsets": [
-				59,
-				105
+				-59,
+				-105
 			],
-			"anim": "knee",
-			"fps": 24,
-			"name": "Knee Forward",
-			"indices": []
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
-			"loop": false,
+			"name": "pissed",
+			"prefix": "Gets Pissed",
 			"offsets": [
-				25,
-				90
+				-25,
+				-90
 			],
-			"anim": "pissed",
-			"fps": 24,
-			"name": "Gets Pissed",
-			"indices": []
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		}
 	],
-	"vocals_file": "",
-	"no_antialiasing": false,
-	"image": "characters/darnell",
-	"position": [
-		0,
-		300
-	],
-	"healthicon": "darnell",
-	"flip_x": false,
-	"healthbar_colors": [
-		115,
-		94,
-		176
-	],
-	"camera_position": [
+	"path": "characters/darnell",
+	"icon": "darnell",
+	"facing_left": false,
+	"antialiasing": true,
+	"cam_offset": [
 		-100,
 		-100
 	],
-	"sing_duration": 4,
-	"scale": 1,
-	"_editor_isPlayer": false
+	"pos_offset": [
+		0,
+		300
+	],
+	"sing_dur": 4,
+	"scale": 1
 }

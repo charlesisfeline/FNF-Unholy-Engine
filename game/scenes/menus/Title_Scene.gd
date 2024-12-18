@@ -10,7 +10,7 @@ var show_cow:bool = Game.rand_bool(5)
 var blurb:Array = []
 func _ready():
 	Discord.change_presence('Title Screen', 'Welcome to the Funkin')
-	#Audio.sync_conductor = true
+	Audio.sync_conductor = true
 	add_child(flash)
 	move_child(flash, 4)
 	flash.color = Color.BLACK
@@ -39,20 +39,20 @@ func beat_hit(beat) -> void:
 	
 	if !finished_intro:
 		match beat:
-			1:
+			1: 
 				Audio.play_music('freakyMenu') # restart song so it sync
 				create_tween().tween_property(Audio, 'volume', 0.7, 4)
-			2: make_funny(['Stupid ass engine by'], 40)
-			4: add_funny('unholywanderer', 40)
-			5: remove_funny()
-			6: make_funny(['Made this hunk of shit'], -40)
-			8: 
+				make_funny(['Stupid ass engine by'], 40)
+			3: add_funny('unholywanderer', 40)
+			4: remove_funny()
+			5: make_funny(['Made this hunk of shit'], -40)
+			7: 
 				add_funny('With Godot', -40)
 				$GodotLogo.visible = true
-			9: 
+			8: 
 				remove_funny()
 				$GodotLogo.visible = false
-			10: 
+			9: 
 				if show_cow:
 					$cow.visible = true
 					$cow.play('cow')
@@ -63,14 +63,14 @@ func beat_hit(beat) -> void:
 					Conductor.song_started = true
 				else:
 					make_funny([blurb[0]])
-			12: 
+			11: 
 				if !show_cow:
 					add_funny(blurb[1] if blurb.size() == 2 else '')
-			13: remove_funny()
-			14: add_funny('friday')
-			15: add_funny('night')
-			16: add_funny('funkin')
-			17: finish_intro()
+			12: remove_funny()
+			13: add_funny('friday')
+			14: add_funny('night')
+			15: add_funny('funkin')
+			16: finish_intro()
 
 var accepted:bool = false
 var funk_sin:float = 0.0

@@ -1,0 +1,205 @@
+{
+	"animations": [
+		{
+			"name": "idle",
+			"prefix": "",
+			"offsets": [
+				0,
+				0
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
+		},
+		{
+			"name": "uppercutPrep",
+			"prefix": "",
+			"offsets": [
+				-37,
+				152
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
+		},
+		{
+			"name": "uppercut",
+			"prefix": "",
+			"offsets": [
+				0,
+				-34
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
+		},
+		{
+			"name": "fakeout",
+			"prefix": "",
+			"offsets": [
+				0,
+				65
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
+		},
+		{
+			"name": "block",
+			"prefix": "",
+			"offsets": [
+				-36,
+				-9
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
+		},
+		{
+			"name": "punchHigh1",
+			"prefix": "",
+			"offsets": [
+				10,
+				0
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
+		},
+		{
+			"name": "punchLow1",
+			"prefix": "",
+			"offsets": [
+				0,
+				43
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
+		},
+		{
+			"name": "dodge",
+			"prefix": "",
+			"offsets": [
+				9,
+				27
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
+		},
+		{
+			"name": "hitHigh",
+			"prefix": "",
+			"offsets": [
+				-58,
+				-65
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
+		},
+		{
+			"name": "hitLow",
+			"prefix": "",
+			"offsets": [
+				-130,
+				25
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
+		},
+		{
+			"name": "cringe",
+			"prefix": "",
+			"offsets": [
+				0,
+				0
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
+		},
+		{
+			"name": "pissed",
+			"prefix": "",
+			"offsets": [
+				26,
+				15
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
+		},
+		{
+			"name": "uppercutHit",
+			"prefix": "",
+			"offsets": [
+				-21,
+				-121
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
+		},
+		{
+			"name": "uppercut-loop",
+			"prefix": "",
+			"offsets": [
+				0,
+				0
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
+		},
+		{
+			"name": "spinOut",
+			"prefix": "",
+			"offsets": [
+				-19,
+				-33
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
+		},
+		{
+			"name": "punchHigh2",
+			"prefix": "",
+			"offsets": [
+				0,
+				21
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
+		},
+		{
+			"name": "punchLow2",
+			"prefix": "",
+			"offsets": [
+				6,
+				47
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
+		}
+	],
+	"path": "characters/darnell-blazin",
+	"icon": "darnell",
+	"facing_left": false,
+	"antialiasing": true,
+	"cam_offset": [
+		-150,
+		-350
+	],
+	"pos_offset": [
+		400,
+		650
+	],
+	"sing_dur": 6.1,
+	"scale": 1.75
+}

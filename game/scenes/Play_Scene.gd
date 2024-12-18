@@ -1,10 +1,12 @@
 extends Node2D
 
 @onready var cam:Camera2D = $Camera
-@onready var ui:UI = $UI
+@onready var ui:CanvasLayer = $UI
 @onready var other:CanvasLayer = $OtherUI # like psych cam other, above ui, and unaffected by ui zoom
 
 @onready var Judge:Rating = Rating.new()
+
+var DIE
 
 var story_mode:bool = false
 var SONG
@@ -146,11 +148,10 @@ func _ready():
 				new.scale = Vector2(i[2], i[2])
 				new.flip_h = i[3]
 				
-				var add_to = gf
+				gf.add_child(new)
+				new.show_behind_parent = true
 				if i.size() >= 5 and i[4]: # add behind speaker
-					add_to = speaker
-					new.show_behind_parent = true
-				add_to.add_child(new)
+					new.reparent(speaker)
 				speaker.addons.append(new)
 	
 	if gf.cur_char.to_lower() == 'pico-speaker' and cur_stage.contains('tank'):
@@ -198,13 +199,17 @@ func _ready():
 	events = JsonHandler.song_events.duplicate()
 	print(SONG.song +' '+ JsonHandler.get_diff.to_upper())
 	print('TOTAL EVENTS: '+ str(events.size()))
+
+	for i in [self, stage]:
+		ui.countdown_start.connect(Callable(i, 'countdown_start'))
+		ui.countdown_tick.connect(Callable(i, 'countdown_tick'))
+		ui.song_start.connect(Callable(i, 'song_start'))
 	
-	ui.countdown_start.connect(countdown_start)
-	ui.countdown_tick.connect(countdown_tick)
-	ui.song_start.connect(song_start)
+	Conductor.connect_signals(stage)
 	
-	Conductor.beat_hit.connect(stage.beat_hit)
-	
+	var char_suff = '-pico' if boyfriend.cur_char == 'pico' else ''
+	if DIE == null:
+		DIE = load('res://game/scenes/game_over'+ char_suff +'.tscn')
 	ui.start_countdown(true)
 	
 	if JsonHandler.parse_type == 'v_slice': move_cam('dad')
@@ -306,7 +311,7 @@ func countdown_tick(tick) -> void:
 	ui.icon_p2.bump()
 	
 func song_start() -> void:
-	stage.song_start()
+	Game.persist.seen_cutscene = true
 
 func beat_hit(beat) -> void:
 	for i in characters:
@@ -375,12 +380,7 @@ func key_press(key:int = 0) -> void:
 	
 	var last = ui.get_group('player').get_strums()
 	if hittable_notes.is_empty():
-		if Prefs.ghost_tapping != 'on':
-			if Prefs.ghost_tapping == 'insta-kill':
-				ui.hp = 0
-				try_death()
-			else:
-				ghost_tap(key)
+		if Prefs.ghost_tapping != 'on': ghost_tap(key)
 	else:
 		var note:Note = hittable_notes[0]
 		#if note.gf: last = ui.get_group('gf').get_strums()
@@ -405,8 +405,9 @@ func try_death() -> void:
 	#boyfriend.process_mode = Node.PROCESS_MODE_ALWAYS
 	gf.play_anim('sad')
 	get_tree().paused = true
-	var death_screen = load('res://game/scenes/game_over.tscn').instantiate()
-	add_child(death_screen)
+	var death = DIE.instantiate()
+	stage.game_over_start(death)
+	add_child(death)
 
 func song_end() -> void:
 	if should_save and JsonHandler.song_variant == '':
@@ -439,7 +440,8 @@ func refresh(restart:bool = true) -> void: # start song from beginning with no r
 	for strum in ui.player_strums:
 		strum.play_anim('static')
 		
-	boyfriend.dance(true)
+	boyfriend.play_anim('idle', true)
+	dad.play_anim('idle', true)
 	
 	chart_notes = JsonHandler.chart_notes.duplicate()
 	events = JsonHandler.song_events.duplicate()
@@ -566,7 +568,6 @@ func good_note_hit(note:Note) -> void:
 		note_miss(note)
 		return
 	
-	LuaHandler.call_func('goodNoteHit', [note.dir])
 	if Conductor.vocals.stream != null: 
 		Conductor.vocals.volume_db = linear_to_db(1.0)
 		
@@ -578,6 +579,7 @@ func good_note_hit(note:Note) -> void:
 
 	var judge_info = Judge.get_score(note.rating)
 	
+	stage.good_note_hit(note)
 	var group = ui.get_group('player')
 	#if note.gf: group = ui.get_group('gf')
 	group.singer = gf if note.gf else boyfriend 
@@ -653,6 +655,7 @@ func opponent_note_hit(note:Note) -> void:
 		var v = Conductor.vocals_opp if Conductor.mult_vocals else Conductor.vocals
 		v.volume_db = linear_to_db(1)
 	
+	stage.opponent_note_hit(note)
 	var group = ui.get_group('opponent')
 	#if note.gf: group = ui.get_group('gf')
 	group.singer = gf if note.gf else dad
@@ -680,11 +683,13 @@ func opponent_sustain_press(sustain:Note) -> void:
 var grace:bool = true
 func note_miss(note:Note) -> void:
 	Audio.play_sound('missnote'+ str(randi_range(1, 3)), 0.3)
-	
+	stage.note_miss(note)
+
 	misses += 1
 	ui.hit_count['miss'] = misses
 	if note != null:
-		ui.get_group('player').note_miss(note)
+		if !note.no_anim:
+			ui.get_group('player').note_miss(note)
 		var away = floor(note.length * 2) if note.is_sustain else int(30 + (15 * floor(misses / 3.0)))
 		score -= 10 if Prefs.legacy_score else away
 		#print(int(30 + (15 * floor(misses / 3))))
@@ -713,9 +718,13 @@ func note_miss(note:Note) -> void:
 	ui.update_score_txt()
 	#if !note.sustain: 
 	
-func ghost_tap(dir:int):
+func ghost_tap(dir:int) -> void:
 	Audio.play_sound('missnote'+ str(randi_range(1, 3)), 0.3)
-	
+	stage.ghost_tap(dir)
+	if Prefs.ghost_tapping == 'insta-kill':
+		ui.hp = 0
+		return try_death()
+		
 	misses += 1
 	ui.hit_count['miss'] = misses
 	boyfriend.sing(dir, 'miss')

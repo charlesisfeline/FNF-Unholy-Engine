@@ -135,6 +135,7 @@ func stage_to(stage:String) -> String:
 		'limoRide': return 'limo'
 		'phillyTrain': return 'philly'
 		'phillyStreets': return 'philly-streets'
+		'phillyBlazin': return 'philly-blazin'
 		'mallXmas': return 'mall'
 		'mallXmasEvil': return 'mall-evil'
 		'school': return 'school'
@@ -169,6 +170,7 @@ func get_character(character:String = 'bf'):
 func parse_week(week:String = 'week1') -> Dictionary: # in week folder
 	week = week.to_lower().strip_edges().replace('.json', '')
 	var week_json = FileAccess.open('res://assets/data/weeks/'+ week +'.json', FileAccess.READ)
+	if week_json == null: return {}
 	var json = JSON.parse_string(week_json.get_as_text())
 	json.file_name = week
 	return json

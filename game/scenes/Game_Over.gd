@@ -1,17 +1,14 @@
 extends Node2D
 
-signal on_game_over # when you first die, with the deathStart anim and sounds
-signal on_game_over_idle # after the timer is done and the deathLoop starts
-signal on_game_over_confirm(is_retry:bool) # once you choose to either leave or retry the song
+signal on_game_over(scene) # when you first die, with the deathStart anim and sounds
+signal on_game_over_idle(scene) # after the timer is done and the deathLoop starts
+signal on_game_over_confirm(is_retry:bool, scene) # once you choose to either leave or retry the song
 
 var dead:Character
 var this = Game.scene
 var last_cam_pos:Vector2
 var last_zoom:Vector2
-
-var death_info:Dictionary = {
-	character = '', sound = '', music = '', music_delay = 0.0
-}
+var death_delay:float = 0
 
 var on_death_start:Callable = func(): # once the death sound and deathStart finish playing
 	if !retried:
@@ -40,7 +37,7 @@ var on_death_confirm:Callable = func(): # once the player chooses to retry
 	this.refresh()
 	queue_free()
 	this.boyfriend.dance()
-	this.gf.play_anim('cheer')
+	this.gf.play_anim('cheer', true)
 
 var death_sound:AudioStreamPlayer
 @onready var timer:Timer = $Timer
@@ -100,7 +97,7 @@ var focused:bool = false
 func _process(delta):
 	$BG.scale = (Vector2.ONE / this.cam.zoom) + Vector2(0.05, 0.05)
 	$BG.position = (get_viewport().get_camera_2d().get_screen_center_position() - (get_viewport_rect().size / 2.0) / this.cam.zoom)
-	$BG.position -= Vector2((5 / 1), 5) # you could see the stage bg leak out
+	$BG.position -= Vector2(5, 5) # you could see the stage bg leak out
 	$Fade.position = $BG.position
 	
 	if (dead.frame >= 14 or dead.anim_finished) and !focused:

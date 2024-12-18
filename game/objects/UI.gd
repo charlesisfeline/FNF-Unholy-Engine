@@ -1,4 +1,4 @@
-class_name UI; extends CanvasLayer;
+extends CanvasLayer;
 
 signal countdown_start
 signal countdown_tick(tick:int) # 0 = 'three', 1 = 'two', 2 = 'one', 3 = 'go', 4 = song start
@@ -223,6 +223,8 @@ func change_skin(new_skin:String = 'default') -> void: # change style of whole h
 	def_mark_scale = (SKIN.strum_scale if SKIN.strum_scale.x <= 0.7 else SKIN.strum_scale / 1.5)
 	mark.scale = def_mark_scale
 
+var skip_countdown:bool = false
+var pause_countdown:bool = false
 var count_down:Timer
 var times_looped:int = -1
 
@@ -230,15 +232,21 @@ func start_countdown(from_beginning:bool = false) -> void:
 	if from_beginning:
 		countdown_start.emit()
 		finished_countdown = false
+		Conductor.paused = false
 		Conductor.song_pos = -(Conductor.crochet * 5.0)
 		count_down = Timer.new() # get_tree.create_timer starts automatically and isn't reusable
 		add_child(count_down)
+		
+	if pause_countdown or skip_countdown:
+		Conductor.paused = pause_countdown or !skip_countdown
+		if skip_countdown: Conductor.song_pos = 0
+		stop_countdown()
+		return
 	
 	count_down.start((Conductor.crochet / 1000.0) / Conductor.playback_rate)
 	await count_down.timeout
 	times_looped += 1
 	countdown_tick.emit(times_looped)
-
 	if times_looped < 4:
 		if times_looped > 0:
 			var spr = Sprite2D.new()
@@ -248,7 +256,7 @@ func start_countdown(from_beginning:bool = false) -> void:
 			spr.texture_filter = Game.get_alias(SKIN.antialiased)
 			Game.center_obj(spr)
 			
-			var tween = create_tween().tween_property(spr, 'modulate:a', 0, Conductor.crochet / 1000)
+			var tween = create_tween().tween_property(spr, 'modulate:a', 0, Conductor.crochet / 1000.0)
 			tween.finished.connect(spr.queue_free)
 		Audio.play_sound(sounds[times_looped], 1, true)
 		start_countdown()
@@ -257,6 +265,8 @@ func start_countdown(from_beginning:bool = false) -> void:
 		song_start.emit()
 
 func stop_countdown() -> void:
+	pause_countdown = false
+	skip_countdown = false
 	finished_countdown = true
 	times_looped = -1
 	if count_down != null:

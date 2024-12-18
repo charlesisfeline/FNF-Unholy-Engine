@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://b1aps5umea8ha"]
+[gd_scene load_steps=12 format=3 uid="uid://b1aps5umea8ha"]
 
 [ext_resource type="Script" path="res://game/scenes/stages/philly-streets.gd" id="1_gj0t7"]
 [ext_resource type="Script" path="res://game/objects/ScrollSprite.gd" id="2_oc14b"]
@@ -10,8 +10,9 @@
 [ext_resource type="Texture2D" uid="uid://bhguloi17x5qi" path="res://assets/images/stages/philly-streets/highway.png" id="8_yyosp"]
 [ext_resource type="Texture2D" uid="uid://cr4mbsiwg36b7" path="res://assets/images/stages/philly-streets/smog.png" id="9_y50c5"]
 [ext_resource type="Texture2D" uid="uid://do02w5dqgativ" path="res://assets/images/stages/philly-streets/foreground.png" id="10_rdxjr"]
+[ext_resource type="Texture2D" uid="uid://dja1w25ifvdmg" path="res://assets/images/stages/philly-streets/spraycanPile.png" id="11_j4p15"]
 
-[node name="philly-streets" type="Node2D"]
+[node name="Philly Streets" type="Node2D"]
 script = ExtResource("1_gj0t7")
 
 [node name="Skybox" type="Node2D" parent="."]
@@ -79,11 +80,14 @@ centered = false
 
 [node name="Traffic" type="Node2D" parent="."]
 
-[node name="Foreground" type="Node2D" parent="."]
-
-[node name="Sprite" type="Sprite2D" parent="Foreground"]
+[node name="Foreground" type="Sprite2D" parent="."]
 position = Vector2(88, 317)
 texture = ExtResource("10_rdxjr")
 centered = false
 
-[node name="Node2D12" type="Node2D" parent="."]
+[node name="CharGroup" type="Node2D" parent="."]
+
+[node name="SprayCanPile" type="Sprite2D" parent="."]
+position = Vector2(920, 1045)
+texture = ExtResource("11_j4p15")
+centered = false

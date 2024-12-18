@@ -41,6 +41,7 @@ var type:String = "":
 		if (new_type.is_empty() or new_type == '0') and type.is_empty(): return
 	
 		type = convert_type(new_type)
+		if type.begins_with('weekend-1'): return
 		match type:
 			'Hey': pass
 			'Alt': alt = '-alt'

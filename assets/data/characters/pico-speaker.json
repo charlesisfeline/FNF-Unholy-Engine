@@ -1,68 +1,81 @@
 {
 	"animations": [
 		{
-			"offsets": [5,134],
-			"indices": [],
-			"loop": false,
-			"fps": 24,
-			"name": "Pico shoot 10",
-			"anim": "shootRight1"
+			"name": "shootRight1",
+			"prefix": "Pico shoot 10",
+			"offsets": [
+				-5,
+				-134
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
-			"offsets": [-8,5],
-			"indices": [],
-			"loop": false,
-			"fps": 24,
-			"name": "Pico shoot 20",
-			"anim": "shootRight2"
+			"name": "shootRight2",
+			"prefix": "Pico shoot 20",
+			"offsets": [
+				8,
+				-5
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
-			"offsets": [0,0],
-			"indices": [],
-			"loop": false,
-			"fps": 24,
-			"name": "Pico Dual Wield on Speaker idle",
-			"anim": "idle"
+			"name": "idle",
+			"prefix": "Pico Dual Wield on Speaker idle",
+			"offsets": [
+				0,
+				0
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
-			"offsets": [568,68],
-			"indices": [],
-			"loop": false,
-			"fps": 24,
-			"name": "Pico shoot 30",
-			"anim": "shootLeft1"
+			"name": "shootLeft1",
+			"prefix": "Pico shoot 30",
+			"offsets": [
+				-568,
+				-68
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
-			"offsets": [579,114],
-			"indices": [],
-			"loop": false,
-			"fps": 24,
-			"name": "Pico shoot 40",
-			"anim": "shootLeft2"
+			"name": "shootLeft2",
+			"prefix": "Pico shoot 40",
+			"offsets": [
+				-579,
+				-114
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		}
 	],
-	"no_antialiasing": false,
-	"image": "characters/pico/tankman/char",
-	"position": [
-		0,
-		10
-	],
-	"healthicon": "pico",
-	"flip_x": false,
-	"healthbar_colors": [
-		183,
-		216,
-		85
-	],
-	"speaker": {
-		"sprite": "speaker",
-		"offsets": [-180, 305.5],
-		"scale": 1
-	},
-	"camera_position": [
+	"path": "characters/pico/tankman/char",
+	"icon": "pico",
+	"facing_left": false,
+	"antialiasing": true,
+	"cam_offset": [
 		-310,
 		100
 	],
-	"sing_duration": 4,
-	"scale": 1
+	"pos_offset": [
+		0,
+		10
+	],
+	"sing_dur": 4,
+	"scale": 1,
+	"speaker": {
+		"sprite": "speaker",
+		"offsets": [
+			-180,
+			305.5
+		],
+		"scale": 1
+	}
 }

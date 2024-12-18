@@ -1,56 +1,51 @@
 {
 	"animations": [
 		{
-			"loop": false,
+			"name": "idle",
+			"prefix": "Idle",
 			"offsets": [
 				0,
 				0
 			],
-			"anim": "idle",
-			"fps": 24,
-			"name": "Idle",
-			"indices": []
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
-			"loop": false,
+			"name": "hey",
+			"prefix": "pico",
 			"offsets": [
 				0,
-				-3
+				3
 			],
-			"anim": "hey",
-			"fps": 24,
-			"name": "pico",
-			"indices": []
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
-			"loop": false,
+			"name": "oops",
+			"prefix": "Pico Down Note0",
 			"offsets": [
 				0,
 				0
 			],
-			"anim": "oops",
-			"fps": 24,
-			"name": "Pico Down Note0",
-			"indices": []
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		}
 	],
-	"no_antialiasing": false,
-	"image": "characters/pico/funny/char",
-	"position": [
-		0,
-		300
-	],
-	"healthicon": "pico",
-	"flip_x": true,
-	"healthbar_colors": [
-		183,
-		216,
-		85
-	],
-	"camera_position": [
+	"path": "characters/pico/funny/char",
+	"icon": "pico",
+	"facing_left": true,
+	"antialiasing": true,
+	"cam_offset": [
 		0,
 		0
 	],
-	"sing_duration": 4,
+	"pos_offset": [
+		0,
+		300
+	],
+	"sing_dur": 4,
 	"scale": 1.3
 }

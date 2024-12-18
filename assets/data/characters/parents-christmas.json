@@ -1,266 +1,261 @@
 {
 	"animations": [
 		{
+			"name": "idle",
+			"prefix": "Parent Christmas Idle",
 			"offsets": [
-				2,
+				-2,
 				0
 			],
-			"loop": false,
-			"anim": "idle",
-			"fps": 24,
-			"name": "Parent Christmas Idle",
-			"indices": []
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
+			"name": "singUP",
+			"prefix": "Parent Up Note Dad",
 			"offsets": [
-				-47,
-				24
-			],
-			"loop": false,
-			"anim": "singUP",
-			"fps": 24,
-			"name": "Parent Up Note Dad",
-			"indices": []
-		},
-		{
-			"offsets": [
-				-31,
-				-29
-			],
-			"loop": false,
-			"anim": "singDOWN",
-			"fps": 24,
-			"name": "Parent Down Note Dad",
-			"indices": []
-		},
-		{
-			"offsets": [
-				-30,
-				16
-			],
-			"loop": false,
-			"anim": "singLEFT",
-			"fps": 24,
-			"name": "Parent Left Note Dad",
-			"indices": []
-		},
-		{
-			"offsets": [
-				-1,
-				-23
-			],
-			"loop": false,
-			"anim": "singRIGHT",
-			"fps": 24,
-			"name": "Parent Right Note Dad",
-			"indices": []
-		},
-		{
-			"offsets": [
-				-1,
+				47,
 				-24
 			],
-			"loop": false,
-			"anim": "singRIGHT-alt",
-			"fps": 24,
-			"name": "Parent Right Note Mom",
-			"indices": []
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
+			"name": "singDOWN",
+			"prefix": "Parent Down Note Dad",
 			"offsets": [
-				-30,
-				-27
+				31,
+				29
 			],
-			"loop": false,
-			"anim": "singDOWN-alt",
-			"fps": 24,
-			"name": "Parent Down Note Mom",
-			"indices": []
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
+			"name": "singLEFT",
+			"prefix": "Parent Left Note Dad",
 			"offsets": [
-				-30,
-				15
+				30,
+				-16
 			],
-			"loop": false,
-			"anim": "singLEFT-alt",
-			"fps": 24,
-			"name": "Parent Left Note Mom",
-			"indices": []
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
+			"name": "singRIGHT",
+			"prefix": "Parent Right Note Dad",
 			"offsets": [
-				-47,
+				1,
+				23
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
+		},
+		{
+			"name": "singRIGHT-alt",
+			"prefix": "Parent Right Note Mom",
+			"offsets": [
+				1,
 				24
 			],
-			"loop": false,
-			"anim": "singUP-alt",
-			"fps": 24,
-			"name": "Parent Up Note Mom",
-			"indices": []
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
+			"name": "singDOWN-alt",
+			"prefix": "Parent Down Note Mom",
 			"offsets": [
-				2,
+				30,
+				27
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
+		},
+		{
+			"name": "singLEFT-alt",
+			"prefix": "Parent Left Note Mom",
+			"offsets": [
+				30,
+				-15
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
+		},
+		{
+			"name": "singUP-alt",
+			"prefix": "Parent Up Note Mom",
+			"offsets": [
+				47,
+				-24
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
+		},
+		{
+			"name": "idle-loop",
+			"prefix": "Parent Christmas Idle",
+			"offsets": [
+				-2,
 				0
 			],
-			"indices": [
+			"framerate": 24,
+			"frames": [
 				10,
 				11,
 				12,
 				13
 			],
-			"fps": 24,
-			"anim": "idle-loop",
-			"loop": true,
-			"name": "Parent Christmas Idle"
+			"loop": true
 		},
 		{
+			"name": "singUP-loop",
+			"prefix": "Parent Up Note Dad",
 			"offsets": [
-				-47,
-				24
+				47,
+				-24
 			],
-			"indices": [
+			"framerate": 24,
+			"frames": [
 				10,
 				11,
 				12,
 				13
 			],
-			"fps": 24,
-			"anim": "singUP-loop",
-			"loop": true,
-			"name": "Parent Up Note Dad"
+			"loop": true
 		},
 		{
+			"name": "singLEFT-loop",
+			"prefix": "Parent Left Note Dad",
 			"offsets": [
-				-30,
-				16
+				30,
+				-16
 			],
-			"indices": [
+			"framerate": 24,
+			"frames": [
 				12,
 				13,
 				14,
 				15
 			],
-			"fps": 24,
-			"anim": "singLEFT-loop",
-			"loop": true,
-			"name": "Parent Left Note Dad"
+			"loop": true
 		},
 		{
+			"name": "singDOWN-loop",
+			"prefix": "Parent Down Note Dad",
 			"offsets": [
-				-31,
-				-29
+				31,
+				29
 			],
-			"indices": [
+			"framerate": 24,
+			"frames": [
 				11,
 				12,
 				13,
 				14
 			],
-			"fps": 24,
-			"anim": "singDOWN-loop",
-			"loop": true,
-			"name": "Parent Down Note Dad"
+			"loop": true
 		},
 		{
+			"name": "singRIGHT-loop",
+			"prefix": "Parent Right Note Dad",
 			"offsets": [
-				-1,
-				-23
+				1,
+				23
 			],
-			"indices": [
+			"framerate": 24,
+			"frames": [
 				12,
 				13,
 				14,
 				15
 			],
-			"fps": 24,
-			"anim": "singRIGHT-loop",
-			"loop": true,
-			"name": "Parent Right Note Dad"
+			"loop": true
 		},
 		{
+			"name": "singRIGHT-alt-loop",
+			"prefix": "Parent Right Note Mom",
 			"offsets": [
-				-1,
-				-24
+				1,
+				24
 			],
-			"indices": [
+			"framerate": 24,
+			"frames": [
 				11,
 				12,
 				13,
 				14
 			],
-			"fps": 24,
-			"anim": "singRIGHT-alt-loop",
-			"loop": true,
-			"name": "Parent Right Note Mom"
+			"loop": true
 		},
 		{
+			"name": "singUP-alt-loop",
+			"prefix": "Parent Up Note Mom",
 			"offsets": [
-				-47,
-				24
+				47,
+				-24
 			],
-			"indices": [
+			"framerate": 24,
+			"frames": [
 				10,
 				11,
 				12,
 				13
 			],
-			"fps": 24,
-			"anim": "singUP-alt-loop",
-			"loop": true,
-			"name": "Parent Up Note Mom"
+			"loop": true
 		},
 		{
+			"name": "singLEFT-alt-loop",
+			"prefix": "Parent Left Note Mom",
 			"offsets": [
-				-30,
-				15
+				30,
+				-15
 			],
-			"indices": [
+			"framerate": 24,
+			"frames": [
 				11,
 				12,
 				13,
 				14
 			],
-			"fps": 24,
-			"anim": "singLEFT-alt-loop",
-			"loop": true,
-			"name": "Parent Left Note Mom"
+			"loop": true
 		},
 		{
+			"name": "singDOWN-alt-loop",
+			"prefix": "Parent Down Note Mom",
 			"offsets": [
-				-30,
-				-27
+				30,
+				27
 			],
-			"indices": [
+			"framerate": 24,
+			"frames": [
 				11,
 				12,
 				13,
 				14
 			],
-			"fps": 24,
-			"anim": "singDOWN-alt-loop",
-			"loop": true,
-			"name": "Parent Down Note Mom"
+			"loop": true
 		}
 	],
-	"no_antialiasing": false,
-	"image": "characters/parents-christmas",
-	"position": [
-		-500,
-		0
-	],
-	"healthicon": "parents",
-	"flip_x": false,
-	"healthbar_colors": [
-		196,
-		94,
-		174
-	],
-	"camera_position": [
+	"path": "characters/parents-christmas",
+	"icon": "parents",
+	"facing_left": false,
+	"antialiasing": true,
+	"cam_offset": [
 		0,
 		0
 	],
-	"sing_duration": 4,
+	"pos_offset": [
+		-500,
+		0
+	],
+	"sing_dur": 4,
 	"scale": 1
 }

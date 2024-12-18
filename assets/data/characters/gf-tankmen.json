@@ -1,14 +1,14 @@
 {
 	"animations": [
 		{
+			"name": "danceRight",
+			"prefix": "GF Dancing at Gunpoint",
 			"offsets": [
 				0,
 				0
 			],
-			"loop": false,
-			"fps": 24,
-			"anim": "danceRight",
-			"indices": [
+			"framerate": 24,
+			"frames": [
 				15,
 				16,
 				17,
@@ -25,17 +25,17 @@
 				28,
 				29
 			],
-			"name": "GF Dancing at Gunpoint"
+			"loop": false
 		},
 		{
+			"name": "danceLeft",
+			"prefix": "GF Dancing at Gunpoint",
 			"offsets": [
 				0,
 				0
 			],
-			"loop": false,
-			"fps": 24,
-			"anim": "danceLeft",
-			"indices": [
+			"framerate": 24,
+			"frames": [
 				30,
 				0,
 				1,
@@ -53,16 +53,17 @@
 				13,
 				14
 			],
-			"name": "GF Dancing at Gunpoint"
+			"loop": false
 		},
 		{
+			"name": "sad",
+			"prefix": "GF Crying at Gunpoint",
 			"offsets": [
-				57,-19
+				-57,
+				19
 			],
-			"loop": false,
-			"fps": 24,
-			"anim": "sad",
-			"indices": [
+			"framerate": 24,
+			"frames": [
 				0,
 				1,
 				2,
@@ -77,37 +78,69 @@
 				11,
 				12
 			],
-			"name": "GF Crying at Gunpoint"
+			"loop": false
 		}
 	],
-	"no_antialiasing": false,
-	"image": "characters/gf/tankmen/char",
-	"position": [
-		0,
-		0
-	],
-	"healthicon": "gf",
-	"flip_x": false,
-	"healthbar_colors": [
-		165,
-		0,
-		77
-	],
-	"camera_position": [
+	"path": "characters/gf/tankmen/char",
+	"icon": "gf",
+	"facing_left": false,
+	"antialiasing": true,
+	"cam_offset": [
 		0,
 		140
 	],
-	"sing_duration": 4,
+	"pos_offset": [
+		0,
+		0
+	],
+	"sing_dur": 4,
+	"scale": 1,
 	"speaker": {
 		"sprite": "speaker",
-		"offsets": [-200, 305],
+		"offsets": [
+			-200,
+			305
+		],
 		"scale": 1,
 		"addons": [
-			["tankman-body", [-100, -85], 1, true, true],
-			["tankman-head2", [-120, -215], 1, true],
-			["tankman-body", [510, -85], 1, false, true],
-			["tankman-head1", [445, -215], 1, false]
+			[
+				"tankman-body",
+				[
+					-100,
+					-85
+				],
+				1,
+				true,
+				true
+			],
+			[
+				"tankman-head2",
+				[
+					-120,
+					-215
+				],
+				1,
+				true
+			],
+			[
+				"tankman-body",
+				[
+					510,
+					-85
+				],
+				1,
+				false,
+				true
+			],
+			[
+				"tankman-head1",
+				[
+					445,
+					-215
+				],
+				1,
+				false
+			]
 		]
-	},
-	"scale": 1
+	}
 }
