@@ -100,7 +100,7 @@ func show_main() -> void:
 
 	in_sub = false
 	$Options/SelectBox.visible = false
-	$Description/Text.text = 'Choose a Catagory'
+	$Description/Text.text = 'Choose a category.'
 	
 func show_catagory(catagory:String) -> void:
 	Audio.play_sound('confirmMenu')
@@ -148,7 +148,7 @@ func update_scroll(diff:int = 0) -> void:
 		var loops:int = 0
 		if catagories[cur_option].to_lower() != 'controls':
 			for pref in get(catagories[cur_option].to_lower()):
-				var desc = descriptions[pref[0]] if descriptions.has(pref[0]) else 'Missing Description'
+				var desc = descriptions[pref[0]] if descriptions.has(pref[0]) else 'No description.'
 				var new_pref = Option.new(pref, desc)
 				new_pref.is_menu = true
 				new_pref.lock.y = 60 + (75 * loops)
