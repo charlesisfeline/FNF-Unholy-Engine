@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<TextureAtlas imagePath="diegooooo.png" width="1834" height="1990">
+<TextureAtlas imagePath="texture.png" width="1834" height="1990">
 <SubTexture name="go die idle dance0000" x="786" y="1324" width="354" height="648" frameX="-150" frameY="-88" frameWidth="604" frameHeight="836"/>
 <SubTexture name="go die idle dance0001" x="786" y="1324" width="354" height="648" frameX="-150" frameY="-88" frameWidth="604" frameHeight="836"/>
 <SubTexture name="go die idle dance0002" x="1272" y="668" width="370" height="640" frameX="-136" frameY="-96" frameWidth="604" frameHeight="836"/>
