@@ -1,11 +1,14 @@
 {
 	"animations": [
 		{
+			"name": "danceLeft",
+			"prefix": "Idle",
 			"offsets": [
 				0,
-				-9
+				9
 			],
-			"indices": [
+			"framerate": 24,
+			"frames": [
 				30,
 				0,
 				1,
@@ -23,17 +26,17 @@
 				13,
 				14
 			],
-			"fps": 24,
-			"anim": "danceLeft",
-			"loop": false,
-			"name": "Idle"
+			"loop": false
 		},
 		{
+			"name": "danceRight",
+			"prefix": "Idle",
 			"offsets": [
 				0,
-				-9
+				9
 			],
-			"indices": [
+			"framerate": 24,
+			"frames": [
 				15,
 				16,
 				17,
@@ -50,102 +53,95 @@
 				28,
 				29
 			],
-			"fps": 24,
-			"anim": "danceRight",
-			"loop": false,
-			"name": "Idle"
+			"loop": false
 		},
 		{
+			"name": "knifeIdle",
+			"prefix": "KnifeIdle",
 			"offsets": [
-				-98,
-				42
+				98,
+				-42
 			],
-			"indices": [],
-			"fps": 24,
-			"anim": "knifeIdle",
-			"loop": false,
-			"name": "KnifeIdle"
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
-			"offsets": [
-				0,
-				42
-			],
-			"indices": [],
-			"fps": 24,
-			"anim": "raise",
-			"loop": false,
-			"name": "KnifeRaise"
-		},
-		{
-			"offsets": [
-				134,
-				41
-			],
-			"indices": [],
-			"fps": 24,
-			"anim": "lower",
-			"loop": false,
-			"name": "KnifeLower"
-		},
-		{
+			"name": "raise",
+			"prefix": "KnifeRaise",
 			"offsets": [
 				0,
-				-16
+				-42
 			],
-			"indices": [],
-			"fps": 24,
-			"anim": "laugh",
-			"loop": false,
-			"name": "Laugh"
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
+			"name": "lower",
+			"prefix": "KnifeLower",
 			"offsets": [
-				-130,
-				40
+				-134,
+				-41
 			],
-			"indices": [],
-			"fps": 24,
-			"anim": "cheer",
-			"loop": false,
-			"name": "ComboCheer"
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
+			"name": "laugh",
+			"prefix": "Laugh",
 			"offsets": [
-				-50,
-				-20
+				0,
+				16
 			],
-			"indices": [],
-			"fps": 24,
-			"anim": "sad",
-			"loop": false,
-			"name": "ComboFawn"
+			"framerate": 24,
+			"frames": [],
+			"loop": false
+		},
+		{
+			"name": "cheer",
+			"prefix": "ComboCheer",
+			"offsets": [
+				130,
+				-40
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
+		},
+		{
+			"name": "sad",
+			"prefix": "ComboFawn",
+			"offsets": [
+				50,
+				20
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		}
 	],
-	"vocals_file": "",
-	"no_antialiasing": false,
-	"image": "characters/gf/nene/char",
-	"position": [
-		-40,
-		0
-	],
-	"healthicon": "gf",
-	"flip_x": false,
-	"healthbar_colors": [
-		165,
-		0,
-		77
-	],
-	"camera_position": [
+	"path": "characters/gf/nene/char",
+	"icon": "gf",
+	"facing_left": false,
+	"antialiasing": true,
+	"cam_offset": [
 		-150,
 		200
 	],
-	"sing_duration": 4,
+	"pos_offset": [
+		-40,
+		0
+	],
+	"sing_dur": 4,
+	"scale": 1,
 	"speaker": {
 		"sprite": "ABot",
-		"offsets": [-100, 320],
+		"offsets": [
+			-100,
+			320
+		],
 		"scale": 1
-	},
-	"scale": 1,
-	"_editor_isPlayer": false
+	}
 }

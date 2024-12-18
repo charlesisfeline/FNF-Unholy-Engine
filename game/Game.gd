@@ -7,6 +7,7 @@ var cur_trans
 
 var persist = { # var values to remember
 	'prev_scene': null,
+	'loaded_already': false,
 	'week_list': ['test', 'tutorial', 'week1', 'week2', 'week3', 'week4', 'week5', 'week6', 'week7', 'weekend1'],
 	'week_int': -1, 'week_diff': -1,
 	'song_list': [],
@@ -68,6 +69,7 @@ func reset_scene() -> void:
 
 func switch_scene(to_scene, skip_trans:bool = false) -> void:
 	Audio.sync_conductor = false
+	persist.loaded_already = false
 	persist.prev_scene = scene.name
 	if ((to_scene is not String) and (to_scene is not PackedScene)) or to_scene == null:
 		printerr('Switch Scene: new scene is invalid')

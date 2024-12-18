@@ -1,0 +1,51 @@
+{
+	"animations": [
+		{
+			"name": "deathStart",
+			"prefix": "Pico Fighting ALL ANIMS",
+			"offsets": [
+				-100,
+				-600
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
+		},
+		{
+			"name": "deathLoop",
+			"prefix": "Pico Fighting ALL ANIMS",
+			"offsets": [
+				-100,
+				-600
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": true
+		},
+		{
+			"name": "deathConfirm",
+			"prefix": "Pico Fighting ALL ANIMS",
+			"offsets": [
+				-100,
+				-600
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
+		}
+	],
+	"path": "characters/pico/blazin/dead",
+	"icon": "pico",
+	"facing_left": true,
+	"antialiasing": true,
+	"cam_offset": [
+		0,
+		-500
+	],
+	"pos_offset": [
+		-20,
+		1050
+	],
+	"sing_dur": 999,
+	"scale": 1.75
+}

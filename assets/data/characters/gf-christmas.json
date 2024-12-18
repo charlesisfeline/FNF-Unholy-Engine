@@ -1,24 +1,25 @@
 {
 	"animations": [
 		{
-			"loop": false,
+			"name": "cheer",
+			"prefix": "GF Cheer",
 			"offsets": [
-				-19,4
+				19,
+				-4
 			],
-			"anim": "cheer",
-			"fps": 24,
-			"name": "GF Cheer",
-			"indices": []
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
-			"loop": false,
+			"name": "sad",
+			"prefix": "gf sad",
 			"offsets": [
-				-18,-14
+				18,
+				14
 			],
-			"anim": "sad",
-			"fps": 24,
-			"name": "gf sad",
-			"indices": [
+			"framerate": 24,
+			"frames": [
 				0,
 				1,
 				2,
@@ -32,18 +33,18 @@
 				10,
 				11,
 				12
-			]
+			],
+			"loop": false
 		},
 		{
-			"loop": false,
+			"name": "danceLeft",
+			"prefix": "GF Dancing Beat",
 			"offsets": [
 				0,
 				0
 			],
-			"anim": "danceLeft",
-			"fps": 24,
-			"name": "GF Dancing Beat",
-			"indices": [
+			"framerate": 24,
+			"frames": [
 				30,
 				0,
 				1,
@@ -60,18 +61,18 @@
 				12,
 				13,
 				14
-			]
+			],
+			"loop": false
 		},
 		{
-			"loop": false,
+			"name": "danceRight",
+			"prefix": "GF Dancing Beat",
 			"offsets": [
 				0,
 				0
 			],
-			"anim": "danceRight",
-			"fps": 24,
-			"name": "GF Dancing Beat",
-			"indices": [
+			"framerate": 24,
+			"frames": [
 				15,
 				16,
 				17,
@@ -87,34 +88,41 @@
 				27,
 				28,
 				29
-			]
+			],
+			"loop": false
 		}
 	],
-	"no_antialiasing": false,
-	"image": "characters/gf/christmas/char",
-	"position": [
-		0,
-		0
-	],
-	"healthicon": "gf",
-	"flip_x": false,
-	"healthbar_colors": [
-		165,
-		0,
-		77
-	],
-	"camera_position": [
+	"path": "characters/gf/christmas/char",
+	"icon": "gf",
+	"facing_left": false,
+	"antialiasing": true,
+	"cam_offset": [
 		-150,
 		200
 	],
-	"sing_duration": 4,
+	"pos_offset": [
+		0,
+		0
+	],
+	"sing_dur": 4,
+	"scale": 1,
 	"speaker": {
 		"sprite": "speaker",
-		"offsets": [-180, 299],
+		"offsets": [
+			-180,
+			299
+		],
 		"scale": 1,
 		"addons": [
-			["lights", [-80, -40], 1, false]
+			[
+				"lights",
+				[
+					-80,
+					-40
+				],
+				1,
+				false
+			]
 		]
-	},
-	"scale": 1
+	}
 }

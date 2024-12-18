@@ -1,56 +1,51 @@
 {
 	"animations": [
 		{
-			"loop": false,
+			"name": "deathConfirm",
+			"prefix": "RETRY CONFIRM",
 			"offsets": [
 				0,
 				0
 			],
-			"fps": 24,
-			"anim": "deathConfirm",
-			"indices": [],
-			"name": "RETRY CONFIRM"
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
-			"loop": true,
+			"name": "deathLoop",
+			"prefix": "Retry Loop",
 			"offsets": [
 				0,
 				0
 			],
-			"fps": 24,
-			"anim": "deathLoop",
-			"indices": [],
-			"name": "Retry Loop"
+			"framerate": 24,
+			"frames": [],
+			"loop": true
 		},
 		{
-			"loop": false,
+			"name": "deathStart",
+			"prefix": "BF Dies pixel",
 			"offsets": [
-				5,
-				2
+				-5,
+				-2
 			],
-			"fps": 24,
-			"anim": "deathStart",
-			"indices": [],
-			"name": "BF Dies pixel"
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		}
 	],
-	"no_antialiasing": true,
-	"image": "characters/bf/pixel/dead",
-	"position": [
-		-10,
-		7
-	],
-	"healthicon": "bf-pixel",
-	"flip_x": true,
-	"healthbar_colors": [
-		123,
-		214,
-		246
-	],
-	"camera_position": [
+	"path": "characters/bf/pixel/dead",
+	"icon": "bf-pixel",
+	"facing_left": true,
+	"antialiasing": false,
+	"cam_offset": [
 		50,
 		-60
 	],
-	"sing_duration": 4,
+	"pos_offset": [
+		-10,
+		7
+	],
+	"sing_dur": 4,
 	"scale": 6
 }

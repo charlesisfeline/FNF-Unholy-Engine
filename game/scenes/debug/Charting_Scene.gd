@@ -122,6 +122,7 @@ func _ready():
 			tab('Song', 'GF').get_popup().add_item(char)
 	
 	var realgf = 'gf'
+	#print('love you maru..')
 	if SONG.has('gfVersion') or SONG.has('player3'):
 		realgf = SONG.gfVersion if SONG.has('gfVersion') else SONG.player3
 		if realgf == null: realgf = 'gf'
@@ -132,6 +133,7 @@ func _ready():
 			char_list.append(i)
 			invalid_chars.append(i)
 	
+	#TODO maybe make this connect to 1 func
 	tab('Song', 'Player1').text = SONG.player1
 	tab('Song', 'Player1').get_popup().connect("id_pressed", on_p1_change)
 

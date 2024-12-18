@@ -1,122 +1,183 @@
 {
 	"animations": [
 		{
-			"loop": false,
+			"name": "idle",
+			"prefix": "Pico Idle Dance",
 			"offsets": [
-				3,
+				-3,
 				0
 			],
-			"anim": "idle",
-			"fps": 24,
-			"name": "Pico Idle Dance",
-			"indices": []
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
-			"loop": false,
+			"name": "singUP",
+			"prefix": "pico Up note0",
 			"offsets": [
-				21,
-				27
+				-21,
+				-27
 			],
-			"anim": "singUP",
-			"fps": 24,
-			"name": "pico Up note0",
-			"indices": []
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
-			"loop": false,
+			"name": "singDOWN",
+			"prefix": "Pico Down Note0",
 			"offsets": [
-				84,
-				-80
+				-84,
+				80
 			],
-			"anim": "singDOWN",
-			"fps": 24,
-			"name": "Pico Down Note0",
-			"indices": []
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
-			"loop": false,
+			"name": "singDOWNmiss",
+			"prefix": "Pico Down Note MISS",
 			"offsets": [
-				80,
-				-38
+				-80,
+				38
 			],
-			"anim": "singDOWNmiss",
-			"fps": 24,
-			"name": "Pico Down Note MISS",
-			"indices": []
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
-			"loop": false,
+			"name": "singUPmiss",
+			"prefix": "pico Up note miss",
 			"offsets": [
-				28,
-				67
+				-28,
+				-67
 			],
-			"anim": "singUPmiss",
-			"fps": 24,
-			"name": "pico Up note miss",
-			"indices": []
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
+			"name": "singRIGHT",
+			"prefix": "Pico Note Right0",
 			"offsets": [
-				-48,
-				2
+				48,
+				-2
 			],
-			"loop": false,
-			"fps": 24,
-			"anim": "singRIGHT",
-			"indices": [],
-			"name": "Pico Note Right0"
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
+			"name": "singLEFT",
+			"prefix": "Pico NOTE LEFT0",
 			"offsets": [
-				85,
-				-10
+				-85,
+				10
 			],
-			"loop": false,
-			"fps": 24,
-			"anim": "singLEFT",
-			"indices": [],
-			"name": "Pico NOTE LEFT0"
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
+			"name": "singRIGHTmiss",
+			"prefix": "Pico Note Right Miss",
 			"offsets": [
-				-45,
-				50
+				45,
+				-50
 			],
-			"loop": false,
-			"fps": 24,
-			"anim": "singRIGHTmiss",
-			"indices": [],
-			"name": "Pico Note Right Miss"
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
+			"name": "singLEFTmiss",
+			"prefix": "Pico NOTE LEFT miss",
 			"offsets": [
-				83,
-				28
+				-83,
+				-28
 			],
-			"loop": false,
-			"fps": 24,
-			"anim": "singLEFTmiss",
-			"indices": [],
-			"name": "Pico NOTE LEFT miss"
+			"framerate": 24,
+			"frames": [],
+			"loop": false
+		},
+		{
+			"name": "shoot",
+			"prefix": "Pico Shoot Hip Full0",
+			"offsets": [
+				-256,
+				-232
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
+		},
+		{
+			"name": "shootMISS",
+			"prefix": "Pico Hit Can0",
+			"offsets": [
+				0,
+				0
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
+		},
+		{
+			"name": "cock",
+			"prefix": "Pico Reload0",
+			"offsets": [
+				0,
+				0
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
+		},
+		{
+			"name": "intro1",
+			"prefix": "Pico Gets Pissed0",
+			"offsets": [
+				-60,
+				0
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
+		},
+		{
+			"name": "cockCutscene",
+			"prefix": "cutscene cock0",
+			"offsets": [
+				0,
+				0
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
+		},
+		{
+			"name": "intro2",
+			"prefix": "shoot and return0",
+			"offsets": [
+				-255,
+				-231
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		}
 	],
-	"no_antialiasing": false,
-	"image": "characters/pico/char",
-	"position": [
-		0,
-		300
-	],
-	"healthicon": "pico",
-	"flip_x": true,
-	"healthbar_colors": [
-		183,
-		216,
-		85
-	],
-	"camera_position": [
+	"path": "characters/pico/char",
+	"icon": "pico",
+	"facing_left": true,
+	"antialiasing": true,
+	"cam_offset": [
 		0,
 		0
 	],
-	"sing_duration": 4,
+	"pos_offset": [
+		0,
+		300
+	],
+	"sing_dur": 4,
 	"scale": 1
 }

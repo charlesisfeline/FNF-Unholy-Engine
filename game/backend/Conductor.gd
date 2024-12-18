@@ -147,10 +147,11 @@ func _process(delta):
 				if absf((audio.get_playback_position() * 1000) - (raw_song_pos + Prefs.offset)) > 20: 
 					resync_audio()
 				
-func connect_signals() -> void: # connect all signals
+func connect_signals(scene = null) -> void: # connect all signals
+	var sce = scene if scene != null else Game.scene
 	for i in ['beat_hit', 'step_hit', 'section_hit', 'song_end']:
 		if Game.scene.has_method(i):
-			get(i).connect(Callable(Game.scene, i))
+			get(i).connect(Callable(sce, i))
 	
 func check_resync(sound:AudioStreamPlayer) -> void: # resyncs a sound to the song position
 	if absf(sound.get_playback_position() * 1000.0 - raw_song_pos) > 20:

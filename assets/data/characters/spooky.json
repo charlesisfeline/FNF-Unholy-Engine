@@ -1,109 +1,104 @@
 {
 	"animations": [
 		{
-			"loop": false,
+			"name": "hey",
+			"prefix": "spooky kids YEAH!!",
 			"offsets": [
-				59,
-				-20
+				-59,
+				20
 			],
-			"anim": "hey",
-			"fps": 24,
-			"name": "spooky kids YEAH!!",
-			"indices": []
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
-			"loop": false,
-			"offsets": [
-				130,
-				-10
-			],
-			"anim": "singLEFT",
-			"fps": 24,
-			"name": "note sing left",
-			"indices": []
-		},
-		{
-			"loop": false,
+			"name": "singLEFT",
+			"prefix": "note sing left",
 			"offsets": [
 				-130,
-				-14
+				10
 			],
-			"anim": "singRIGHT",
-			"fps": 24,
-			"name": "spooky sing right",
-			"indices": []
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
-			"loop": false,
+			"name": "singRIGHT",
+			"prefix": "spooky sing right",
 			"offsets": [
-				-50,
-				-130
+				130,
+				14
 			],
-			"anim": "singDOWN",
-			"fps": 24,
-			"name": "spooky DOWN note",
-			"indices": []
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
-			"loop": false,
+			"name": "singDOWN",
+			"prefix": "spooky DOWN note",
+			"offsets": [
+				50,
+				130
+			],
+			"framerate": 24,
+			"frames": [],
+			"loop": false
+		},
+		{
+			"name": "danceLeft",
+			"prefix": "spooky dance idle",
 			"offsets": [
 				0,
 				0
 			],
-			"fps": 12,
-			"anim": "danceLeft",
-			"indices": [
+			"framerate": 12,
+			"frames": [
 				0,
 				2,
 				6
 			],
-			"name": "spooky dance idle"
+			"loop": false
 		},
 		{
-			"loop": false,
+			"name": "danceRight",
+			"prefix": "spooky dance idle",
 			"offsets": [
 				0,
 				0
 			],
-			"fps": 12,
-			"anim": "danceRight",
-			"indices": [
+			"framerate": 12,
+			"frames": [
 				8,
 				10,
 				12,
 				14
 			],
-			"name": "spooky dance idle"
+			"loop": false
 		},
 		{
-			"loop": false,
+			"name": "singUP",
+			"prefix": "spooky UP NOTE",
 			"offsets": [
-				-20,
-				26
+				20,
+				-26
 			],
-			"fps": 24,
-			"anim": "singUP",
-			"indices": [],
-			"name": "spooky UP NOTE"
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		}
 	],
-	"no_antialiasing": false,
-	"image": "characters/spooky",
-	"position": [
+	"path": "characters/spooky",
+	"icon": "spooky",
+	"facing_left": false,
+	"antialiasing": true,
+	"cam_offset": [
+		0,
+		0
+	],
+	"pos_offset": [
 		0,
 		200
 	],
-	"healthicon": "spooky",
-	"flip_x": false,
-	"healthbar_colors": [
-		213,
-		126,
-		0
-	],
-	"camera_position": [
-		0,
-		0
-	],
-	"sing_duration": 4,
+	"sing_dur": 4,
 	"scale": 1
 }

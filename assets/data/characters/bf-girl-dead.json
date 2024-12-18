@@ -1,56 +1,51 @@
 {
 	"animations": [
 		{
+			"name": "deathStart",
+			"prefix": "BF dies",
 			"offsets": [
-				37,
-				11
+				-37,
+				-11
 			],
-			"loop": false,
-			"fps": 24,
-			"anim": "deathStart",
-			"indices": [],
-			"name": "BF dies"
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		},
 		{
+			"name": "deathLoop",
+			"prefix": "BF Dead Loop",
 			"offsets": [
-				37,
-				5
+				-37,
+				-5
 			],
-			"loop": true,
-			"fps": 24,
-			"anim": "deathLoop",
-			"indices": [],
-			"name": "BF Dead Loop"
+			"framerate": 24,
+			"frames": [],
+			"loop": true
 		},
 		{
+			"name": "deathConfirm",
+			"prefix": "BF Dead confirm",
 			"offsets": [
-				37,
-				69
+				-37,
+				-69
 			],
-			"loop": false,
-			"fps": 24,
-			"anim": "deathConfirm",
-			"indices": [],
-			"name": "BF Dead confirm"
+			"framerate": 24,
+			"frames": [],
+			"loop": false
 		}
 	],
-	"no_antialiasing": false,
-	"image": "characters/bf/trans/dead",
-	"position": [
-		15,
-		5
-	],
-	"healthicon": "bf",
-	"flip_x": true,
-	"healthbar_colors": [
-		49,
-		176,
-		209
-	],
-	"camera_position": [
+	"path": "characters/bf/trans/dead",
+	"icon": "bf",
+	"facing_left": true,
+	"antialiasing": true,
+	"cam_offset": [
 		0,
 		0
 	],
-	"sing_duration": 4,
+	"pos_offset": [
+		15,
+		5
+	],
+	"sing_dur": 4,
 	"scale": 1
 }

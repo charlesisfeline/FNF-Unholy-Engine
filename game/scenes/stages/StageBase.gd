@@ -4,6 +4,10 @@ class_name StageBase extends Node2D
 var default_zoom:float = 0.8
 var cam_speed:float = 4.0
 
+var THIS:
+	get: return Game.scene
+var UI:
+	get: return Game.scene.ui
 var SONG:
 	get: return Game.scene.SONG
 
@@ -42,7 +46,13 @@ func beat_hit(beat:int) -> void: pass
 func step_hit(step:int) -> void: pass
 func section_hit(section:int) -> void: pass
 
+func good_note_hit(note:Note) -> void: pass
+func opponent_note_hit(note:Note) -> void: pass
+func note_miss(note:Note) -> void: pass
+func ghost_tap(dir:int) -> void: pass
+func event_hit(event:EventData) -> void: pass
+
 # bf died
-func game_over_start() -> void: pass
-func game_over_idle() -> void: pass
-func game_over_confirm(is_retry:bool) -> void: pass
+func game_over_start(scene) -> void: pass
+func game_over_idle(scene) -> void: pass
+func game_over_confirm(is_retry:bool, scene) -> void: pass

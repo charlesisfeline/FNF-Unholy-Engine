@@ -21,7 +21,6 @@ func _ready():
 	add_child(Player)
 	Player.finished.connect(finished)
 	if music.length() == 0 and !exclude.has(Game.scene.name):
-		sync_conductor = true
 		play_music('freakyMenu')
 
 func _process(_delta):
@@ -82,7 +81,7 @@ func play_sound(sound:String, vol:float = 1.0, use_skin:bool = false, ext:String
 
 func stop_all_sounds() -> void:
 	for sound in sound_list:
-		if sound != null and sound.stream != null and sound.playing:
+		if sound != null and sound.stream != null:
 			sound.stop()
 			sound.stream = null
 			sound.finish()
