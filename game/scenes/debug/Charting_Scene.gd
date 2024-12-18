@@ -144,8 +144,8 @@ func _ready():
 	tab('Song', 'GF').get_popup().connect("id_pressed", on_gf_change)
 
 	var chars = [JsonHandler.get_character(SONG.player2), JsonHandler.get_character(SONG.player1)]
-	$ChartLine/IconL.change_icon(chars[0].healthicon if chars[0] != null else 'face')
-	$ChartLine/IconR.change_icon(chars[1].healthicon if chars[1] != null else 'face', true)
+	$ChartLine/IconL.change_icon(chars[0].icon if chars[0] != null else 'face')
+	$ChartLine/IconR.change_icon(chars[1].icon if chars[1] != null else 'face', true)
 	
 	$ChartUI/SongProgress/Length.text = Game.to_time(Conductor.song_length)
 	

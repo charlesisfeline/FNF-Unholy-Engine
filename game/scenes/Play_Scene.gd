@@ -224,9 +224,9 @@ func _process(delta):
 	if ui.hp <= 0: try_death()
 		
 	if Input.is_action_just_pressed("debug_1"):
-		# if JsonHandler.parse_type == 'v_slice':
-		# 	Audio.play_sound('cancelMenu')
-		#	return
+		if JsonHandler.parse_type == 'v_slice':
+			Audio.play_sound('cancelMenu')
+			return
 		await RenderingServer.frame_post_draw
 		Game.switch_scene('debug/Charting_Scene')
 		

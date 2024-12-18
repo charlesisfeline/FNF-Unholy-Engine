@@ -205,4 +205,3 @@ func reset_beats() -> void:
 	cur_beat = 0; cur_step = 0; cur_section = 0;
 	last_beat = -1; last_step = -1; last_section = -1;
 	paused = false
-
