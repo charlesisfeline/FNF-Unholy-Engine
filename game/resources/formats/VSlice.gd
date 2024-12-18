@@ -1,5 +1,7 @@
 class_name VSlice; extends Chart;
 
+# todo: vslice character support
+
 var diff:String = 'hard'
 func _init(d:String): diff = d
 

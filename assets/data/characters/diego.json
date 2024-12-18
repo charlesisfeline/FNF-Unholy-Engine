@@ -57,12 +57,12 @@
 		}
 	],
 	"no_antialiasing": true,
-	"image": "characters/diegooooo",
+	"image": "characters/diego",
 	"position": [
 		-100,
 		50
 	],
-	"healthicon": "diego",
+	"healthicon": "diego-exe",
 	"flip_x": false,
 	"healthbar_colors": [
 		184,

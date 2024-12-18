@@ -26,7 +26,7 @@ func change_icon(new_image:String = 'face', player:bool = false, credit:bool = f
 	if !ResourceLoader.exists(icon_path % image): image = 'face'
 	texture = load(icon_path % image)
 	
-	antialiasing = !image.ends_with('-pixel')
+	antialiasing = !image.ends_with('-pixel') or !image.ends_with('-exe')
 	has_lose = texture.get_width() > MIN_WIDTH
 	hframes = 2 if has_lose else 1
 	if is_player: flip_h = true

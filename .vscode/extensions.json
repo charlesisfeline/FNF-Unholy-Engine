@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "geequlim.godot-tools", // Basic Godot integration
+    "alfish.godot-files", // GDShader support and other stuff
+    "EddieDover.gdscript-formatter-linter", // GDScript formatting
+    "esbenp.prettier-vscode", // JSON formatting
+    "redhat.vscode-xml" // XML formatting
+  ]
+}

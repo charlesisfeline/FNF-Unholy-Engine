@@ -1,5 +1,7 @@
 class_name Codename; extends Chart;
 
+# todo: codename character support
+
 func parse_chart(data):
 	for line in data.strumLines:
 		var init_type:String = 'gf' if line.position == 'girlfriend' else ''

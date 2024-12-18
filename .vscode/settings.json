@@ -1,0 +1,26 @@
+{
+  "godotTools.editorPath.godot4": "d:\\Godot_v4.3-stable_win64.exe\\Godot_v4.3-stable_win64.exe",
+
+  "[json]": {
+    // automatically keep json files formatted
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  // Generic file formatting style configuration
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": false,
+  "files.trimTrailingWhitespace": true,
+
+  "prettier.tabWidth": 2,
+
+  // Automatically detect indentation.
+  "editor.bracketPairColorization.enabled": true,
+  "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
+  "editor.codeLens": true,
+  "editor.detectIndentation": true,
+  "editor.insertSpaces": true,
+  "editor.minimap.enabled": true,
+  "editor.tabSize": 2
+}

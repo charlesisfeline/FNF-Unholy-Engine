@@ -1,79 +1,52 @@
 {
-	"animations": [
-		{
-			"offsets": [
-				0,
-				0
-			],
-			"indices": [],
-			"fps": 24,
-			"anim": "idle",
-			"loop": false,
-			"name": "wizard idle dance"
-		},
-		{
-			"offsets": [
-				15,
-				4
-			],
-			"indices": [],
-			"fps": 24,
-			"anim": "singLEFT",
-			"loop": false,
-			"name": "wizard sing left"
-		},
-		{
-			"offsets": [
-				-47,
-				-84
-			],
-			"indices": [],
-			"fps": 24,
-			"anim": "singDOWN",
-			"loop": false,
-			"name": "wizard sing down"
-		},
-		{
-			"offsets": [
-				-14,
-				49
-			],
-			"indices": [],
-			"fps": 24,
-			"anim": "singUP",
-			"loop": false,
-			"name": "wizard sing up"
-		},
-		{
-			"offsets": [
-				-5,
-				-12
-			],
-			"indices": [],
-			"fps": 24,
-			"anim": "singRIGHT",
-			"loop": false,
-			"name": "wizard sing right"
-		}
-	],
-	"no_antialiasing": false,
-	"image": "characters/wizard",
-	"position": [
-		0,
-		310
-	],
-	"healthicon": "wizard",
-	"flip_x": false,
-	"healthbar_colors": [
-		20,
-		20,
-		240
-	],
-	"camera_position": [
-		-50,
-		-100
-	],
-	"sing_duration": 6.1,
-	"scale": 2.1,
-"_editor_isPlayer": false
+  "animations": [
+	{
+	  "offsets": [0, 0],
+	  "frames": [],
+	  "framerate": 24,
+	  "name": "idle",
+	  "loop": false,
+	  "prefix": "wizard idle dance"
+	},
+	{
+	  "offsets": [15, 4],
+	  "frames": [],
+	  "framerate": 24,
+	  "name": "singLEFT",
+	  "loop": false,
+	  "prefix": "wizard sing left"
+	},
+	{
+	  "offsets": [-47, -84],
+	  "frames": [],
+	  "framerate": 24,
+	  "name": "singDOWN",
+	  "loop": false,
+	  "prefix": "wizard sing down"
+	},
+	{
+	  "offsets": [-14, 49],
+	  "frames": [],
+	  "framerate": 24,
+	  "name": "singUP",
+	  "loop": false,
+	  "prefix": "wizard sing up"
+	},
+	{
+	  "offsets": [-5, -12],
+	  "frames": [],
+	  "framerate": 24,
+	  "name": "singRIGHT",
+	  "loop": false,
+	  "prefix": "wizard sing right"
+	}
+  ],
+  "antialiasing": true,
+  "path": "characters/wizard",
+  "pos_offset": [0, 310],
+  "icon": "wizard",
+  "facing_left": false,
+  "cam_offset": [-50, -100],
+  "sing_dur": 4,
+  "scale": 2.1
 }

@@ -92,6 +92,8 @@ func _ready():
 			'senpai', 'roses': cur_stage = 'school'
 			'thorns': cur_stage = 'school-evil'
 			'ugh', 'guns', 'stress': cur_stage = 'tank'
+			'darnell', 'lit-up', '2hot': cur_stage = 'philly-streets'
+			'blazin': cur_stage = 'philly-blazin'
 
 	var to_load = 'stage'
 	if ResourceLoader.exists('res://game/scenes/stages/'+ cur_stage +'.tscn'):

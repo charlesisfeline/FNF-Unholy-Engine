@@ -1,1 +1,1 @@
-bf,bf-car,bf-christmas,bf-pixel,bf-holding-gf,bf-pixel-opponent,gf,gf-car,gf-christmas,gf-pixel,gf-tankmen,dad,spooky,monster,pico,mom,mom-car,parents-christmas,monster-christmas,senpai,senpai-angry,spirit,tankman,pico-speaker,darnell,nene
+bf,bf-car,bf-christmas,bf-pixel,bf-holding-gf,bf-pixel-opponent,gf,gf-car,gf-christmas,gf-pixel,gf-tankmen,dad,spooky,monster,pico,mom,mom-car,parents-christmas,monster-christmas,senpai,senpai-angry,spirit,tankman,pico-speaker,darnell,nene,diego,diego-flipped,milky,wizard

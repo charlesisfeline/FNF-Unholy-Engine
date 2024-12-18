@@ -10,7 +10,7 @@ var in_diff:bool = false
 var diffs = JsonHandler.song_diffs
 var break_text = [
 	'Havin a snack break', 'Stop fucking pinging me', 'Oop I fell down the stairs', 
-	'Damn, I can\'t funk like this', 'Time to touch some grass', 'Shittin rn keep it down'
+	'Damn, I can\'t funk like this', 'Time to touch some grass', 'Shittin rn keep it down', 'Not now bud', 'No', 'Stop', 'Why'
 ]
 func _ready():
 	Discord.change_presence('Paused '+ this.SONG.song +' - '+ JsonHandler.get_diff.to_upper(), break_text.pick_random())
