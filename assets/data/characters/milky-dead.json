@@ -1,0 +1,57 @@
+{
+	"animations": [
+		{
+			"offsets": [
+				60,
+				10
+			],
+			"indices": [],
+			"fps": 24,
+			"anim": "deathStart",
+			"loop": false,
+			"name": "milky ded"
+		},
+		{
+			"offsets": [
+				60,
+				10
+			],
+			"indices": [],
+			"fps": 24,
+			"anim": "deathLoop",
+			"loop": false,
+			"name": "milky ded"
+		},
+		{
+			"offsets": [
+				60,
+				10
+			],
+			"indices": [],
+			"fps": 24,
+			"anim": "deathConfirm",
+			"loop": false,
+			"name": "milky ded"
+		}
+	],
+	"no_antialiasing": true,
+	"image": "characters/milky",
+	"position": [
+		-20,
+		180
+	],
+	"healthicon": "milky",
+	"flip_x": true,
+	"healthbar_colors": [
+		49,
+		176,
+		209
+	],
+	"camera_position": [
+		100,
+		-140
+	],
+	"sing_duration": 6.1,
+	"scale": 2,
+"_editor_isPlayer": true
+}

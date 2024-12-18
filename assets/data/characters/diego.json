@@ -1,0 +1,79 @@
+{
+	"animations": [
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"indices": [],
+			"fps": 16,
+			"anim": "idle",
+			"loop": false,
+			"name": "go die idle dance"
+		},
+		{
+			"offsets": [
+				10,
+				0
+			],
+			"indices": [],
+			"fps": 24,
+			"anim": "singDOWN",
+			"loop": false,
+			"name": "go die note down"
+		},
+		{
+			"offsets": [
+				0,
+				-2
+			],
+			"indices": [],
+			"fps": 24,
+			"anim": "singLEFT",
+			"loop": false,
+			"name": "go die note left"
+		},
+		{
+			"offsets": [
+				0,
+				7
+			],
+			"indices": [],
+			"fps": 24,
+			"anim": "singUP",
+			"loop": false,
+			"name": "go die note up"
+		},
+		{
+			"offsets": [
+				-6,
+				0
+			],
+			"indices": [],
+			"fps": 24,
+			"anim": "singRIGHT",
+			"loop": false,
+			"name": "go die note right"
+		}
+	],
+	"no_antialiasing": true,
+	"image": "characters/diegooooo",
+	"position": [
+		-100,
+		50
+	],
+	"healthicon": "diego",
+	"flip_x": false,
+	"healthbar_colors": [
+		184,
+		229,
+		255
+	],
+	"camera_position": [
+		-120,
+		-60
+	],
+	"sing_duration": 6.1,
+	"scale": 1,
+"_editor_isPlayer": false
+}

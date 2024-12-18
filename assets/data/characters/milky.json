@@ -1,0 +1,79 @@
+{
+	"animations": [
+		{
+			"offsets": [
+				-1,
+				0
+			],
+			"indices": [],
+			"fps": 24,
+			"anim": "idle",
+			"loop": false,
+			"name": "milky idle dance"
+		},
+		{
+			"offsets": [
+				20,
+				10
+			],
+			"indices": [],
+			"fps": 24,
+			"anim": "singLEFT",
+			"loop": false,
+			"name": "milky sing left"
+		},
+		{
+			"offsets": [
+				20,
+				10
+			],
+			"indices": [],
+			"fps": 24,
+			"anim": "singDOWN",
+			"loop": false,
+			"name": "milky sing down"
+		},
+		{
+			"offsets": [
+				20,
+				10
+			],
+			"indices": [],
+			"fps": 24,
+			"anim": "singUP",
+			"loop": false,
+			"name": "milky sing up"
+		},
+		{
+			"offsets": [
+				20,
+				10
+			],
+			"indices": [],
+			"fps": 24,
+			"anim": "singRIGHT",
+			"loop": false,
+			"name": "milky sing right"
+		}
+	],
+	"no_antialiasing": true,
+	"image": "characters/milky",
+	"position": [
+		-20,
+		180
+	],
+	"healthicon": "milky",
+	"flip_x": true,
+	"healthbar_colors": [
+		49,
+		176,
+		209
+	],
+	"camera_position": [
+		100,
+		-140
+	],
+	"sing_duration": 4,
+	"scale": 2,
+"_editor_isPlayer": true
+}
