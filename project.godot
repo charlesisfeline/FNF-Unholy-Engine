@@ -15,6 +15,7 @@ config/description="A stupid FNF Engine made in Godot (for the 1,000,000th time)
 config/tags=PackedStringArray("audio")
 run/main_scene="res://game/scenes/menus/title_scene.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
+boot_splash/bg_color=Color(0.0217901, 0, 0.354912, 1)
 config/icon="res://icon.png"
 
 [autoload]
