@@ -1,34 +1,34 @@
 {
   "animations": [
-	{
-	  "offsets": [60, 10],
-	  "frames": [],
-	  "framerate": 24,
-	  "name": "deathStart",
-	  "loop": false,
-	  "prefix": "milky ded"
-	},
-	{
-	  "offsets": [60, 10],
-	  "frames": [],
-	  "framerate": 24,
-	  "name": "deathLoop",
-	  "loop": false,
-	  "prefix": "milky ded"
-	},
-	{
-	  "offsets": [60, 10],
-	  "frames": [],
-	  "framerate": 24,
-	  "name": "deathConfirm",
-	  "loop": false,
-	  "prefix": "milky ded"
-	}
+    {
+      "offsets": [60, 10],
+      "frames": [],
+      "framerate": 24,
+      "name": "deathStart",
+      "loop": false,
+      "prefix": "milky ded"
+    },
+    {
+      "offsets": [60, 10],
+      "frames": [],
+      "framerate": 24,
+      "name": "deathLoop",
+      "loop": false,
+      "prefix": "milky ded"
+    },
+    {
+      "offsets": [60, 10],
+      "frames": [],
+      "framerate": 24,
+      "name": "deathConfirm",
+      "loop": false,
+      "prefix": "milky ded"
+    }
   ],
   "antialiasing": false,
   "path": "characters/milky",
   "pos_offset": [-20, 180],
-  "icon": "milky",
+  "icon": "milky-exe",
   "facing_left": true,
   "cam_offset": [100, -140],
   "sing_dur": 4,
