@@ -47,7 +47,7 @@ theme_override_fonts/font = ExtResource("5_85d4d")
 theme_override_font_sizes/font_size = 25
 text = "Beat: %s
 Step: %s
-Sect: %s
+Section: %s
 
 Snap: 16th"
 
