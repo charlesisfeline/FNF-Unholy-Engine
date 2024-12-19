@@ -27,10 +27,10 @@
   ],
   "antialiasing": false,
   "path": "characters/milky",
-  "pos_offset": [-20, 180],
+  "pos_offset": [-425, -25],
   "icon": "milky-exe",
   "facing_left": true,
-  "cam_offset": [100, -140],
+  "cam_offset": [100, -220],
   "sing_dur": 4,
   "scale": 2
 }
