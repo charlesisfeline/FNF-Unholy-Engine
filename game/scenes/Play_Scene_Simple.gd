@@ -9,7 +9,7 @@ extends Node2D
 var default_zoom:float = 0.8
 var SONG
 var cur_style:String = 'default': # yes
-	set(new_style): 
+	set(new_style):
 		ui.cur_style = new_style
 		cur_style = ui.cur_style
 var cur_speed:float = 1:
@@ -42,42 +42,42 @@ var misses:int = 0
 
 func _ready():
 	ui.health_bar.scale = Vector2(0.8, 0.8)
-	
+
 	auto_play = Prefs.auto_play # there is a reason
-	
+
 	SONG = JsonHandler._SONG
 
 	Conductor.load_song(SONG.song)
 	Conductor.bpm = SONG.bpm
 	Conductor.paused = false
 	cur_speed = SONG.speed
-	
+
 	var chars = [JsonHandler.get_character(SONG.player1), JsonHandler.get_character(SONG.player2)]
-	ui.icon_p1.change_icon(chars[0].healthicon if chars[0] != null else 'face', true)
-	ui.icon_p2.change_icon(chars[1].healthicon if chars[1] != null else 'face')
-	
+	ui.icon_p1.change_icon(chars[0].icon if chars[0] != null else 'face', true)
+	ui.icon_p2.change_icon(chars[1].icon if chars[1] != null else 'face')
+
 	if SONG.has('stage') and SONG.stage.contains('school'):
 		cur_style = 'pixel'
-		
+
 	if Prefs.rating_cam == 'game':
 		Judge.rating_pos = cam.position + Vector2(-15, -15)
 		Judge.combo_pos = cam.position + Vector2(-150, 60)
 	elif Prefs.rating_cam == 'hud':
 		Judge.rating_pos = Vector2(580, 300)
 		Judge.combo_pos = Vector2(450, 400)
-		
+
 	Discord.change_presence('Starting '+ SONG.song.capitalize())
-	
+
 	if !JsonHandler.chart_notes.is_empty():
 		chart_notes = JsonHandler.chart_notes.duplicate()
 		print('already loaded')
 	else:
 		chart_notes = JsonHandler.generate_chart(SONG)
 		print('made chart')
-		
+
 	start_time = chart_notes[0][0]
 	events = JsonHandler.song_events.duplicate()
-	
+
 	ui.start_countdown(true)
 	section_hit(0) #just for 1st section stuff
 
@@ -87,7 +87,7 @@ func _process(delta):
 	if Input.is_key_pressed(KEY_R): ui.hp = 0
 	if ui.hp <= 0:
 		can_gain_score = false
-		
+
 	if Input.is_action_just_pressed("debug_1"):
 		await RenderingServer.frame_post_draw
 		Game.switch_scene('debug/Charting_Scene')
@@ -97,20 +97,20 @@ func _process(delta):
 		Conductor.resync_audio()
 		get_tree().paused = true
 		other.add_child(load('res://game/scenes/pause_screen.tscn').instantiate())
-	
+
 	if ui.finished_countdown:
 		Discord.change_presence('Playing '+ SONG.song.capitalize() +' - '+ JsonHandler.get_diff.to_upper(),\
 		 Game.to_time(Conductor.song_pos) +' / '+ Game.to_time(Conductor.song_length) +' | '+ \
 		  str(round(abs(Conductor.song_pos / Conductor.song_length) * 100.0)) +'% Complete')
-		
-	ui.icon_p1.position.y = 0 
-	ui.icon_p2.position.y = 0 
-	
+
+	ui.icon_p1.position.y = 0
+	ui.icon_p2.position.y = 0
+
 	if chart_notes != null:
 		while chart_notes.size() > 0 and chunk != chart_notes.size() and chart_notes[chunk][0] - Conductor.song_pos < spawn_time / cur_speed:
 			if chart_notes[chunk][0] - Conductor.song_pos > spawn_time / cur_speed:
 				break
-			
+
 			var note_info = NoteData.new(chart_notes[chunk])
 			var new_note:Note = Note.new(note_info)
 			new_note.speed = cur_speed
@@ -120,7 +120,7 @@ func _process(delta):
 			if chart_notes[chunk][2]: # if it has a sustain
 				var new_sustain:Note = Note.new(new_note, true)
 				new_sustain.speed = new_note.speed
-		
+
 				notes.append(new_sustain)
 				ui.add_to_strum_group(new_sustain, to_add)
 
@@ -143,7 +143,7 @@ func _process(delta):
 					else:
 						if note.can_hit and !note.was_good_hit:
 							opponent_sustain_press(note)
-					
+
 					if note.temp_len <= 0: kill_note(note)
 
 				else:
@@ -185,16 +185,16 @@ func key_press(key:int = 0) -> void:
 		return i.dir == key and i.spawned and !i.is_sustain and i.must_press and i.can_hit and !i.was_good_hit
 	)
 	hittable_notes.sort_custom(func(a, b): return a.strum_time < b.strum_time)
-	
+
 	if hittable_notes.size() != 0:
 		var note:Note = hittable_notes[0]
-			
+
 		if hittable_notes.size() > 1: # mmm idk anymore
 			for funny in hittable_notes: # temp dupe note thing killer bwargh i hate it
-				if note == funny: continue 
+				if note == funny: continue
 				if absf(funny.strum_time - note.strum_time) < 1.0:
 					kill_note(funny)
-					
+
 		good_note_hit(note)
 
 	var strum = ui.player_strums[key]
@@ -215,21 +215,21 @@ func song_end() -> void:
 		var scores = ConfigFile.new()
 		scores.load('user://highscores.cfg')
 		var to_save = scores.get_value('Song Scores', Game.format_str(SONG.song))
-		if to_save[JsonHandler.get_diff] == [0, 0, 'N/A'] or score > to_save[JsonHandler.get_diff][0]: 
+		if to_save[JsonHandler.get_diff] == [0, 0, 'N/A'] or score > to_save[JsonHandler.get_diff][0]:
 			to_save[JsonHandler.get_diff] = [score, ui.accuracy, ui.fc]
 
 			scores.set_value('Song Scores', Game.format_str(SONG.song), to_save)
 			scores.save('user://highscores.cfg')
-		
+
 	#refresh(false)
 	Conductor.reset()
 	Game.switch_scene("menus/freeplay")
-	
+
 func refresh(restart:bool = true) -> void: # start song from beginning with no restarts
 	Conductor.reset_beats()
 	Conductor.bpm = SONG.bpm # reset bpm to init whoops
 	can_gain_score = true
-	
+
 	while notes.size() != 0:
 		kill_note(notes[0])
 	notes.clear()
@@ -249,7 +249,7 @@ func refresh(restart:bool = true) -> void: # start song from beginning with no r
 	section_hit(0)
 
 func event_hit(event:EventData) -> void:
-	if event.event == 'Change Scroll Speed': 
+	if event.event == 'Change Scroll Speed':
 		var new_speed = SONG.speed * float(event.values[0])
 		var len := float(event.values[1])
 		if len > 0:
@@ -260,13 +260,13 @@ func event_hit(event:EventData) -> void:
 func good_note_hit(note:Note) -> void:
 	if note.type.length() > 0: print(note.type, ' bf')
 
-	if Conductor.vocals.stream != null: 
+	if Conductor.vocals.stream != null:
 		Conductor.vocals.volume_db = linear_to_db(1)
-		
+
 	ui.player_group.note_hit(note)
 	grace = true
 	combo += 1
-	
+
 	var time = Conductor.song_pos - note.strum_time if !auto_play else 0
 	var hit_rating = Judge.get_rating(time)
 	var judge_info = Judge.get_score(hit_rating)
@@ -277,11 +277,11 @@ func good_note_hit(note:Note) -> void:
 		ui.total_hit += 1
 		ui.hit_count[hit_rating] += 1
 	ui.hp += 2.3
-	
+
 	if Prefs.note_splashes != 'none':
 		if Prefs.note_splashes == 'all' or (Prefs.note_splashes == 'sicks' and hit_rating == 'sick'):
 			ui.spawn_splash(ui.player_strums[note.dir])
-			
+
 	ui.update_score_txt()
 	kill_note(note)
 	if Prefs.hitsound_volume != 0:
@@ -296,12 +296,12 @@ func good_sustain_press(sustain:Note, delt:float = 0.0) -> void:
 		time_dropped += delt
 		note_miss(sustain)
 		return
-	
+
 	if sustain.holding:
-		if Conductor.vocals.stream != null: 
-			Conductor.vocals.volume_db = linear_to_db(1) 
+		if Conductor.vocals.stream != null:
+			Conductor.vocals.volume_db = linear_to_db(1)
 		ui.player_group.note_hit(sustain)
-		
+
 		grace = true
 		if can_gain_score:
 			score += floor(550 * delt)
@@ -313,7 +313,7 @@ func opponent_note_hit(note:Note) -> void:
 
 	if section_data != null and section_data.has('altAnim') and section_data.altAnim:
 		note.alt = '-alt'
-		
+
 	if Conductor.vocals.stream != null:
 		var v = Conductor.vocals_opp if Conductor.mult_vocals else Conductor.vocals
 		v.volume_db = linear_to_db(1)
@@ -324,7 +324,7 @@ func opponent_sustain_press(sustain:Note) -> void:
 	if Conductor.vocals.stream != null:
 		var v = Conductor.vocals_opp if Conductor.mult_vocals else Conductor.vocals
 		v.volume_db = linear_to_db(1)
-		
+
 	if section_data != null and section_data.has('altAnim') and section_data.altAnim:
 		sustain.alt = '-alt'
 	ui.opponent_group.note_hit(sustain)
@@ -338,46 +338,46 @@ func note_miss(note:Note) -> void:
 			ui.hit_count['miss'] = misses
 			score -= floor(note.length * 2) if note.is_sustain else int(30 + (15 * floor(misses / 3)))
 			ui.total_hit += 1
-		
+
 		var hp_diff = ((note.length / 30) if note.is_sustain else 4.7)
 		if note.is_sustain and grace and ui.hp - hp_diff <= 0: # big ass sustains wont kill you instantly
 			grace = false
 			hp_diff = ui.hp - 0.1
-			
-		ui.hp -= hp_diff 
-		
+
+		ui.hp -= hp_diff
+
 		pop_up_combo('miss', ('000' if combo >= 5 else ''), true)
 		#if combo >= 5: pop_up_combo('', '000', true)
 		combo = 0
-	
+
 		if Conductor.vocals != null:
 			Conductor.vocals.volume_db = linear_to_db(0)
 		ui.update_score_txt()
 	kill_note(note)
-	
+
 func pop_up_combo(rating:String = 'sick', combo = -1, is_miss:bool = false) -> void:
 	if Prefs.rating_cam != 'none':
 		var cam:Callable = ui.add_behind if Prefs.rating_cam == 'hud' else add_child
-	
+
 		if rating.length() != 0:
 			var new_rating = Judge.make_rating(rating)
 			cam.call(new_rating)
-	
-			if new_rating != null: # opening chart editor at the wrong time would fuck it	
+
+			if new_rating != null: # opening chart editor at the wrong time would fuck it
 				var r_tween = create_tween()
 				r_tween.tween_property(new_rating, "modulate:a", 0, 0.2).set_delay(Conductor.crochet * 0.001)
 				r_tween.finished.connect(new_rating.queue_free)
-		
+
 		if (combo is int and combo > -1) or (combo is String and combo.length() > 0):
 			for num in Judge.make_combo(combo):
 				cam.call(num)
-				
+
 				if num != null:
 					var n_tween = create_tween()
 					if is_miss: num.modulate = Color.DARK_RED
 					n_tween.tween_property(num, "modulate:a", 0, 0.2).set_delay(Conductor.crochet * 0.002)
 					n_tween.finished.connect(num.queue_free)
-	
+
 func kill_note(note:Note) -> void:
 	if note != null:
 		note.spawned = false

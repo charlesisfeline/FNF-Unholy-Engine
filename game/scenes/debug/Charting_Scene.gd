@@ -331,7 +331,7 @@ func on_char_change(c:String):
 	tab('Song', c).text = new_char
 	var new_json = JsonHandler.get_character(new_char)
 	if _icon != null:
-		_icon.change_icon(new_json.healthicon if new_json != null else 'face', c.to_lower() == 'Player1')
+		_icon.change_icon(new_json.icon if new_json != null else 'face', c.to_lower() == 'Player1')
 	
 var bg_tween:Tween
 func beat_hit(beat:int) -> void:
