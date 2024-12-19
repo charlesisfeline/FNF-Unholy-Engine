@@ -1,0 +1,38 @@
+checkTemplate: true
+miniTitleLength: 8
+labelToAdd: needs-more-info
+reactions:
+  - confused
+
+issue:
+  badTitles:
+    - update
+    - updates
+    - test
+    - issue
+    - debug
+    - demo
+  badTitleComment: |
+    @{{ author }}
+    i am hungry give me more info
+    i want more info about ur issue
+
+  badBodyComment: |
+    @{{ author }}
+    i am hungry give me more info
+    i want more info about ur issue
+
+pullRequest:
+  badTitles:
+    - update
+    - updates
+    - test
+  badBodyComment: |
+    @{{ author }}
+    i am hungry give me more info
+    i want more info about ur pr
+
+  badTitleComment: |
+    @{{ author }}
+    i am hungry give me more info
+    i want more info about ur pr
